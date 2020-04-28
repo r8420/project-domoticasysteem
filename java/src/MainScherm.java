@@ -14,40 +14,44 @@ import java.util.Hashtable;
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
 
     public static void main(String[] args) {
-
         MainScherm scherm = new MainScherm();
     }
 
+    private static final boolean ARDUINO = false;
+    private static final boolean PI = false;
+
+    /* scherm-componenten */
     private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
     private JButton jbLichtAan, jbLichtUit;
+
+    /* connectie/update */
+    private Timer timer;
     private MainInput mainInput;
 
-    private Timer timer;
-
-    // meetwaardes
+    /* meetwaardes */
     private double temperatuur;
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
 
-    // gebruikers instellingen
-    private double verwarmingsTemperatuur;
-    private int maxLichtsterkte;
-
     public MainScherm() {
+
+        /* maak verbinding */
         mainInput = new MainInput();
         mainInput.socketStart();
         mainInput.arduinoStart();
-        // startup settings
+
+
+        /* default scherm settings */
         setSize(1000,750);
         setMinimumSize(new Dimension(1000, 800));
         setTitle("Domotica Systeem");
 //        setResizable(false);
 
 
-        // layouts
+        /* standaard layout settings */
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         int standaardInset = 20;
@@ -55,13 +59,12 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.anchor = GridBagConstraints.LINE_START;
 
 
-        // muziekspeler
+        /* muziekspeler panel */
         JPanel jpMuziekspeler = new JPanel();
         jpMuziekspeler.setLayout(new FlowLayout());
 
 
-
-        // verwarming / temperatuur
+        /* verwarming / temperatuur panel*/
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(20, 0, 25, 0.5));
@@ -81,7 +84,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridy = 0;
 
 
-        // licht
+        /* licht panel */
         JPanel jpLicht = new JPanel();
         jpLicht.setLayout(new GridBagLayout());
         jbLichtAan = new JButton("Aan");
@@ -97,8 +100,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLicht.add(new JLabel("Licht aan vanaf: "), c);
         c.gridy = 2;
 
-        int maxLichtWaarde = 10;
-        // jslMaxLichtsterkte.getValue() is nu een getal van 0 to 10, 0 is heel donker en 10 is heel licht
+        int maxLichtWaarde = 10; // de slider kan zo een waarde van 0 tot 10 krijgen.
         jslMaxLichtsterkte = new JSlider(0,maxLichtWaarde,maxLichtWaarde/2);
         jslMaxLichtsterkte.setMajorTickSpacing((int)(maxLichtWaarde*0.1));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
@@ -115,7 +117,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridwidth = 1;
 
 
-        // lucht
+        /* lucht panel */
         JPanel jpLucht = new JPanel();
         jpLucht.setLayout(new GridBagLayout());
         jlLuchtdruk = new JLabel("Luchtdruk: -");
@@ -126,15 +128,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLucht.add(jlLuchtvochtigheid, c);
 
 
-        // zijkant
+        /* zijkant panel (profiel knoppen) */
         JPanel jpZijkant = new JPanel();
         jpZijkant.setLayout(new GridBagLayout());
 
-        JLabel jlProfielAfb = maakFotoLabel("src/profiel.png");
-        jlAnderProfielAfb = maakFotoLabel("src/anderprofiel.png");
-        jlInstellingenAfb = maakFotoLabel("src/instellingen.png");
+        JLabel jlProfielAfb = Functies.maakFotoLabel("src/profiel.png");
+        jlAnderProfielAfb = Functies.maakFotoLabel("src/anderprofiel.png");
+        jlInstellingenAfb = Functies.maakFotoLabel("src/instellingen.png");
         jlAnderProfielAfb.addMouseListener(this);
         jlInstellingenAfb.addMouseListener(this);
+
         c.anchor = GridBagConstraints.PAGE_START;
         c.insets = new Insets(0,0,0,0);
         c.weighty = 0;
@@ -155,15 +158,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.insets = new Insets(0,0,0,0);
 
 
-        // tijdelijk
+        /* tijdelijke borders rondom de panels */
         Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
         jpMuziekspeler.setBorder(testBorder);
         jpVerwarming.setBorder(testBorder);
         jpLicht.setBorder(testBorder);
         jpLucht.setBorder(testBorder);
 //        jpZijkant.setBorder(testBorder);
-        // tijdelijk
 
+
+        /* voeg alle panels toe aan het hoofdscherm */
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1;
         c.insets = new Insets(10,10,10,10);
@@ -172,8 +176,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridx = 0;
         c.weighty = 1;
         add(jpMuziekspeler, c);
-        c.weighty = 0.3;
 
+        c.weighty = 0.3;
         c.gridy = 1;
         add(jpVerwarming, c);
 
@@ -189,27 +193,25 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridheight = 4;
         add(jpZijkant, c);
 
-        // timer die om de zoveel tijd nieuwe gegevens opvraagt
+
+        /* timer voor opvragen van nieuwe gegevens */
         timer = new Timer(0, e -> {
             updateMeetWaardes();
         });
-
-        timer.setDelay(10000); // wacht voor 1 minuut
+        timer.setDelay(10000); // millisec, 1.000 = 1 sec
         timer.start();
 
 
-        // moet onderaan staan
-        setVisible(true);
-        addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                System.out.println("Closed");
-                mainInput.socketStop();
-                e.getWindow().dispose();
+        /* wat te doen als op kruisje wordt gedrukt */
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                mainInput.socketStop(); // verbreek verbinding
+                e.getWindow().dispose(); // sluit het scherm
             }
         });
+
+        /* Maak het scherm zichtbaar */
+        setVisible(true);
     }
 
 
@@ -239,18 +241,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void veranderProfiel() {
-        // set maxLicht
-        // set verwarmTemp
-        // set profielNaam
-    }
-
-    private JLabel maakFotoLabel(String locatie) {
-        try {
-            BufferedImage myPicture = ImageIO.read(new File(locatie));
-            return new JLabel(new ImageIcon(myPicture));
-        } catch (IOException e) {
-            return new JLabel("X");
-        }
+        /* deze functie moet de profielsettings aanpassen wanneer iemand een ander profiel selecteert
+        * update jslMaxLichtsterkte
+        * update jspVerwarmingsTemperatuur
+        * update jlProfielNaam
+        * */
     }
 
     public void setTemperatuur(double temp) {

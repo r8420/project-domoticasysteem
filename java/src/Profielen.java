@@ -22,7 +22,7 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
 
         //De knoppen plaatjes geven en de labels tekst geven
         jlKiesProfiel = new JLabel("Kies Profiel");
-        jlProfielPlaatje =  maakFotoLabel("src/profielToevoegen.png");
+        jlProfielPlaatje =  Functies.maakFotoLabel("src/profielToevoegen.png");
         jlProfielToevoegen = new JLabel("Profiel Toevoegen");
 
         profielen.add(new Profiel("MafklapperKees"));
@@ -57,7 +57,7 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
                 c.gridy += 2;
                 c.gridx = 0;
             }
-            JLabel jlPlaatje = maakFotoLabel("src/profiel.png");
+            JLabel jlPlaatje = Functies.maakFotoLabel("src/profiel.png");
             JLabel jlNaam = new JLabel(profiel.getNaam());
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
@@ -92,15 +92,6 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
 
         setVisible(true);
         frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-    }
-
-    private JLabel maakFotoLabel(String locatie) {
-        try {
-            BufferedImage myPicture = ImageIO.read(new File(locatie));
-            return new JLabel(new ImageIcon(myPicture));
-        } catch (IOException e) {
-            return new JLabel("X");
-        }
     }
 
     public void mouseClicked(MouseEvent e) {
