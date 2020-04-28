@@ -1,14 +1,10 @@
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -17,8 +13,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         MainScherm scherm = new MainScherm();
     }
 
-    private static final boolean ARDUINO = false;
-    private static final boolean PI = false;
+    private boolean arduinoAansluiting;
+    private boolean piAansluiting;
 
     /* scherm-componenten */
     private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
@@ -40,8 +36,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* maak verbinding */
         mainInput = new MainInput();
-        mainInput.socketStart();
-        mainInput.arduinoStart();
+        piAansluiting = mainInput.socketStart();
+        arduinoAansluiting = mainInput.arduinoStart();
 
 
         /* default scherm settings */
@@ -205,7 +201,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /* wat te doen als op kruisje wordt gedrukt */
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                mainInput.socketStop(); // verbreek verbinding
+                if (piAansluiting) mainInput.socketStop(); // verbreek verbinding
                 e.getWindow().dispose(); // sluit het scherm
             }
         });
@@ -217,27 +213,29 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     public void updateMeetWaardes() {
 
-        System.out.println("Update meetwaardes!");
-        String[] splitStr = mainInput.sensor();
-        String string = mainInput.arduinoSensor();
-        /* verander dit */
-        lichtsterkte = (int)Double.parseDouble(string);
-        temperatuur = Double.parseDouble(splitStr[0]);
-        luchtdruk =  (int)Double.parseDouble(splitStr[2]);
-        luchtvochtigheid = (int)Double.parseDouble(splitStr[1]);
+        System.out.println("Update meetwaardes!" + ((arduinoAansluiting || piAansluiting) ? "" : " (geen verbinding)"));
 
-        // ....
+        if (arduinoAansluiting) {
+            String arduinoMeting = mainInput.arduinoSensor();
+            lichtsterkte = (int) Double.parseDouble(arduinoMeting);
 
-        /* stuur de waardes ook meteen naar de database */
-        mainInput.database(temperatuur,luchtdruk, luchtvochtigheid, lichtsterkte);
-        // ...
+            setLichtsterkte(lichtsterkte);
+        }
 
+        if (piAansluiting) {
+            String[] piMetingen = mainInput.piSensoren();
+            temperatuur = Double.parseDouble(piMetingen[0]);
+            luchtvochtigheid = (int) Double.parseDouble(piMetingen[1]);
+            luchtdruk = (int) Double.parseDouble(piMetingen[2]);
 
-        /* waardes worden aangepast */
-        setTemperatuur(temperatuur);
-        setLichtsterkte(lichtsterkte);
-        setLuchtdruk(luchtdruk);
-        setLuchtvochtigheid(luchtvochtigheid);
+            setTemperatuur(temperatuur);
+            setLuchtvochtigheid(luchtvochtigheid);
+            setLuchtdruk(luchtdruk);
+        }
+
+        /* ! DIT MOET NU APART VOOR PI EN ARDUINO ! */
+//        mainInput.database(temperatuur,luchtdruk, luchtvochtigheid, lichtsterkte);
+
     }
 
     public void veranderProfiel() {
@@ -271,11 +269,10 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        if (e.getSource() == jslMaxLichtsterkte) {
-            if (!jslMaxLichtsterkte.getValueIsAdjusting()) {
-                // maximale lichtsterkte is veranderd
-                System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
-            }
+        if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
+            // maximale lichtsterkte is veranderd
+            System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
+
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
             System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
@@ -284,9 +281,12 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
+
         if (e.getSource() == jlAnderProfielAfb) {
             // ander profiel wordt aangeklikt
             System.out.println("ander profiel");
+            Profielen profielDialog = new Profielen(this);
+
         } else if (e.getSource() == jlInstellingenAfb) {
             // opties wordt aangeklikt
             System.out.println("instellingen");
