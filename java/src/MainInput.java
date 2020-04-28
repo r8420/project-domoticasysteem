@@ -1,4 +1,3 @@
-package RaspberrryPi;
 import com.fazecast.jSerialComm.*;
 
 import java.io.IOException;

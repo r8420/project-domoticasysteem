@@ -1,4 +1,3 @@
-package RaspberrryPi;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
