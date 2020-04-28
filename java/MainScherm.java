@@ -1,0 +1,317 @@
+package RaspberrryPi;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+
+public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
+
+    public static void main(String[] args) {
+
+        MainScherm scherm = new MainScherm();
+    }
+
+    private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
+    private JSpinner jspVerwarmingsTemperatuur;
+    private JSlider jslMaxLichtsterkte;
+    private JButton jbLichtAan, jbLichtUit;
+    private MainInput mainInput;
+
+    private Timer timer;
+
+    // meetwaardes
+    private double temperatuur;
+    private int lichtsterkte;
+    private int luchtdruk;
+    private int luchtvochtigheid;
+
+    // gebruikers instellingen
+    private double verwarmingsTemperatuur;
+    private int maxLichtsterkte;
+
+    public MainScherm() {
+        mainInput = new MainInput();
+        mainInput.socketStart();
+        mainInput.arduinoStart();
+        // startup settings
+        setSize(1000,750);
+        setMinimumSize(new Dimension(1000, 800));
+        setTitle("Domotica Systeem");
+//        setResizable(false);
+
+
+        // layouts
+        setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        int standaardInset = 20;
+        c.insets = new Insets(10,standaardInset,0,0);
+        c.anchor = GridBagConstraints.LINE_START;
+
+
+        // muziekspeler
+        JPanel jpMuziekspeler = new JPanel();
+        jpMuziekspeler.setLayout(new FlowLayout());
+
+
+
+        // verwarming / temperatuur
+        JPanel jpVerwarming = new JPanel();
+        jpVerwarming.setLayout(new GridBagLayout());
+        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(20, 0, 25, 0.5));
+        jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50,30));
+        jspVerwarmingsTemperatuur.addChangeListener(this);
+
+        c.weightx = 0;
+        jpVerwarming.add(new JLabel("Huidige temperatuur: "), c);
+        c.weightx = 1;
+        jlTemperatuur = new JLabel("-");
+        jpVerwarming.add(jlTemperatuur, c);
+        c.gridy = 1;
+        c.weightx = 0;
+        jpVerwarming.add(new JLabel("Verwarmen vanaf: "), c);
+        c.weightx = 1;
+        jpVerwarming.add(jspVerwarmingsTemperatuur, c);
+        c.gridy = 0;
+
+
+        // licht
+        JPanel jpLicht = new JPanel();
+        jpLicht.setLayout(new GridBagLayout());
+        jbLichtAan = new JButton("Aan");
+        jbLichtUit = new JButton("Uit");
+        jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
+        c.weightx = 0;
+        jpLicht.add(jbLichtAan, c);
+        jpLicht.add(jbLichtUit, c);
+        c.weightx = 1;
+        jpLicht.add(jlLichtsterkte, c);
+        c.gridy = 1;
+        c.gridwidth = 3;
+        jpLicht.add(new JLabel("Licht aan vanaf: "), c);
+        c.gridy = 2;
+
+        int maxLichtWaarde = 10;
+        // jslMaxLichtsterkte.getValue() is nu een getal van 0 to 10, 0 is heel donker en 10 is heel licht
+        jslMaxLichtsterkte = new JSlider(0,maxLichtWaarde,maxLichtWaarde/2);
+        jslMaxLichtsterkte.setMajorTickSpacing((int)(maxLichtWaarde*0.1));
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        labelTable.put( 0, new JLabel("Donker") );
+        labelTable.put(maxLichtWaarde, new JLabel("Licht") );
+        jslMaxLichtsterkte.setLabelTable( labelTable );
+        jslMaxLichtsterkte.setPaintTicks(true);
+        jslMaxLichtsterkte.setPaintLabels(true);
+        jslMaxLichtsterkte.addChangeListener(this);
+        jslMaxLichtsterkte.setPreferredSize(new Dimension(400,40));
+        jpLicht.add(jslMaxLichtsterkte, c);
+
+        c.gridy = 0;
+        c.gridwidth = 1;
+
+
+        // lucht
+        JPanel jpLucht = new JPanel();
+        jpLucht.setLayout(new GridBagLayout());
+        jlLuchtdruk = new JLabel("Luchtdruk: -");
+        jlLuchtvochtigheid = new JLabel("Luchtvochtigheid: -");
+        c.weightx = 0;
+        jpLucht.add(jlLuchtdruk, c);
+        c.weightx = 1;
+        jpLucht.add(jlLuchtvochtigheid, c);
+
+
+        // zijkant
+        JPanel jpZijkant = new JPanel();
+        jpZijkant.setLayout(new GridBagLayout());
+
+        JLabel jlProfielAfb = maakFotoLabel("src/profiel.png");
+        jlAnderProfielAfb = maakFotoLabel("src/anderprofiel.png");
+        jlInstellingenAfb = maakFotoLabel("src/instellingen.png");
+        jlAnderProfielAfb.addMouseListener(this);
+        jlInstellingenAfb.addMouseListener(this);
+        c.anchor = GridBagConstraints.PAGE_START;
+        c.insets = new Insets(0,0,0,0);
+        c.weighty = 0;
+        jpZijkant.add(jlProfielAfb, c);
+        jpZijkant.add(jlAnderProfielAfb, c);
+//        jpZijkant.add(jlInstellingenAfb, c);
+        c.gridy = 1;
+        c.weighty = 1;
+        jlProfielNaam = new JLabel("Naam");
+        jpZijkant.add(jlProfielNaam, c);
+        jpZijkant.add(new JLabel("Ander profiel"), c);
+//        jpZijkant.add(new JLabel("Instellingen"), c);
+
+
+        // reset GridBagConstraints
+        c.anchor = GridBagConstraints.CENTER;
+        c.gridy = 0;
+        c.insets = new Insets(0,0,0,0);
+
+
+        // tijdelijk
+        Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
+        jpMuziekspeler.setBorder(testBorder);
+        jpVerwarming.setBorder(testBorder);
+        jpLicht.setBorder(testBorder);
+        jpLucht.setBorder(testBorder);
+//        jpZijkant.setBorder(testBorder);
+        // tijdelijk
+
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1;
+        c.insets = new Insets(10,10,10,10);
+
+        c.gridy = 0;
+        c.gridx = 0;
+        c.weighty = 1;
+        add(jpMuziekspeler, c);
+        c.weighty = 0.3;
+
+        c.gridy = 1;
+        add(jpVerwarming, c);
+
+        c.gridy = 2;
+        add(jpLicht, c);
+
+        c.gridy = 3;
+        add(jpLucht, c);
+
+        c.gridy = 0;
+        c.gridx = 1;
+        c.weightx = 0.1;
+        c.gridheight = 4;
+        add(jpZijkant, c);
+
+        // timer die om de zoveel tijd nieuwe gegevens opvraagt
+        timer = new Timer(0, e -> {
+            updateMeetWaardes();
+        });
+
+        timer.setDelay(10000); // wacht voor 1 minuut
+        timer.start();
+
+
+        // moet onderaan staan
+        setVisible(true);
+        addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                System.out.println("Closed");
+                mainInput.socketStop();
+                e.getWindow().dispose();
+            }
+        });
+    }
+
+
+    public void updateMeetWaardes() {
+
+        System.out.println("Update meetwaardes!");
+        String[] splitStr = mainInput.sensor();
+        String string = mainInput.arduinoSensor();
+        /* verander dit */
+        lichtsterkte = (int)Double.parseDouble(string);
+        temperatuur = Double.parseDouble(splitStr[0]);
+        luchtdruk =  (int)Double.parseDouble(splitStr[2]);
+        luchtvochtigheid = (int)Double.parseDouble(splitStr[1]);
+
+        // ....
+
+        /* stuur de waardes ook meteen naar de database */
+        mainInput.database(temperatuur,luchtdruk, luchtvochtigheid, lichtsterkte);
+        // ...
+
+
+        /* waardes worden aangepast */
+        setTemperatuur(temperatuur);
+        setLichtsterkte(lichtsterkte);
+        setLuchtdruk(luchtdruk);
+        setLuchtvochtigheid(luchtvochtigheid);
+    }
+
+    public void veranderProfiel() {
+        // set maxLicht
+        // set verwarmTemp
+        // set profielNaam
+    }
+
+    private JLabel maakFotoLabel(String locatie) {
+        try {
+            BufferedImage myPicture = ImageIO.read(new File(locatie));
+            return new JLabel(new ImageIcon(myPicture));
+        } catch (IOException e) {
+            return new JLabel("X");
+        }
+    }
+
+    public void setTemperatuur(double temp) {
+        jlTemperatuur.setText(String.valueOf(temp) + " ℃");
+    }
+
+    public void setLichtsterkte(int licht) {
+        jlLichtsterkte.setText("Huidige lichtsterkte: " + licht);
+    }
+
+    public void setLuchtdruk(int druk) {
+        jlLuchtdruk.setText("Luchtdruk: " + druk);
+    }
+
+    public void setLuchtvochtigheid(int luchtvochtigheid) {
+        jlLuchtvochtigheid.setText("Luchtvochtigheid: " + luchtvochtigheid);
+    }
+
+    public void setProfielNaam(String naam) {
+        jlProfielNaam.setText(naam);
+    }
+
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        if (e.getSource() == jslMaxLichtsterkte) {
+            if (!jslMaxLichtsterkte.getValueIsAdjusting()) {
+                // maximale lichtsterkte is veranderd
+                System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
+            }
+        } else if (e.getSource() == jspVerwarmingsTemperatuur) {
+            // verwarmingstemperatuur is veranderd
+            System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
+        }
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (e.getSource() == jlAnderProfielAfb) {
+            // ander profiel wordt aangeklikt
+            System.out.println("ander profiel");
+        } else if (e.getSource() == jlInstellingenAfb) {
+            // opties wordt aangeklikt
+            System.out.println("instellingen");
+        }
+    }
+
+    public void mousePressed(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == jbLichtAan) {
+            // licht aan
+            System.out.println("licht aan");
+        } else if (e.getSource() == jbLichtUit) {
+            // licht uit
+            System.out.println("licht uit");
+        }
+    }
+}
