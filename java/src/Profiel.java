@@ -1,4 +1,3 @@
-package KBS;
 
 public class Profiel {
     private String naam;
