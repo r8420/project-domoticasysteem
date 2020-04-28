@@ -132,9 +132,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         JPanel jpZijkant = new JPanel();
         jpZijkant.setLayout(new GridBagLayout());
 
-        JLabel jlProfielAfb = Functies.maakFotoLabel("src/profiel.png");
-        jlAnderProfielAfb = Functies.maakFotoLabel("src/anderprofiel.png");
-        jlInstellingenAfb = Functies.maakFotoLabel("src/instellingen.png");
+        JLabel jlProfielAfb = Functies.maakFotoLabel("src/images/profiel.png");
+        jlAnderProfielAfb = Functies.maakFotoLabel("src/images/anderprofiel.png");
+        jlInstellingenAfb = Functies.maakFotoLabel("src/images/instellingen.png");
         jlAnderProfielAfb.addMouseListener(this);
         jlInstellingenAfb.addMouseListener(this);
 
