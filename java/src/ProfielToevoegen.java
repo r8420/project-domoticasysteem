@@ -41,8 +41,6 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jbNewProfile) {
-            gebruikersnaam = jtfNewProfile.getText();
-
             setVisible(false);
         } else if (e.getSource() == jbAnnuleren) {
             setVisible(false);

@@ -5,6 +5,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.ParseException;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -15,6 +16,10 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private boolean arduinoAansluiting;
     private boolean piAansluiting;
+    private double TemperatuurInstelling = 20; // De waarde die wordt afgebeeld wanneer er niemand is ingelogd.
+
+
+
 
     /* scherm-componenten */
     private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
@@ -32,6 +37,10 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int luchtdruk;
     private int luchtvochtigheid;
 
+    public void setTemperatuurInstelling(double temperatuurInstelling) {
+        TemperatuurInstelling = temperatuurInstelling;
+    }
+
     public MainScherm() {
 
         /* maak verbinding */
@@ -44,6 +53,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setSize(1000,750);
         setMinimumSize(new Dimension(1000, 800));
         setTitle("Domotica Systeem");
+
 //        setResizable(false);
 
 
@@ -63,7 +73,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /* verwarming / temperatuur panel*/
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
-        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(20, 0, 25, 0.5));
+        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(TemperatuurInstelling, 0, 25, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50,30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
 
@@ -273,6 +283,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
 
+
+
     @Override
     public void stateChanged(ChangeEvent e) {
         if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
@@ -281,13 +293,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
-
             MainInput.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), jlProfielNaam.getText());
             System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
-             double TemperatuurDing = MainInput.selectDBtemp(jlProfielNaam.getText());
-            System.out.println("Instelling voor temperatuur: " + TemperatuurDing);
         }
     }
+
+
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -295,19 +307,23 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (e.getSource() == jlAnderProfielAfb) {
             // ander profiel wordt aangeklikt
             System.out.println("ander profiel");
+
             ProfielenManagement profielDialog = new ProfielenManagement(this);
-            if (profielDialog.anderProfielGeselecteerd()){
-                // Wat te doen als er op een ander profiel wordt ingelogd.
+            if (profielDialog.anderProfielGeselecteerd()) {
                 // Nieuw profiel aanmaken zodat de gebruikersnaam kan worden opgehaald, deze wordt getoond op Mainscherm.
                 Profiel x = profielDialog.getGeselecteerdProfiel();
                 setProfielNaam(x.getNaam());
-            }
+                // Per profiel kijken wat er in de database staat als TempVerwarmen, dit tonen in de Spinner.
+                jspVerwarmingsTemperatuur.setValue(MainInput.selectDBtemp(jlProfielNaam.getText()));
+                System.out.println("Instelling voor temperatuur: " + TemperatuurInstelling);
 
-        } else if (e.getSource() == jlInstellingenAfb) {
-            // opties wordt aangeklikt
-            System.out.println("instellingen");
+            } else if (e.getSource() == jlInstellingenAfb) {
+                // opties wordt aangeklikt
+                System.out.println("instellingen");
+            }
         }
     }
+
 
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}

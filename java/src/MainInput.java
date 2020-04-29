@@ -252,7 +252,7 @@ public class MainInput {
 
             double TempVerwarmen =0.0;
             while (rs.next()) {
-                TempVerwarmen = rs.getInt(1);
+                TempVerwarmen = rs.getDouble(1);
             }
             conn.close();
 
