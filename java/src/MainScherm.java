@@ -233,8 +233,14 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             setLuchtdruk(luchtdruk);
         }
 
-        /* ! DIT MOET NU APART VOOR PI EN ARDUINO ! */
-//        mainInput.database(temperatuur,luchtdruk, luchtvochtigheid, lichtsterkte);
+        /* log de sensordata in de database */
+        if (piAansluiting && arduinoAansluiting) {
+            mainInput.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
+        } else if (piAansluiting) {
+            mainInput.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid);
+        } else if (arduinoAansluiting) {
+            mainInput.insertDBLog(lichtsterkte);
+        }
 
     }
 

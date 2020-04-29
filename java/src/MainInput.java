@@ -87,7 +87,7 @@ public class MainInput {
         return Arduino;
     }
 
-    public void database(double temperatuur, int luchtdruk, int luchtvochtigheid, int lichtsterkte) {
+    public void insertDBLog(double temperatuur, int luchtdruk, int luchtvochtigheid, int lichtsterkte) {
         try {
             java.util.Date uDate = new java.util.Date();
             DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
@@ -95,7 +95,7 @@ public class MainInput {
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
-            String query = "insert into log(Date, Temperatuur, Luchtvochtigheid, luchtdruk, Lichtsterkte)\n" +
+            String query = "INSERT INTO log(Date, Temperatuur, Luchtvochtigheid, Luchtdruk, Lichtsterkte)\n" +
                     "VALUES ('"+s+"', " + temperatuur+", " + luchtvochtigheid+ ", " + luchtdruk + ", " + lichtsterkte + ")";
 
             // create the mysql insert preparedstatement
@@ -109,6 +109,53 @@ public class MainInput {
             System.out.println(e);
         }
     }
+
+    public void insertDBLog(double temperatuur, int luchtdruk, int luchtvochtigheid) {
+        try {
+            java.util.Date uDate = new java.util.Date();
+            DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+            String s = df.format(uDate);
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "INSERT INTO log(Date, Temperatuur, Luchtvochtigheid, Luchtdruk)\n" +
+                    "VALUES ('"+s+"', " + temperatuur+", " + luchtvochtigheid+ ", " + luchtdruk + ")";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+            conn.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public void insertDBLog(int lichtsterkte) {
+        try {
+            java.util.Date uDate = new java.util.Date();
+            DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+            String s = df.format(uDate);
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "INSERT INTO log(Date, Lichtsterkte)\n" +
+                    "VALUES ('"+s+"', " + lichtsterkte + ")";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+            conn.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 
 }
 
