@@ -235,7 +235,7 @@ public class MainInput {
         }
     }
 
-    /*public static double selectDBtemp(String profiel){
+    public static double selectDBtemp(String profiel) {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -250,17 +250,20 @@ public class MainInput {
             // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
 
-            double TempVerwarmen;
-            TempVerwarmen = rs.getDouble(3);
-
+            double TempVerwarmen =0.0;
+            while (rs.next()) {
+                TempVerwarmen = rs.getInt(1);
+            }
             conn.close();
+
             return TempVerwarmen;
+
 
         } catch (Exception e) {
             System.out.println("Ging wat mis bij ophalen temperatuur");
             return 0;
         }
-    }*/
+    }
 
 
 }

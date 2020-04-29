@@ -284,6 +284,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
             MainInput.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), jlProfielNaam.getText());
             System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
+             double TemperatuurDing = MainInput.selectDBtemp(jlProfielNaam.getText());
+            System.out.println("Instelling voor temperatuur: " + TemperatuurDing);
         }
     }
 
