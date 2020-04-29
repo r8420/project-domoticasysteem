@@ -213,6 +213,55 @@ public class MainInput {
         }
     }
 
+    public static void updateDBtemp(double temperatuur, String profiel){
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "UPDATE profile\n" +
+                    "SET TempVerwarmen = '"+temperatuur+"'\n" +
+                    "WHERE Gebruikersnaam = '"+profiel+"'";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+            conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    /*public static double selectDBtemp(String profiel){
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "SELECT TempVerwarmen FROM profile WHERE Gebruikersnaam = '"+profiel+"'";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            ResultSet rs = preparedStmt.executeQuery();
+
+            double TempVerwarmen;
+            TempVerwarmen = rs.getDouble(3);
+
+            conn.close();
+            return TempVerwarmen;
+
+        } catch (Exception e) {
+            System.out.println("Ging wat mis bij ophalen temperatuur");
+            return 0;
+        }
+    }*/
+
 
 }
 

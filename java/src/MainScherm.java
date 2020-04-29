@@ -281,6 +281,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
+
+            MainInput.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), jlProfielNaam.getText());
             System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
         }
     }
