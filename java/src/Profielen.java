@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Profielen extends JDialog implements MouseListener, ActionListener {
-    private ArrayList<Profiel> profielen = new ArrayList<>();
+    private ArrayList<Profiel> profielen;
     private JLabel jlKiesProfiel, jlProfielPlaatje, jlProfielToevoegen;
 
     public Profielen(JFrame frame){
@@ -28,7 +28,7 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
 
         MainInput mainInput = new MainInput();
 
-
+        profielen = MainInput.selectDBprofiles();
 
         //De labels toevoegen aan het scherm
         GridBagConstraints c = new GridBagConstraints();

@@ -6,8 +6,10 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class MainInput {
 
@@ -179,25 +181,36 @@ public class MainInput {
     }
 
 
-    public void selectDBprofiles(String gebruikersnaam){
+    public static ArrayList<Profiel> selectDBprofiles(){
         try {
-            java.util.Date uDate = new java.util.Date();
-            DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
-            String s = df.format(uDate);
+
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
-            String query = "insert into profile(Gebruikersnaam)\n" +
-                    "VALUES ('"+gebruikersnaam+"')";
+            String query = "SELECT * FROM profile";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
 
             // execute the preparedstatement
-            preparedStmt.execute();
+            ResultSet rs = preparedStmt.executeQuery();
+
+            ArrayList<Profiel> resultaat = new ArrayList<>();
+            while (rs.next()) {
+                Profiel p = new Profiel(
+                        (int)rs.getObject(1),
+                        (String)rs.getObject(2));
+
+                resultaat.add(p);
+            }
+
             conn.close();
+            return resultaat;
+
         } catch (Exception e) {
             System.out.println(e);
+            System.out.println("Ging wat mis bij ophalen profielen");
+            return new ArrayList<Profiel>();
         }
     }
 
