@@ -183,7 +183,7 @@ public class MainInput {
 
     public static ArrayList<Profiel> selectDBprofiles(){
         try {
-
+            // mysql-connector.jar benodigd om dit te laten functioneren.
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
@@ -195,10 +195,9 @@ public class MainInput {
             // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
 
-            ArrayList<Profiel> resultaat = new ArrayList<>();
+            ArrayList<Profiel> resultaat = new ArrayList<>(); // Array met profielen vullen met de gebruikersnamen
             while (rs.next()) {
                 Profiel p = new Profiel(
-                        (int)rs.getObject(1),
                         (String)rs.getObject(2));
 
                 resultaat.add(p);

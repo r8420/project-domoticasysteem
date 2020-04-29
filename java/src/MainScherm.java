@@ -142,7 +142,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 //        jpZijkant.add(jlInstellingenAfb, c);
         c.gridy = 1;
         c.weighty = 1;
-        jlProfielNaam = new JLabel("Naam");
+        jlProfielNaam = new JLabel("Niet ingelogd");
         jpZijkant.add(jlProfielNaam, c);
         jpZijkant.add(new JLabel("Ander profiel"), c);
 //        jpZijkant.add(new JLabel("Instellingen"), c);
@@ -291,7 +291,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (e.getSource() == jlAnderProfielAfb) {
             // ander profiel wordt aangeklikt
             System.out.println("ander profiel");
-            Profielen profielDialog = new Profielen(this);
+            ProfielenManagement profielDialog = new ProfielenManagement(this);
+            if (profielDialog.anderProfielGeselecteerd()){
+                // Wat te doen als er op een ander profiel wordt ingelogd.
+                // Nieuw profiel aanmaken zodat de gebruikersnaam kan worden opgehaald, deze wordt getoond op Mainscherm.
+                Profiel x = profielDialog.getGeselecteerdProfiel();
+                setProfielNaam(x.getNaam());
+            }
 
         } else if (e.getSource() == jlInstellingenAfb) {
             // opties wordt aangeklikt

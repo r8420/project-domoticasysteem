@@ -19,7 +19,7 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
     }
 
 
-    public ProfielToevoegen(JFrame frame) {
+    public ProfielToevoegen(JDialog frame) {
         super(frame, true);
         setTitle("Nieuwe profiel aanmaken");
         setSize(300, 130);
@@ -42,8 +42,6 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jbNewProfile) {
             gebruikersnaam = jtfNewProfile.getText();
-
-            // INSERT INTO (de gebruikersnaam)
 
             setVisible(false);
         } else if (e.getSource() == jbAnnuleren) {
