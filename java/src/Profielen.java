@@ -16,6 +16,7 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
 
     public Profielen(JFrame frame){
         super(frame, true);
+
         setTitle("Kies profiel");
         setLayout(new GridBagLayout());
         setSize(800,300);
@@ -25,15 +26,9 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
         jlProfielPlaatje =  Functies.maakFotoLabel("src/images/profielToevoegen.png");
         jlProfielToevoegen = new JLabel("Profiel Toevoegen");
 
-        profielen.add(new Profiel("MafklapperKees"));
-        profielen.add(new Profiel("Henk Klinkelhamer"));
-        profielen.add(new Profiel("Geert-Jan Bazelman"));
-        profielen.add(new Profiel("MafklapperKees"));
-        profielen.add(new Profiel("Henk Klinkelhamer"));
-        profielen.add(new Profiel("Geert-Jan Bazelman"));
-        profielen.add(new Profiel("MafklapperKees"));
-        profielen.add(new Profiel("Henk Klinkelhamer"));
-        profielen.add(new Profiel("Geert-Jan Bazelman"));
+        MainInput mainInput = new MainInput();
+
+
 
         //De labels toevoegen aan het scherm
         GridBagConstraints c = new GridBagConstraints();
@@ -96,13 +91,21 @@ public class Profielen extends JDialog implements MouseListener, ActionListener 
 
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == jlProfielPlaatje || e.getSource() == jlProfielToevoegen) {
-            if (profielen.size() >= 9){
-                JOptionPane.showMessageDialog(this,"Het maximaal aantal profielen is bereikt!", "Foutmelding",JOptionPane.ERROR_MESSAGE);
+            if (profielen.size() >= 9) {
+                JOptionPane.showMessageDialog(this, "Het maximaal aantal profielen is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            // toevoegen profiel wordt aangeklikt
-            System.out.println("toevoegen profiel");
+
             ProfielToevoegen nieuwProfiel = new ProfielToevoegen(new JFrame());
+
+            if (nieuwProfiel.GetIsOk() && !nieuwProfiel.getJtfNewProfile().equals("")) {
+                // toevoegen profiel wordt aangeklikt
+                System.out.println("profiel met succes toegevoegd");
+               MainInput.insertDBprofile(nieuwProfiel.getJtfNewProfile());
+
+            } else {
+                System.out.println("profiel toevoegen mislukt");
+            }
             dispose();
         }
     }

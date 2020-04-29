@@ -9,6 +9,15 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
     private JTextField jtfNewProfile;
     private JButton jbNewProfile;
     private JButton jbAnnuleren;
+    private boolean isOk;
+
+    public String getJtfNewProfile() {
+        return jtfNewProfile.getText();
+    }
+    public boolean GetIsOk() {
+        return isOk;
+    }
+
 
     public ProfielToevoegen(JFrame frame) {
         super(frame, true);
@@ -33,12 +42,20 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jbNewProfile) {
             gebruikersnaam = jtfNewProfile.getText();
-            System.out.println(gebruikersnaam);
+
             // INSERT INTO (de gebruikersnaam)
-            dispose();
+
+            setVisible(false);
         } else if (e.getSource() == jbAnnuleren) {
-            dispose();
+            setVisible(false);
         }
+
+        if (e.getSource() == jbNewProfile) {
+            isOk = true;
+        } else {
+            isOk = false;
+        }
+        setVisible(false);
     }
 }
 

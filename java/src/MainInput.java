@@ -157,6 +157,51 @@ public class MainInput {
     }
 
 
+    public static void insertDBprofile(String gebruikersnaam){
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "insert into profile(Gebruikersnaam)\n" +
+                    "VALUES ('"+gebruikersnaam+"')";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+            conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+
+    public void selectDBprofiles(String gebruikersnaam){
+        try {
+            java.util.Date uDate = new java.util.Date();
+            DateFormat df = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+            String s = df.format(uDate);
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "insert into profile(Gebruikersnaam)\n" +
+                    "VALUES ('"+gebruikersnaam+"')";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+            conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+
 }
 
 
