@@ -223,15 +223,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* error voor database verbinding */
         if (profiel != null) {
-            setProfielNaam(profiel.getNaam());
-            jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
-            jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+            updateSchermSettings();
         } else {
             JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
         }
+    }
 
-
-
+    public void updateSchermSettings() {
+        setProfielNaam(profiel.getNaam());
+        jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
+        jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
     }
 
 
@@ -319,10 +320,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             if (profielDialog.anderProfielGeselecteerd()) {
                 // Nieuw profiel aanmaken zodat de gebruikersnaam kan worden opgehaald, deze wordt getoond op Mainscherm.
                 profiel = profielDialog.getGeselecteerdProfiel();
-                setProfielNaam(profiel.getNaam());
-                // Per profiel kijken wat er in de database staat als TempVerwarmen, dit tonen in de Spinner.
-                jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
-                jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+                updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
                 System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
 
             }
