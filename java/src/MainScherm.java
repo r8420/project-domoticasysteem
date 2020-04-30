@@ -17,7 +17,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private boolean arduinoAansluiting;
     private boolean piAansluiting;
     private double TemperatuurInstelling = 20; // De waarde die wordt afgebeeld wanneer er niemand is ingelogd.
-
+    private int maxLichtWaarde = 10;
 
 
 
@@ -106,7 +106,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLicht.add(new JLabel("Licht aan vanaf: "), c);
         c.gridy = 2;
 
-        int maxLichtWaarde = 10; // de slider kan zo een waarde van 0 tot 10 krijgen.
+         // de slider kan zo een waarde van 0 tot 10 krijgen.
         jslMaxLichtsterkte = new JSlider(0,maxLichtWaarde,maxLichtWaarde/2);
         jslMaxLichtsterkte.setMajorTickSpacing((int)(maxLichtWaarde*0.1));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
@@ -254,14 +254,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     }
 
-    public void veranderProfiel() {
-        /* deze functie moet de profielsettings aanpassen wanneer iemand een ander profiel selecteert
-        * update jslMaxLichtsterkte
-        * update jspVerwarmingsTemperatuur
-        * update jlProfielNaam
-        * */
-    }
-
     public void setTemperatuur(double temp) {
         jlTemperatuur.setText(String.valueOf(temp) + " ℃");
     }
@@ -290,6 +282,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
             // maximale lichtsterkte is veranderd
             System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
+            MainInput.updateDBlicht(jslMaxLichtsterkte.getValue(), jlProfielNaam.getText());
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
@@ -315,15 +308,12 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 setProfielNaam(x.getNaam());
                 // Per profiel kijken wat er in de database staat als TempVerwarmen, dit tonen in de Spinner.
                 jspVerwarmingsTemperatuur.setValue(MainInput.selectDBtemp(jlProfielNaam.getText()));
+                jslMaxLichtsterkte.setValue(MainInput.selectDBlicht(jlProfielNaam.getText()));
                 System.out.println("Instelling voor temperatuur: " + TemperatuurInstelling);
 
-            } else if (e.getSource() == jlInstellingenAfb) {
-                // opties wordt aangeklikt
-                System.out.println("instellingen");
             }
         }
     }
-
 
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}

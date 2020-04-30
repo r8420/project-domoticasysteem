@@ -213,7 +213,7 @@ public class MainInput {
         }
     }
 
-    public static void updateDBtemp(double temperatuur, String profiel){
+    public static void updateDBtemp(double temperatuur,  String profiel){
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -222,6 +222,28 @@ public class MainInput {
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "UPDATE profile\n" +
                     "SET TempVerwarmen = '"+temperatuur+"'\n" +
+                    "WHERE Gebruikersnaam = '"+profiel+"'";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+            conn.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void updateDBlicht(int licht,  String profiel){
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "UPDATE profile\n" +
+                    "SET TijdLicht = '"+licht+"'\n" +
                     "WHERE Gebruikersnaam = '"+profiel+"'";
 
             // create the mysql insert preparedstatement
@@ -261,6 +283,36 @@ public class MainInput {
 
         } catch (Exception e) {
             System.out.println("Ging wat mis bij ophalen temperatuur");
+            return 0;
+        }
+    }
+
+    public static int selectDBlicht(String profiel) {
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "SELECT TijdLicht FROM profile WHERE Gebruikersnaam = '"+profiel+"'";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            ResultSet rs = preparedStmt.executeQuery();
+
+            int licht =0;
+            while (rs.next()) {
+                licht = rs.getInt(1);
+            }
+            conn.close();
+
+            return licht;
+
+
+        } catch (Exception e) {
+            System.out.println("Ging wat mis bij ophalen van licht");
             return 0;
         }
     }
