@@ -1,13 +1,9 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class ProfielenManagement extends JDialog implements MouseListener, ActionListener {
@@ -69,6 +65,7 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
                     System.out.println("Geklikt op profiel: " + profiel.getNaam());
                     anderProfiel = true;
                     geselecteerdProfiel = profiel; // Weten dat het aangeklikte profiel moet worden gebruikt om de gebruikersnaam van op te halen (tonen op Mainscherm).
+                    MainInput.updateLastUsedProfile(profiel.getId());
                     dispose();
                 }
                 public void mousePressed(MouseEvent e) {
@@ -104,25 +101,34 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
 
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() == jlProfielPlaatje || e.getSource() == jlProfielToevoegen) {
+
             if (profielen.size() >= 9) {
                 JOptionPane.showMessageDialog(this, "Het maximaal aantal profielen is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
            // Nieuwe Profiel toevoegen dialog aanmaken om verder in te gaan.
             ProfielToevoegen nieuwProfielDialog = new ProfielToevoegen( this);
+
+            if (!nieuwProfielDialog.getOk()) {
+                return;
+            }
+
+            if (nieuwProfielDialog.getJtfNewProfile().equals("")) {
+                JOptionPane.showMessageDialog(this, "Profiel toevoegen mislukt.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // Wanneer er op "Profiel aanmaken" is gedrukt en er een gebruikersnaam is ingevuld.
-            if (nieuwProfielDialog.GetIsOk() && !nieuwProfielDialog.getJtfNewProfile().equals("")) {
+            if (nieuwProfielDialog.getOk()) {
+
                 // toevoegen profiel wordt aangeklikt
                 System.out.println("profiel met succes toegevoegd");
                 MainInput.insertDBprofile(nieuwProfielDialog.getJtfNewProfile()); // De nieuwe gebruiker(Gebruikersnaam) in de database zetten.
-                geselecteerdProfiel = new Profiel(nieuwProfielDialog.getJtfNewProfile()); // Naam van het geselecteerde (nieuwe) profiel ophalen.
+                geselecteerdProfiel = MainInput.selectLastProfile(); // Naam van het geselecteerde (nieuwe) profiel ophalen.
                 anderProfiel = true;
-
-
-            } else {
-                System.out.println("profiel toevoegen mislukt");
+                dispose();
             }
-            dispose();
         }
     }
     public void mousePressed(MouseEvent e) {}

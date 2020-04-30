@@ -21,11 +21,11 @@ public class MainInput {
         String[] splitStr = new String[3];
 
         try {
-           byte[] bytes = s.getInputStream().readNBytes(19);
+            byte[] bytes = s.getInputStream().readNBytes(19);
             String string = new String(bytes);
             splitStr = string.split("\\s+");
 
-        } catch (IOException u){
+        } catch (IOException u) {
             System.out.println("fail");
             u.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class MainInput {
             s = new Socket("piri", 8000);
             return true;
 
-        } catch (IOException IE){
+        } catch (IOException IE) {
             System.out.println("socketStart: No server found");
             return false;
         }
@@ -51,15 +51,15 @@ public class MainInput {
             pw.close();
             s.close();
 
-        } catch (IOException IE){
+        } catch (IOException IE) {
             System.out.println("fail");
         }
     }
 
-    public boolean arduinoStart(){
+    public boolean arduinoStart() {
         sp = SerialPort.getCommPort("COM3");
         sp.setComPortParameters(9600, 8, 1, 0);
-        sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING,0,0);
+        sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0);
 
         if (sp.openPort()) {
             System.out.println("arduinoStart: succes");
@@ -71,7 +71,7 @@ public class MainInput {
         }
     }
 
-    public String arduinoSensor(){
+    public String arduinoSensor() {
         String Arduino = "";
 
         try {
@@ -79,10 +79,10 @@ public class MainInput {
             Arduino = new String(bytes);
             System.out.println(Arduino);
 
-        } catch (IOException IE){
+        } catch (IOException IE) {
             System.out.println("nothing to read");
 
-        } catch (NullPointerException NE){
+        } catch (NullPointerException NE) {
             System.out.println("geweldig jammer");
             Arduino = "0";
         }
@@ -98,7 +98,7 @@ public class MainInput {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "INSERT INTO log(Date, Temperatuur, Luchtvochtigheid, Luchtdruk, Lichtsterkte)\n" +
-                    "VALUES ('"+s+"', " + temperatuur+", " + luchtvochtigheid+ ", " + luchtdruk + ", " + lichtsterkte + ")";
+                    "VALUES ('" + s + "', " + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ", " + lichtsterkte + ")";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -121,7 +121,7 @@ public class MainInput {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "INSERT INTO log(Date, Temperatuur, Luchtvochtigheid, Luchtdruk)\n" +
-                    "VALUES ('"+s+"', " + temperatuur+", " + luchtvochtigheid+ ", " + luchtdruk + ")";
+                    "VALUES ('" + s + "', " + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ")";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -144,7 +144,7 @@ public class MainInput {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "INSERT INTO log(Date, Lichtsterkte)\n" +
-                    "VALUES ('"+s+"', " + lichtsterkte + ")";
+                    "VALUES ('" + s + "', " + lichtsterkte + ")";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -159,7 +159,7 @@ public class MainInput {
     }
 
 
-    public static void insertDBprofile(String gebruikersnaam){
+    public static void insertDBprofile(String gebruikersnaam) {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -167,7 +167,7 @@ public class MainInput {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "insert into profile(Gebruikersnaam)\n" +
-                    "VALUES ('"+gebruikersnaam+"')";
+                    "VALUES ('" + gebruikersnaam + "')";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -181,7 +181,7 @@ public class MainInput {
     }
 
 
-    public static ArrayList<Profiel> selectDBprofiles(){
+    public static ArrayList<Profiel> selectDBprofiles() {
         try {
             // mysql-connector.jar benodigd om dit te laten functioneren.
             Class.forName("com.mysql.jdbc.Driver");
@@ -198,7 +198,11 @@ public class MainInput {
             ArrayList<Profiel> resultaat = new ArrayList<>(); // Array met profielen vullen met de gebruikersnamen
             while (rs.next()) {
                 Profiel p = new Profiel(
-                        (String)rs.getObject(2));
+                        (String) rs.getObject(2),
+                        (int) rs.getObject(1),
+                        (double) rs.getObject(3),
+                        (int) rs.getObject(4)
+                );
 
                 resultaat.add(p);
             }
@@ -213,7 +217,7 @@ public class MainInput {
         }
     }
 
-    public static void updateDBtemp(double temperatuur,  String profiel){
+    public static void updateDBtemp(double temperatuur, int id) {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -221,8 +225,8 @@ public class MainInput {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "UPDATE profile\n" +
-                    "SET TempVerwarmen = '"+temperatuur+"'\n" +
-                    "WHERE Gebruikersnaam = '"+profiel+"'";
+                    "SET TempVerwarmen = '" + temperatuur + "'\n" +
+                    "WHERE ProfileId = '" + id + "'";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -235,7 +239,7 @@ public class MainInput {
         }
     }
 
-    public static void updateDBlicht(int licht,  String profiel){
+    public static void updateDBlicht(int licht, int id) {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -243,8 +247,8 @@ public class MainInput {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             String query = "UPDATE profile\n" +
-                    "SET TijdLicht = '"+licht+"'\n" +
-                    "WHERE Gebruikersnaam = '"+profiel+"'";
+                    "SET LichtWaarde = '" + licht + "'\n" +
+                    "WHERE ProfileId = '" + id + "'";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -257,14 +261,16 @@ public class MainInput {
         }
     }
 
-    public static double selectDBtemp(String profiel) {
+    public static Profiel selectLastProfile() {
         try {
-
+            // mysql-connector.jar benodigd om dit te laten functioneren.
             Class.forName("com.mysql.jdbc.Driver");
-
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
-            String query = "SELECT TempVerwarmen FROM profile WHERE Gebruikersnaam = '"+profiel+"'";
+            String query = "SELECT * FROM profile\n" +
+                    "WHERE LaatsteLogin = (\n" +
+                    "\tSELECT MAX(LaatsteLogin) FROM profile\n" +
+                    ");";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -272,52 +278,46 @@ public class MainInput {
             // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
 
-            double TempVerwarmen =0.0;
-            while (rs.next()) {
-                TempVerwarmen = rs.getDouble(1);
-            }
+            rs.next();
+            Profiel p = new Profiel(
+                    (String) rs.getObject(2),
+                    (int) rs.getObject(1),
+                    (double) rs.getObject(3),
+                    (int) rs.getObject(4)
+            );
+
             conn.close();
-
-            return TempVerwarmen;
-
+            return p;
 
         } catch (Exception e) {
-            System.out.println("Ging wat mis bij ophalen temperatuur");
-            return 0;
+            System.out.println(e);
+            System.out.println("Ging wat mis bij ophalen profielen");
+            return null;
         }
     }
 
-    public static int selectDBlicht(String profiel) {
+    public static void updateLastUsedProfile(int id) {
         try {
-
+            // mysql-connector.jar benodigd om dit te laten functioneren.
             Class.forName("com.mysql.jdbc.Driver");
-
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
-            String query = "SELECT TijdLicht FROM profile WHERE Gebruikersnaam = '"+profiel+"'";
+            String query = "UPDATE profile\n" +
+                    "SET LaatsteLogin = NOW()\n" +
+                    "WHERE ProfileId = " + id + ";";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
 
             // execute the preparedstatement
-            ResultSet rs = preparedStmt.executeQuery();
+            preparedStmt.execute();
 
-            int licht =0;
-            while (rs.next()) {
-                licht = rs.getInt(1);
-            }
             conn.close();
 
-            return licht;
-
-
         } catch (Exception e) {
-            System.out.println("Ging wat mis bij ophalen van licht");
-            return 0;
+            System.out.println(e);
         }
     }
-
-
 }
 
 

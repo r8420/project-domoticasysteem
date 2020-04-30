@@ -1,4 +1,6 @@
 
+import com.sun.tools.javac.Main;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -19,8 +21,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private double TemperatuurInstelling = 20; // De waarde die wordt afgebeeld wanneer er niemand is ingelogd.
     private int maxLichtWaarde = 10;
 
-
-
     /* scherm-componenten */
     private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
     private JSpinner jspVerwarmingsTemperatuur;
@@ -36,6 +36,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
+
+    private Profiel profiel;
 
     public void setTemperatuurInstelling(double temperatuurInstelling) {
         TemperatuurInstelling = temperatuurInstelling;
@@ -152,7 +154,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 //        jpZijkant.add(jlInstellingenAfb, c);
         c.gridy = 1;
         c.weighty = 1;
-        jlProfielNaam = new JLabel("Niet ingelogd");
+        jlProfielNaam = new JLabel();
         jpZijkant.add(jlProfielNaam, c);
         jpZijkant.add(new JLabel("Ander profiel"), c);
 //        jpZijkant.add(new JLabel("Instellingen"), c);
@@ -215,6 +217,20 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 e.getWindow().dispose(); // sluit het scherm
             }
         });
+
+
+        /* stel mainscherm in op laatste gebruiker */
+        Profiel recentProfiel = MainInput.selectLastProfile();
+        if (recentProfiel == null) { // is er geen laatste gebruiker, maak dan gast account
+            MainInput.insertDBprofile("Gast");
+            profiel = MainInput.selectLastProfile();
+        } else {
+            profiel = recentProfiel;
+        }
+        setProfielNaam(profiel.getNaam());
+        jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
+        jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+
 
         /* Maak het scherm zichtbaar */
         setVisible(true);
@@ -282,11 +298,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
             // maximale lichtsterkte is veranderd
             System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
-            MainInput.updateDBlicht(jslMaxLichtsterkte.getValue(), jlProfielNaam.getText());
+            MainInput.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
-            MainInput.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), jlProfielNaam.getText());
+            MainInput.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), profiel.getId());
             System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
         }
     }
@@ -304,11 +320,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             ProfielenManagement profielDialog = new ProfielenManagement(this);
             if (profielDialog.anderProfielGeselecteerd()) {
                 // Nieuw profiel aanmaken zodat de gebruikersnaam kan worden opgehaald, deze wordt getoond op Mainscherm.
-                Profiel x = profielDialog.getGeselecteerdProfiel();
-                setProfielNaam(x.getNaam());
+                profiel = profielDialog.getGeselecteerdProfiel();
+                setProfielNaam(profiel.getNaam());
                 // Per profiel kijken wat er in de database staat als TempVerwarmen, dit tonen in de Spinner.
-                jspVerwarmingsTemperatuur.setValue(MainInput.selectDBtemp(jlProfielNaam.getText()));
-                jslMaxLichtsterkte.setValue(MainInput.selectDBlicht(jlProfielNaam.getText()));
+                jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
+                jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
                 System.out.println("Instelling voor temperatuur: " + TemperatuurInstelling);
 
             }
