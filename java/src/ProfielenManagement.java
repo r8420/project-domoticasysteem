@@ -6,9 +6,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class ProfielenManagement extends JDialog implements MouseListener, ActionListener {
+public class ProfielenManagement extends JDialog implements MouseListener {
     private ArrayList<Profiel> profielen;
-    private JLabel jlKiesProfiel, jlProfielPlaatje, jlProfielToevoegen;
+    private JLabel jlProfielPlaatje, jlProfielToevoegen;
     private boolean anderProfiel = false;
     private Profiel geselecteerdProfiel;
 
@@ -28,13 +28,11 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
         setSize(800,300);
 
         //De knoppen plaatjes geven en de labels tekst geven
-        jlKiesProfiel = new JLabel("Kies Profiel");
+        JLabel jlKiesProfiel = new JLabel("Kies Profiel");
         jlProfielPlaatje =  Functies.maakFotoLabel("src/images/profielToevoegen.png");
         jlProfielToevoegen = new JLabel("Profiel Toevoegen");
 
-        MainInput mainInput = new MainInput();
-
-        profielen = MainInput.selectDBprofiles();
+        profielen = Database.selectDBprofiles();
 
         //De labels toevoegen aan het scherm
         GridBagConstraints c = new GridBagConstraints();
@@ -52,6 +50,7 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
         add(jlProfielToevoegen,c);
         c.gridy = 1;
 
+        /* set alle beschikbare profielen netjes naast/onder elkaar */
         for (Profiel profiel: profielen){
             c.gridx++;
             if (c.gridx == 5){
@@ -64,22 +63,14 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
                 public void mouseClicked(MouseEvent e) {
                     System.out.println("Geklikt op profiel: " + profiel.getNaam());
                     anderProfiel = true;
-                    geselecteerdProfiel = profiel; // Weten dat het aangeklikte profiel moet worden gebruikt om de gebruikersnaam van op te halen (tonen op Mainscherm).
-                    MainInput.updateLastUsedProfile(profiel.getId());
+                    geselecteerdProfiel = profiel;
+                    Database.updateLastUsedProfile(profiel.getId());
                     dispose();
                 }
-                public void mousePressed(MouseEvent e) {
-
-                }
-                public void mouseReleased(MouseEvent e) {
-
-                }
-                public void mouseEntered(MouseEvent e) {
-
-                }
-                public void mouseExited(MouseEvent e) {
-
-                }
+                public void mousePressed(MouseEvent e) {}
+                public void mouseReleased(MouseEvent e) {}
+                public void mouseEntered(MouseEvent e) {}
+                public void mouseExited(MouseEvent e) {}
             };
             jlPlaatje.addMouseListener(listener);
             jlNaam.addMouseListener(listener);
@@ -91,7 +82,7 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
             c.gridy--;
         }
 
-        //De label klikbaar maken
+        // Het "Profiel toevegen"-label klikbaar maken
         jlProfielPlaatje.addMouseListener(this);
         jlProfielToevoegen.addMouseListener(this);
 
@@ -100,6 +91,8 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
     }
 
     public void mouseClicked(MouseEvent e) {
+
+        /* profiel toevoegen */
         if (e.getSource() == jlProfielPlaatje || e.getSource() == jlProfielToevoegen) {
 
             if (profielen.size() >= 9) {
@@ -107,39 +100,34 @@ public class ProfielenManagement extends JDialog implements MouseListener, Actio
                 return;
             }
 
-           // Nieuwe Profiel toevoegen dialog aanmaken om verder in te gaan.
+           // Nieuwe Profiel-toevoegen-dialog openen
             ProfielToevoegen nieuwProfielDialog = new ProfielToevoegen( this);
 
-            if (!nieuwProfielDialog.getOk()) {
+            if (!nieuwProfielDialog.getOk()) { // kruisje of annuleren, niks doen
                 return;
             }
 
             if (nieuwProfielDialog.getJtfNewProfile().equals("")) {
-                JOptionPane.showMessageDialog(this, "Profiel toevoegen mislukt.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Profiel toevoegen mislukt.\nEen profielnaam mag niet leeg zijn.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Wanneer er op "Profiel aanmaken" is gedrukt en er een gebruikersnaam is ingevuld.
             if (nieuwProfielDialog.getOk()) {
 
-                // toevoegen profiel wordt aangeklikt
-                System.out.println("profiel met succes toegevoegd");
-                MainInput.insertDBprofile(nieuwProfielDialog.getJtfNewProfile()); // De nieuwe gebruiker(Gebruikersnaam) in de database zetten.
-                geselecteerdProfiel = MainInput.selectLastProfile(); // Naam van het geselecteerde (nieuwe) profiel ophalen.
+                System.out.println("Profiel toegevoegd!");
+                Database.insertDBprofile(nieuwProfielDialog.getJtfNewProfile()); // Het nieuwe profiel in de database zetten.
+                geselecteerdProfiel = Database.selectLastProfile(); // Het nieuwe profiel ophalen, inclusief standaardinstellingen en ProfileId.
                 anderProfiel = true;
                 dispose();
             }
         }
     }
+
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
-
-
-    public void actionPerformed(ActionEvent e) {
-
-    }
 }
 
 

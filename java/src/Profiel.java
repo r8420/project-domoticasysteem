@@ -5,11 +5,6 @@ public class Profiel {
     private double tempVerwarmen;
     private int lichtWaarde;
 
-    public Profiel(String naam){
-        this.naam = naam;
-    }
-
-    @Override
     public String toString() {
         return "Profiel{" +
                 "naam='" + naam + '\'' +

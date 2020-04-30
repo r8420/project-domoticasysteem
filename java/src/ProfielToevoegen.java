@@ -4,11 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ProfielToevoegen extends JDialog implements ActionListener {
-    private String gebruikersnaam;
-    private JLabel jlNewProfile;
     private JTextField jtfNewProfile;
     private JButton jbNewProfile;
-    private JButton jbAnnuleren;
     private boolean ok;
 
     public String getJtfNewProfile() {
@@ -24,10 +21,10 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
         setSize(300, 130);
         setLayout(new FlowLayout());
 
-        jlNewProfile = new JLabel("Naam Profiel:");
+        JLabel jlNewProfile = new JLabel("Naam Profiel:");
         jtfNewProfile = new JTextField(20);
         jbNewProfile = new JButton("Profiel aanmaken");
-        jbAnnuleren = new JButton("Annuleren");
+        JButton jbAnnuleren = new JButton("Annuleren");
         add(jlNewProfile);
         add(jtfNewProfile);
         add(jbNewProfile);

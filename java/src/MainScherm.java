@@ -1,13 +1,9 @@
-
-import com.sun.tools.javac.Main;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.text.ParseException;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -18,8 +14,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private boolean arduinoAansluiting;
     private boolean piAansluiting;
-    private double TemperatuurInstelling = 20; // De waarde die wordt afgebeeld wanneer er niemand is ingelogd.
-    private int maxLichtWaarde = 10;
 
     /* scherm-componenten */
     private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
@@ -39,10 +33,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private Profiel profiel;
 
-    public void setTemperatuurInstelling(double temperatuurInstelling) {
-        TemperatuurInstelling = temperatuurInstelling;
-    }
-
     public MainScherm() {
 
         /* maak verbinding */
@@ -55,7 +45,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setSize(1000,750);
         setMinimumSize(new Dimension(1000, 800));
         setTitle("Domotica Systeem");
-
 //        setResizable(false);
 
 
@@ -69,13 +58,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* muziekspeler panel */
         JPanel jpMuziekspeler = new JPanel();
-        jpMuziekspeler.setLayout(new FlowLayout());
+        jpMuziekspeler.setLayout(new GridBagLayout());
 
 
         /* verwarming / temperatuur panel*/
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
-        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(TemperatuurInstelling, 0, 25, 0.5));
+        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50,30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
 
@@ -109,6 +98,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridy = 2;
 
          // de slider kan zo een waarde van 0 tot 10 krijgen.
+        int maxLichtWaarde = 10;
         jslMaxLichtsterkte = new JSlider(0,maxLichtWaarde,maxLichtWaarde/2);
         jslMaxLichtsterkte.setMajorTickSpacing((int)(maxLichtWaarde*0.1));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
@@ -220,20 +210,28 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
         /* stel mainscherm in op laatste gebruiker */
-        Profiel recentProfiel = MainInput.selectLastProfile();
+        Profiel recentProfiel = Database.selectLastProfile();
         if (recentProfiel == null) { // is er geen laatste gebruiker, maak dan gast account
-            MainInput.insertDBprofile("Gast");
-            profiel = MainInput.selectLastProfile();
+            Database.insertDBprofile("Gast");
+            profiel = Database.selectLastProfile();
         } else {
             profiel = recentProfiel;
         }
-        setProfielNaam(profiel.getNaam());
-        jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
-        jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
-
 
         /* Maak het scherm zichtbaar */
         setVisible(true);
+
+        /* error voor database verbinding */
+        if (profiel != null) {
+            setProfielNaam(profiel.getNaam());
+            jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
+            jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+        } else {
+            JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+
     }
 
 
@@ -261,11 +259,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* log de sensordata in de database */
         if (piAansluiting && arduinoAansluiting) {
-            mainInput.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
+            Database.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
         } else if (piAansluiting) {
-            mainInput.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid);
+            Database.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid);
         } else if (arduinoAansluiting) {
-            mainInput.insertDBLog(lichtsterkte);
+            Database.insertDBLog(lichtsterkte);
         }
 
     }
@@ -298,11 +296,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
             // maximale lichtsterkte is veranderd
             System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
-            MainInput.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
+            Database.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
-            MainInput.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), profiel.getId());
+            Database.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), profiel.getId());
             System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
         }
     }
@@ -325,7 +323,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 // Per profiel kijken wat er in de database staat als TempVerwarmen, dit tonen in de Spinner.
                 jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
                 jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
-                System.out.println("Instelling voor temperatuur: " + TemperatuurInstelling);
+                System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
 
             }
         }
