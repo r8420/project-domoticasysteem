@@ -273,7 +273,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
     public void updateMeetWaardes() throws IOException {
-
+        boolean arduinoMeetIets = false;
         System.out.println("Update meetwaardes!" + ((arduinoAansluiting || piAansluiting) ? "" : " (geen verbinding)"));
 
         if (arduinoAansluiting) {
@@ -281,7 +281,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             String arduinoMeting = mainInput.arduinoSensor();
             if (arduinoMeting != null) {
                 lichtsterkte = Integer.parseInt(arduinoMeting);
-
+                arduinoMeetIets = true;
                 setLichtsterkte(lichtsterkte);
 
             }
@@ -300,11 +300,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         }
 
         /* log de sensordata in de database */
-        if (piAansluiting && arduinoAansluiting) {
+        if (piAansluiting && (arduinoAansluiting && arduinoMeetIets)) {
             Database.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
         } else if (piAansluiting) {
             Database.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid);
-        } else if (arduinoAansluiting) {
+        } else if (arduinoAansluiting && arduinoMeetIets) {
             Database.insertDBLog(lichtsterkte);
         }
 
