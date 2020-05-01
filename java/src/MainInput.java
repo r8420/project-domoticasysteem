@@ -81,6 +81,14 @@ public class MainInput {
         }
         return Arduino;
     }
+
+    public void sendMessage(String Naam) throws IOException {
+        pw = new PrintWriter(s.getOutputStream());
+        pw.write(Naam);
+        pw.flush();
+        System.out.println("gelukt");
+
+    }
 }
 
 

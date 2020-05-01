@@ -4,6 +4,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -20,6 +21,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
     private JButton jbLichtAan, jbLichtUit;
+    private JLabel jlSkip, jlSkipBack, jlPLay, JlNaamMuziek;
+    private JSlider jsTijdMuziek;
 
     /* connectie/update */
     private Timer timer;
@@ -30,6 +33,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
+    private boolean playOrPause, newSong  = true;
+
 
     private Profiel profiel;
 
@@ -58,7 +63,33 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* muziekspeler panel */
         JPanel jpMuziekspeler = new JPanel();
-        jpMuziekspeler.setLayout(new GridBagLayout());
+        jpMuziekspeler.setLayout(new FlowLayout());
+        JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
+        JlNaamMuziek.setPreferredSize(new Dimension(400, 100));
+        Border border = BorderFactory.createLineBorder(Color.black, 1);
+        JlNaamMuziek.setBorder(border);
+        jpMuziekspeler.add(JlNaamMuziek);
+        jsTijdMuziek = new JSlider();
+        jsTijdMuziek.setPreferredSize(new Dimension(400, 20));
+        jsTijdMuziek.setEnabled(false);
+        jsTijdMuziek.setValue(0);
+        jpMuziekspeler.add(jsTijdMuziek);
+        JPanel outer = new JPanel(new BorderLayout());
+        outer.setPreferredSize(new Dimension(400,80));
+        jpMuziekspeler.add(outer);
+        jlSkipBack = Functies.maakFotoLabel("src/images/skip_back.png");
+        jlSkipBack.setPreferredSize(new Dimension(50,50));
+        jlPLay = Functies.maakFotoLabel("src/images/play.png");
+        jlPLay.setPreferredSize(new Dimension(60,60));
+        jlSkip = Functies.maakFotoLabel("src/images/skip_forward.png");
+        jlSkip.setPreferredSize(new Dimension(50,50));
+        jlPLay.addMouseListener(this);
+        jlSkip.addMouseListener(this);
+        jlSkipBack.addMouseListener(this);
+        outer.add(jlSkipBack, BorderLayout.WEST);
+        outer.add(jlPLay, BorderLayout.CENTER);
+        outer.add(jlSkip, BorderLayout.EAST);
+
 
 
         /* verwarming / temperatuur panel*/
@@ -194,7 +225,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* timer voor opvragen van nieuwe gegevens */
         timer = new Timer(0, e -> {
-            updateMeetWaardes();
+            try {
+                updateMeetWaardes();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
         timer.setDelay(10000); // millisec, 1.000 = 1 sec
         timer.start();
@@ -236,7 +271,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
 
-    public void updateMeetWaardes() {
+    public void updateMeetWaardes() throws IOException {
 
         System.out.println("Update meetwaardes!" + ((arduinoAansluiting || piAansluiting) ? "" : " (geen verbinding)"));
 
@@ -248,6 +283,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         }
 
         if (piAansluiting) {
+            mainInput.sendMessage("read sensors");
             String[] piMetingen = mainInput.piSensoren();
             temperatuur = Double.parseDouble(piMetingen[0]);
             luchtvochtigheid = (int) Double.parseDouble(piMetingen[1]);
@@ -323,6 +359,32 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
                 System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
 
+            }
+
+        } else if (e.getSource() == jlPLay){
+            if (playOrPause) {
+                System.out.println("pause");
+                jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+                playOrPause = !playOrPause;
+                try {
+                    if (newSong){
+                        mainInput.sendMessage(JlNaamMuziek.getText());
+                        newSong = !newSong;
+                    }else if (!newSong) {
+                        mainInput.sendMessage("pause");
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }else {
+                jlPLay.setIcon(new ImageIcon("src/images/play.png"));
+                System.out.println("pause");
+                playOrPause = !playOrPause;
+                try {
+                    mainInput.sendMessage("unpause");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
