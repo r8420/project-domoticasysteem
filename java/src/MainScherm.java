@@ -9,7 +9,7 @@ import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         MainScherm scherm = new MainScherm();
     }
 
@@ -38,7 +38,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private Profiel profiel;
 
-    public MainScherm() {
+    public MainScherm() throws InterruptedException {
 
         /* maak verbinding */
         mainInput = new MainInput();
@@ -49,6 +49,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /* default scherm settings */
         setSize(1000,750);
         setMinimumSize(new Dimension(1000, 800));
+        setLocation(500, 0);
         setTitle("Domotica Systeem");
 //        setResizable(false);
 
@@ -276,18 +277,22 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         System.out.println("Update meetwaardes!" + ((arduinoAansluiting || piAansluiting) ? "" : " (geen verbinding)"));
 
         if (arduinoAansluiting) {
-            String arduinoMeting = mainInput.arduinoSensor();
-            lichtsterkte = (int) Double.parseDouble(arduinoMeting);
 
-            setLichtsterkte(lichtsterkte);
+            String arduinoMeting = mainInput.arduinoSensor();
+            if (arduinoMeting != null) {
+                lichtsterkte = Integer.parseInt(arduinoMeting);
+
+                setLichtsterkte(lichtsterkte);
+
+            }
         }
 
         if (piAansluiting) {
             mainInput.sendMessage("read sensors");
             String[] piMetingen = mainInput.piSensoren();
             temperatuur = Double.parseDouble(piMetingen[0]);
-            luchtvochtigheid = (int) Double.parseDouble(piMetingen[1]);
-            luchtdruk = (int) Double.parseDouble(piMetingen[2]);
+            luchtvochtigheid = Integer.parseInt(piMetingen[1]);
+            luchtdruk = Integer.parseInt(piMetingen[2]);
 
             setTemperatuur(temperatuur);
             setLuchtvochtigheid(luchtvochtigheid);

@@ -3,6 +3,7 @@ import com.fazecast.jSerialComm.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
 public class MainInput {
 
@@ -49,13 +50,14 @@ public class MainInput {
         }
     }
 
-    public boolean arduinoStart() {
+    public boolean arduinoStart() throws InterruptedException {
         sp = SerialPort.getCommPort("COM3");
         sp.setComPortParameters(9600, 8, 1, 0);
         sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0);
 
         if (sp.openPort()) {
             System.out.println("arduinoStart: succes");
+//            TimeUnit.MILLISECONDS.sleep(100);
             return true;
 
         } else {
@@ -65,21 +67,20 @@ public class MainInput {
     }
 
     public String arduinoSensor() {
-        String Arduino = "";
+        String ldrWaarde = null;
 
         try {
-            byte[] bytes = sp.getInputStream().readNBytes(3);
-            Arduino = new String(bytes);
-            System.out.println(Arduino);
+            while (sp.getInputStream().available() > 0) {
+                byte[] bytes = sp.getInputStream().readNBytes(4);
+                ldrWaarde = new String(bytes);
+                System.out.println("LDR waarde: " + ldrWaarde);
 
-        } catch (IOException IE) {
-            System.out.println("nothing to read");
-
-        } catch (NullPointerException NE) {
-            System.out.println("geweldig jammer");
-            Arduino = "0";
+            }
+        } catch (NullPointerException | IOException NE) {
+            System.out.println("Arduinno LDR leest niks");
+            ldrWaarde = null;
         }
-        return Arduino;
+        return ldrWaarde;
     }
 
     public void sendMessage(String Naam) throws IOException {
