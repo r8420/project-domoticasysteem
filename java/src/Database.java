@@ -222,4 +222,69 @@ public class Database {
             System.out.println(e);
         }
     }
+
+
+    public static ArrayList<Nummer> selectDBnummers() {
+        try {
+
+            Connection conn = maakVerbinding();
+            if (!verbinding) {return null;}
+
+            String query = "SELECT * FROM nummer";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            ResultSet rs = preparedStmt.executeQuery();
+
+            ArrayList<Nummer> resultaat = new ArrayList<>();
+            while (rs.next()) { // Array met nummers vullen met de nummer-informatie
+                Nummer n = new Nummer(
+                        (int) rs.getObject(1),
+                        (String) rs.getObject(2),
+                        (String) rs.getObject(3),
+                        (double) rs.getObject(4)
+                );
+                resultaat.add(n);
+            }
+
+            conn.close();
+            return resultaat;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Ging wat mis bij ophalen nummers");
+            return new ArrayList<Nummer>();
+        }
+    }
+
+    public static ArrayList<Afspeellijst> selectDBafspeellijsten() {
+        try {
+
+            Connection conn = maakVerbinding();
+            if (!verbinding) {return null;}
+
+            String query = "SELECT * FROM afspeellijst";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            ResultSet rs = preparedStmt.executeQuery();
+
+            ArrayList<Afspeellijst> resultaat = new ArrayList<>();
+            while (rs.next()) { // Array met afspeellijsten vullen met de afspeellijst-informatie
+                Afspeellijst a = new Afspeellijst(
+                        (int) rs.getObject(1),
+                        (int) rs.getObject(2),
+                        (String) rs.getObject(3)
+
+                );
+                resultaat.add(a);
+            }
+
+            conn.close();
+            return resultaat;
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Ging wat mis bij ophalen afspeellijsten");
+            return new ArrayList<Afspeellijst>();
+        }
+    }
 }
