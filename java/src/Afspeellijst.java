@@ -13,9 +13,6 @@ public class Afspeellijst {
        this.afspeellijstId = afspeellijstId;
        this.profileId = profileId;
         this.naam = naam;
-        nummers = Database.selectDBnummers();
-
-
     }
 
     public void voegNummerToe(Nummer nummer){

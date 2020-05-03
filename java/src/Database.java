@@ -236,17 +236,20 @@ public class Database {
             ResultSet rs = preparedStmt.executeQuery();
 
             ArrayList<Nummer> resultaat = new ArrayList<>();
-            while (rs.next()) { // Array met nummers vullen met de nummer-informatie
+            while (rs.next()) { // Array met profielen vullen met de gebruikersnamen
                 Nummer n = new Nummer(
                         (int) rs.getObject(1),
                         (String) rs.getObject(2),
                         (String) rs.getObject(3),
                         (double) rs.getObject(4)
+
+
                 );
                 resultaat.add(n);
             }
 
             conn.close();
+            System.out.println(resultaat);
             return resultaat;
 
         } catch (Exception e) {
@@ -279,6 +282,7 @@ public class Database {
             }
 
             conn.close();
+            System.out.println(resultaat);
             return resultaat;
 
         } catch (Exception e) {

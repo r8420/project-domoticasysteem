@@ -9,6 +9,10 @@ import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
 
+
+
+
+
     public static void main(String[] args) throws InterruptedException {
         MainScherm scherm = new MainScherm();
     }
@@ -269,6 +273,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setProfielNaam(profiel.getNaam());
         jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
         jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+//        Test.insertDBAfspeellijst(4, profiel.getId(), "Werkt dit");
     }
 
 
