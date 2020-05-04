@@ -1,3 +1,5 @@
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -273,7 +275,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setProfielNaam(profiel.getNaam());
         jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
         jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
-//        Test.insertDBAfspeellijst(4, profiel.getId(), "Werkt dit");
+        Test.insertDBAfspeellijst(profiel.getId(), "werkt dit");
     }
 
 
