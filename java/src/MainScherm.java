@@ -1,5 +1,3 @@
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -96,6 +94,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         outer.add(jlSkipBack, BorderLayout.WEST);
         outer.add(jlPLay, BorderLayout.CENTER);
         outer.add(jlSkip, BorderLayout.EAST);
+     
 
 
 
@@ -414,6 +413,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         } else if (e.getSource() == jbLichtUit) {
             // licht uit
             System.out.println("licht uit");
+
         }
     }
 }

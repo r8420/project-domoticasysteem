@@ -332,7 +332,7 @@ public class Database {
             return resultaat;
 
         } catch (Exception e) {
-            System.out.println("Ging wat mis bij ophalen gezeik");
+            System.out.println("Ging wat mis bij ophalen van de nummers van een afspeellijst");
             return new ArrayList<Nummer>();
         }
     }
@@ -376,7 +376,27 @@ public class Database {
 
         } catch (Exception e) {
             System.out.println(e);
-            System.out.println("Ging wat fout bij het inserten van nummers in een afspeellijst");
+            System.out.println("Ging wat fout bij het inserten van een nummer in een afspeellijst");
+        }
+    }
+
+    public static void deleteDBafspeellijstNummer(int AfspeellijstId, int NummerId) {
+        try {
+
+            Connection conn = maakVerbinding();
+            if (!verbinding) {return;}
+
+            String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId +"' AND NummerId =  '" + NummerId +"'";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.execute();
+
+            conn.close();
+            System.out.println("Nummer verwijdert uit afspeellijst");
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Ging wat fout bij verwijderen van een nummer uit een afspeellijst");
         }
     }
 }
