@@ -291,4 +291,49 @@ public class Database {
             return new ArrayList<Afspeellijst>();
         }
     }
+
+    public static ArrayList<Nummer> selectDBafspeellijstNummer(String welkeAfspeellijst) {
+
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/domotica", "root", "");
+            String query = "select a.Naam, n.NummerId, n.Naam, n.Artiest, n.Tijdsduur from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.Naam ='" + welkeAfspeellijst +"'";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+
+            // execute the preparedstatement
+            ResultSet rs = preparedStmt.executeQuery();
+
+            String afspeellijstnaam = "";
+            int nummerId = 0;
+            String nummerNaam = "";
+            String nummerArtiest = "";
+            double nummerTijdsduur = 0.0;
+
+
+            ArrayList<Nummer> resultaat = new ArrayList<>();
+            while (rs.next()) {
+                System.out.println();
+                afspeellijstnaam = rs.getString("a.Naam");
+                Nummer nummer = new Nummer(
+                        nummerId = rs.getInt("n.NummerId"),
+                        nummerNaam = rs.getString("n.Naam"),
+                        nummerArtiest = rs.getString("n.Artiest"),
+                        nummerTijdsduur = rs.getDouble("n.TijdsDuur"));
+
+                resultaat.add(nummer);
+            }
+            conn.close();
+            System.out.println("Afspeellijst: " + afspeellijstnaam + " , met de nummers:\n" + resultaat);
+            return resultaat;
+
+        } catch (Exception e) {
+            System.out.println("Ging wat mis bij ophalen gezeik");
+            return new ArrayList<Nummer>();
+        }
+    }
 }
