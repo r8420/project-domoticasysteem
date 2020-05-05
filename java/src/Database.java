@@ -8,6 +8,8 @@ public class Database {
 
     private static boolean verbinding = true;
 
+
+    // Functie om verbinding te maken met de database.
     private static Connection maakVerbinding() {
         try {
 
@@ -24,6 +26,7 @@ public class Database {
         }
     }
 
+    // Functie voor het inserten van temperatuur, luchtdruk, -vochtigheid en -sterkte.
     public static void insertDBLog(double temperatuur, int luchtdruk, int luchtvochtigheid, int lichtsterkte) {
         try {
 
@@ -43,6 +46,7 @@ public class Database {
         }
     }
 
+    // Functie voor inserten van temperatuur, luchtdruk en -vochtigheid.
     public static void insertDBLog(double temperatuur, int luchtdruk, int luchtvochtigheid) {
         try {
 
@@ -62,6 +66,7 @@ public class Database {
         }
     }
 
+    // Functie voor het inserten van lichtsterkte.
     public static void insertDBLog(int lichtsterkte) {
         try {
 
@@ -81,7 +86,7 @@ public class Database {
         }
     }
 
-
+    // Functie voor het inserten van een profiel.
     public static void insertDBprofile(String gebruikersnaam) {
         try {
 
@@ -101,7 +106,7 @@ public class Database {
         }
     }
 
-
+    // Functie voor het ophalen van alle profielen.
     public static ArrayList<Profiel> selectDBprofiles() {
         try {
 
@@ -134,6 +139,7 @@ public class Database {
         }
     }
 
+    // Functie voor het updaten van de temperatuur per profiel (instelling, wanneer gaat de kachel aan).
     public static void updateDBtemp(double temperatuur, int id) {
         try {
 
@@ -154,6 +160,7 @@ public class Database {
         }
     }
 
+    // Functie voor het updaten van het licht per profiel (instelling, wanneer gaat de lamp aan).
     public static void updateDBlicht(int licht, int id) {
         try {
 
@@ -172,6 +179,7 @@ public class Database {
         }
     }
 
+    // Functie om het laatst ingelogde profiel op te halen.
     public static Profiel selectLastProfile() {
         try {
 
@@ -203,6 +211,7 @@ public class Database {
         }
     }
 
+    // Functie om het laatste ingelogde profile te updaten.
     public static void updateLastUsedProfile(int id) {
         try {
 
@@ -223,7 +232,7 @@ public class Database {
         }
     }
 
-
+    // Functie om alle nummers op te halen.
     public static ArrayList<Nummer> selectDBnummers() {
         try {
 
@@ -259,6 +268,7 @@ public class Database {
         }
     }
 
+    // Functie om alle afspeellijsten op te halen.
     public static ArrayList<Afspeellijst> selectDBafspeellijsten() {
         try {
 
@@ -292,6 +302,7 @@ public class Database {
         }
     }
 
+    // Functie om de nummers uit een bepaalde afspeellijst op te kunnen halen.
     public static ArrayList<Nummer> selectDBafspeellijstNummer(String welkeAfspeellijst) {
 
         try {
@@ -337,6 +348,7 @@ public class Database {
         }
     }
 
+    // Functie voor het inserten van een nieuwe afspeellijst.
     public static void insertDBAfspeellijst(int ProfileId, String Naam) {
         try {
 
@@ -359,7 +371,7 @@ public class Database {
 
 
 
-
+    // Functie voor het inserten van een nummer in een bepaalde afspeellist.
     public static void insertDBNummerInAfspeellijst(int AfspeellijstId, int NummerId) {
         try {
 
@@ -380,6 +392,7 @@ public class Database {
         }
     }
 
+    // Functie voor het verwijderen van een nummer uit een bepaalde afspeellist.
     public static void deleteDBafspeellijstNummer(int AfspeellijstId, int NummerId) {
         try {
 
@@ -397,6 +410,27 @@ public class Database {
         } catch (Exception e) {
             System.out.println(e);
             System.out.println("Ging wat fout bij verwijderen van een nummer uit een afspeellijst");
+        }
+    }
+
+    // Functie voor het verwijderen van een afspeellijst.
+    public static void deleteDBafspeellijst(int AfspeellijstId, int ProfileId) {
+        try {
+
+            Connection conn = maakVerbinding();
+            if (!verbinding) {return;}
+
+            String query = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId +"' AND ProfileId =  '" + ProfileId +"'";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.execute();
+
+            conn.close();
+            System.out.println("Afspeellijst verwijderd uit Database");
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Ging wat fout bij het verwijderen van een afspeellijst");
         }
     }
 }
