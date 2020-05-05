@@ -336,4 +336,47 @@ public class Database {
             return new ArrayList<Nummer>();
         }
     }
+
+    public static void insertDBAfspeellijst(int ProfileId, String Naam) {
+        try {
+
+            Connection conn = maakVerbinding();
+            if (!verbinding) {return;}
+
+            String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES ('" + ProfileId +"', '" + Naam +"')";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.execute();
+
+            conn.close();
+            System.out.println("Afspeellijst toegevoegd aan Database");
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Ging wat fout bij het inserten van een afspeellijst");
+        }
+    }
+
+
+
+
+    public static void insertDBNummerInAfspeellijst(int AfspeellijstId, int NummerId) {
+        try {
+
+            Connection conn = maakVerbinding();
+            if (!verbinding) {return;}
+
+            String query = "INSERT INTO afspeellijst_nummer VALUES ('" + AfspeellijstId +"', '" + NummerId +"')";
+
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.execute();
+
+            conn.close();
+            System.out.println("Nummer toegevoegd aan afspeellijst");
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Ging wat fout bij het inserten van nummers in een afspeellijst");
+        }
+    }
 }

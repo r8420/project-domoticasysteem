@@ -275,6 +275,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setProfielNaam(profiel.getNaam());
         jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
         jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+
     }
 
 
