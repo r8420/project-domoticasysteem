@@ -363,33 +363,18 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 profiel = profielDialog.getGeselecteerdProfiel();
                 updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
                 System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
-
             }
-
         } else if (e.getSource() == jlPLay){
             if (playOrPause) {
-                System.out.println("pause");
+                System.out.println("play");
                 jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
                 playOrPause = !playOrPause;
-                try {
-                    if (newSong){
-                        mainInput.sendMessage(JlNaamMuziek.getText());
-                        newSong = !newSong;
-                    }else if (!newSong) {
-                        mainInput.sendMessage("pause");
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                mainInput.sendMessage("unpause");
             }else {
                 jlPLay.setIcon(new ImageIcon("src/images/play.png"));
                 System.out.println("pause");
                 playOrPause = !playOrPause;
-                try {
-                    mainInput.sendMessage("unpause");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                mainInput.sendMessage("pause");
             }
         }
     }
