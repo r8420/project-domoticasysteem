@@ -5,6 +5,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -33,8 +34,10 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
-    private boolean playOrPause, newSong  = true;
+    private boolean playOrPause  = true;
 
+    private long timestamp;
+    private long timestampPrev = 0;
 
     private Profiel profiel;
 
@@ -70,11 +73,24 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         Border border = BorderFactory.createLineBorder(Color.black, 1);
         JlNaamMuziek.setBorder(border);
         jpMuziekspeler.add(JlNaamMuziek);
-        jsTijdMuziek = new JSlider();
-        jsTijdMuziek.setPreferredSize(new Dimension(400, 20));
+
+
+        // de slider kan zo een waarde van 0 tot 10 krijgen.
+        int maxTijd = 10;
+        int huidigeTijd = 0;
+        jsTijdMuziek = new JSlider(0,maxTijd,0);
         jsTijdMuziek.setEnabled(false);
-        jsTijdMuziek.setValue(0);
+        jsTijdMuziek.setMajorTickSpacing((int)(maxTijd*0.1));
+        Hashtable<Integer, JLabel> tijdLableTable = new Hashtable<>();
+        tijdLableTable.put( 0, new JLabel("00:00") );
+        tijdLableTable.put(maxTijd, new JLabel("03:21") );
+        jsTijdMuziek.setValue(huidigeTijd);
+        jsTijdMuziek.setLabelTable( tijdLableTable );
+        jsTijdMuziek.setPaintLabels(true);
+        jsTijdMuziek.setPreferredSize(new Dimension(400,40));
         jpMuziekspeler.add(jsTijdMuziek);
+
+
         JPanel outer = new JPanel(new BorderLayout());
         outer.setPreferredSize(new Dimension(400,80));
         jpMuziekspeler.add(outer);
@@ -375,16 +391,21 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
             }
         } else if (e.getSource() == jlPLay){
-            if (playOrPause) {
-                System.out.println("play");
-                jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-                playOrPause = !playOrPause;
-                mainInput.sendMessage("unpause");
-            }else {
-                jlPLay.setIcon(new ImageIcon("src/images/play.png"));
-                System.out.println("pause");
-                playOrPause = !playOrPause;
-                mainInput.sendMessage("pause");
+            timestamp = System.currentTimeMillis() / 1000;
+
+            if (timestamp - timestampPrev >= 1){
+                if (playOrPause) {
+                    System.out.println("play");
+                    jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+                    playOrPause = !playOrPause;
+                    mainInput.sendMessage("unpause");
+                }else {
+                    jlPLay.setIcon(new ImageIcon("src/images/play.png"));
+                    System.out.println("pause");
+                    playOrPause = !playOrPause;
+                    mainInput.sendMessage("pause");
+                }
+                timestampPrev = System.currentTimeMillis() / 1000;
             }
         }
     }
