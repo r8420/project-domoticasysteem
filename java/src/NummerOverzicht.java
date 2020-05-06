@@ -1,10 +1,21 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class NummerOverzicht {
+public class NummerOverzicht  extends JDialog implements ActionListener {
 
 
     public NummerOverzicht(){
-    Database.selectDBnummers();
+        setTitle("Nummer overzicht");
+        setSize(400, 600);
+        setLayout(new FlowLayout());
+
+        setVisible(true);
+
+
+//    Database.selectDBnummers();
     }
 
 
@@ -12,5 +23,10 @@ public class NummerOverzicht {
 
     public static void main(String[] args) {
         NummerOverzicht a = new NummerOverzicht();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
     }
 }

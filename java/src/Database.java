@@ -250,7 +250,7 @@ public class Database {
                         (int) rs.getObject(1),
                         (String) rs.getObject(2),
                         (String) rs.getObject(3),
-                        (double) rs.getObject(4)
+                        (int) rs.getObject(4)
 
 
                 );
@@ -433,4 +433,9 @@ public class Database {
             System.out.println("Ging wat fout bij het verwijderen van een afspeellijst");
         }
     }
+
+    public static void main(String[] args) {
+        Database.selectDBafspeellijstNummer("Test");
+    }
+
 }
