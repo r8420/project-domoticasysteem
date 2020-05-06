@@ -323,7 +323,7 @@ public class Database {
             int nummerId = 0;
             String nummerNaam = "";
             String nummerArtiest = "";
-            double nummerTijdsduur = 0.0;
+            int nummerTijdsduur = 0;
 
 
             ArrayList<Nummer> resultaat = new ArrayList<>();
@@ -334,7 +334,7 @@ public class Database {
                         nummerId = rs.getInt("n.NummerId"),
                         nummerNaam = rs.getString("n.Naam"),
                         nummerArtiest = rs.getString("n.Artiest"),
-                        nummerTijdsduur = rs.getDouble("n.TijdsDuur"));
+                        nummerTijdsduur = rs.getInt("n.TijdsDuur"));
 
                 resultaat.add(nummer);
             }
@@ -414,13 +414,13 @@ public class Database {
     }
 
     // Functie voor het verwijderen van een afspeellijst.
-    public static void deleteDBafspeellijst(int AfspeellijstId, int ProfileId) {
+    public static void deleteDBafspeellijst(int AfspeellijstId) {
         try {
 
             Connection conn = maakVerbinding();
             if (!verbinding) {return;}
 
-            String query = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId +"' AND ProfileId =  '" + ProfileId +"'";
+            String query = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId +"'";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();

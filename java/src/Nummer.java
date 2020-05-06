@@ -1,10 +1,14 @@
 public class Nummer {
-    private double tijdsduur;
+    private int tijdsduur;
     private String naam;
     private String artiest;
     private int nummerId;
 
-    public Nummer(int nummerId, String naam, String artiest, double tijdsduur){
+    public int getTijdsduur() {
+        return tijdsduur;
+    }
+
+    public Nummer(int nummerId, String naam, String artiest, int tijdsduur){
         this.nummerId = nummerId;
         this.naam = naam;
         this.artiest = artiest;

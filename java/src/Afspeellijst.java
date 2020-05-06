@@ -9,6 +9,10 @@ public class Afspeellijst {
     private Nummer nummer;
 
 
+    public int getAfspeellijstId() {
+        return afspeellijstId;
+    }
+
     public Afspeellijst(int afspeellijstId, int profileId, String naam){
        this.afspeellijstId = afspeellijstId;
        this.profileId = profileId;

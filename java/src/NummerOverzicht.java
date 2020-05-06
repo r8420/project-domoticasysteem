@@ -3,11 +3,13 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class NummerOverzicht  extends JDialog implements ActionListener {
     private ArrayList<Nummer> nummers = Database.selectDBnummers();
-    private JLabel jlKiesNummer, jlNaamNummer, jlPlus;
+    private JLabel jlKiesNummer;
 
     public NummerOverzicht(){
         setTitle("Nummer overzicht");
@@ -27,9 +29,9 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
         add(jlKiesNummer,c);
 
         for (Nummer nummer: nummers) {
-            jlPlus = Functies.maakFotoLabel("src/images/plus.png");
+           JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");
             jlPlus.setPreferredSize(new Dimension(20,20));
-            jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
+           JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
             c.gridy++;
             c.ipady = 20;
             c.ipadx = 20;
@@ -39,11 +41,31 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
             jlPlus.setHorizontalAlignment(SwingConstants.RIGHT);
             add(jlPlus, c);
             jlNaamNummer.setBorder(border);
+            MouseListener listener = new MouseListener() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getSource() == jlPlus){
+                        System.out.println("Doe wat met nummer: " + nummer.getNaam());
+                    }
+                }
+                public void mousePressed(MouseEvent e) {
+
+                }
+                public void mouseReleased(MouseEvent e) {
+
+                }
+                public void mouseEntered(MouseEvent e) {
+
+                }
+                public void mouseExited(MouseEvent e) {
+
+                }
+            };
+            jlPlus.addMouseListener(listener);
         }
 
-        Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
+//        Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
         add(jpNummers);
-        jpNummers.setBorder(testBorder);
+//        jpNummers.setBorder(border);
 
         setVisible(true);
 
