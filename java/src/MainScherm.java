@@ -18,7 +18,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private boolean piAansluiting;
 
     /* scherm-componenten */
-    private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb;
+    private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb, jlPuntjes, jlOpvuller;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
     private JButton jbLichtAan, jbLichtUit;
@@ -34,7 +34,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
-    private boolean playOrPause  = true;
+    private boolean playOrPause, newSong  = true;
 
     private long timestamp;
     private long timestampPrev = 0;
@@ -69,7 +69,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         JPanel jpMuziekspeler = new JPanel();
         jpMuziekspeler.setLayout(new FlowLayout());
         JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
-        JlNaamMuziek.setPreferredSize(new Dimension(400, 100));
+        JlNaamMuziek.setPreferredSize(new Dimension(600, 100));
         Border border = BorderFactory.createLineBorder(Color.black, 1);
         JlNaamMuziek.setBorder(border);
         jpMuziekspeler.add(JlNaamMuziek);
@@ -87,11 +87,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jsTijdMuziek.setValue(huidigeTijd);
         jsTijdMuziek.setLabelTable( tijdLableTable );
         jsTijdMuziek.setPaintLabels(true);
-        jsTijdMuziek.setPreferredSize(new Dimension(400,40));
+        jsTijdMuziek.setPreferredSize(new Dimension(600,40));
         jpMuziekspeler.add(jsTijdMuziek);
 
 
-        JPanel outer = new JPanel(new BorderLayout());
+        JPanel outer = new JPanel(new FlowLayout());
         outer.setPreferredSize(new Dimension(400,80));
         jpMuziekspeler.add(outer);
         jlSkipBack = Functies.maakFotoLabel("src/images/skip_back.png");
@@ -100,12 +100,21 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlPLay.setPreferredSize(new Dimension(60,60));
         jlSkip = Functies.maakFotoLabel("src/images/skip_forward.png");
         jlSkip.setPreferredSize(new Dimension(50,50));
+        jlPuntjes = Functies.maakFotoLabel("src/images/3_puntjes.png");
+        jlPuntjes.setPreferredSize(new Dimension(50,50));
+        jlOpvuller = new JLabel("               ");
+        jlPuntjes.addMouseListener(this);
         jlPLay.addMouseListener(this);
         jlSkip.addMouseListener(this);
         jlSkipBack.addMouseListener(this);
-        outer.add(jlSkipBack, BorderLayout.WEST);
-        outer.add(jlPLay, BorderLayout.CENTER);
-        outer.add(jlSkip, BorderLayout.EAST);
+        outer.add(jlOpvuller);
+        outer.add(jlSkipBack);
+        outer.add(Box.createHorizontalStrut(30));
+        outer.add(jlPLay);
+        outer.add(Box.createHorizontalStrut(30));
+        outer.add(jlSkip);
+        outer.add(Box.createHorizontalStrut(30));
+        outer.add(jlPuntjes);
 
 
 
@@ -391,21 +400,26 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
             }
         } else if (e.getSource() == jlPLay){
-            timestamp = System.currentTimeMillis() / 1000;
+            if (newSong) {
+                JlNaamMuziek.setText("geen muziek gekozen");
+                JlNaamMuziek.setForeground(Color.RED);
+            }else{
+                timestamp = System.currentTimeMillis() / 1000;
 
-            if (timestamp - timestampPrev >= 1){
-                if (playOrPause) {
-                    System.out.println("play");
-                    jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-                    playOrPause = !playOrPause;
-                    mainInput.sendMessage("unpause");
-                }else {
-                    jlPLay.setIcon(new ImageIcon("src/images/play.png"));
-                    System.out.println("pause");
-                    playOrPause = !playOrPause;
-                    mainInput.sendMessage("pause");
+                if (timestamp - timestampPrev >= 1) {
+                    if (playOrPause) {
+                        System.out.println("play");
+                        jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+                        playOrPause = !playOrPause;
+                        mainInput.sendMessage("unpause");
+                    } else {
+                        jlPLay.setIcon(new ImageIcon("src/images/play.png"));
+                        System.out.println("pause");
+                        playOrPause = !playOrPause;
+                        mainInput.sendMessage("pause");
+                    }
+                    timestampPrev = System.currentTimeMillis() / 1000;
                 }
-                timestampPrev = System.currentTimeMillis() / 1000;
             }
         }
     }
