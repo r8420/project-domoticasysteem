@@ -68,12 +68,12 @@ public class MainInput {
         String Arduino = "";
 
         try {
-            byte[] bytes = sp.getInputStream().readNBytes(3);
+            byte[] bytes = sp.getInputStream().readNBytes(4);
             Arduino = new String(bytes);
             System.out.println(Arduino);
 
         } catch (IOException IE) {
-            System.out.println("nothing to read");
+            System.out.println("nothing to read");giggitgit
 
         } catch (NullPointerException NE) {
             System.out.println("geweldig jammer");
