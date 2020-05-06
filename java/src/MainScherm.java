@@ -337,13 +337,23 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     public void stateChanged(ChangeEvent e) {
         if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
             // maximale lichtsterkte is veranderd
-            System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
-            Database.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
+            try{
+                System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
+                Database.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
+            } catch (NullPointerException np){
+                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+            }
+
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
-            Database.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), profiel.getId());
-            System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
+            try{
+                Database.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), profiel.getId());
+                System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
+            } catch (NullPointerException np){
+                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+            }
+
         }
     }
 
