@@ -70,6 +70,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpMuziekspeler.setLayout(new FlowLayout());
         JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
         JlNaamMuziek.setPreferredSize(new Dimension(600, 100));
+        JlNaamMuziek.setMinimumSize(new Dimension(600, 100));
         Border border = BorderFactory.createLineBorder(Color.black, 1);
         JlNaamMuziek.setBorder(border);
         jpMuziekspeler.add(JlNaamMuziek);
@@ -115,6 +116,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         outer.add(jlSkip);
         outer.add(Box.createHorizontalStrut(30));
         outer.add(jlPuntjes);
+
+
 
 
 

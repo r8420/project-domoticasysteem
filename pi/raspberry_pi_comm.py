@@ -39,8 +39,8 @@ while length < 19:
 
 def outputstream ():
     temp = round(sense.get_temperature(), 2)
-    Humidity = round(sense.get_humidity(), 2)
-    Pressure = round(sense.get_pressure(), 2)
+    Humidity = round(sense.get_humidity())
+    Pressure = round(sense.get_pressure())
     message = str(temp) +" "+ str(Humidity)+ " " + str(Pressure)
     print(message)
     length = len(message.encode('utf-8'))
@@ -51,6 +51,7 @@ def outputstream ():
 
 def inputstream ():
     try:
+        time.sleep(0.5)
         messageJava = clientsocket.recv(1024).decode('utf-8')
         print(messageJava)
         if messageJava == "pause":
