@@ -18,5 +18,9 @@ public class Nummer {
     public String getNaam() {
         return naam;
     }
+
+    public String getArtiest() {
+        return artiest;
+    }
 }
 
