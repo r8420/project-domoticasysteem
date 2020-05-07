@@ -16,35 +16,52 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
+
+        GridBagConstraints c = new GridBagConstraints();
         JPanel jpNummers = new JPanel();
         jpNummers.setLayout(new GridBagLayout());
-        jlKiesNummer = new JLabel("Nummers:");
-        GridBagConstraints c = new GridBagConstraints();
-        Border border = BorderFactory.createLineBorder(Color.black, 1);
+        c.insets = new Insets(10,10,10,10);
+        c.fill = GridBagConstraints.BOTH;
         c.weightx = 1;
-        c.gridwidth = 5;
+        c.weighty = 1;
+        add(jpNummers, c);
+        jlKiesNummer = new JLabel("Nummers:");
+
+        Border border = BorderFactory.createLineBorder(Color.black, 1);
+        jpNummers.setBorder(border);
+        c.weightx = 1;
         c.gridx = 0;
         c.gridy = 0;
         c.insets = new Insets(0,0,10,0);
-        add(jlKiesNummer,c);
+        jpNummers.add(jlKiesNummer,c);
+        jlKiesNummer.setHorizontalAlignment(SwingConstants.CENTER);
+
 
         for (Nummer nummer: nummers) {
-           JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");
+            JPanel jpNummerBalk = new JPanel();
+            jpNummerBalk.setLayout(new GridBagLayout());
+            jpNummerBalk.setBorder(border);
+            JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");
             jlPlus.setPreferredSize(new Dimension(20,20));
-           JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
+            JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest() );
             c.gridy++;
             c.ipady = 20;
             c.ipadx = 20;
             c.insets = new Insets(0,20,0,20);
             c.fill = GridBagConstraints.HORIZONTAL;
-            add(jlNaamNummer, c);
-            jlPlus.setHorizontalAlignment(SwingConstants.RIGHT);
-            add(jlPlus, c);
-            jlNaamNummer.setBorder(border);
+            jpNummerBalk.add(jlNaamNummer, c);
+            c.gridx = 1;
+            c.weightx = 0;
+            jpNummerBalk.add(jlPlus, c);
+            c.gridx = 0;
+            c.weightx = 1;
+            jpNummers.add(jpNummerBalk, c);
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlPlus){
                         System.out.println("Doe wat met nummer: " + nummer.getNaam());
+                    }else if (e.getSource() == jlNaamNummer){
+                        System.out.println("Herres");
                     }
                 }
                 public void mousePressed(MouseEvent e) {
@@ -61,11 +78,11 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
                 }
             };
             jlPlus.addMouseListener(listener);
+            jlNaamNummer.addMouseListener(listener);
         }
 
-//        Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
-        add(jpNummers);
-//        jpNummers.setBorder(border);
+
+
 
         setVisible(true);
 

@@ -18,39 +18,56 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener, Mo
             setLayout(new GridBagLayout());
 
             afspeellijsten = Database.selectDBafspeellijsten();
-
+            GridBagConstraints c = new GridBagConstraints();
             JPanel jpAfspeellijsten = new JPanel();
             jpAfspeellijsten.setLayout(new GridBagLayout());
-            jlKiesAfspeellijst = new JLabel("Afspeellijsten:");
-            GridBagConstraints c = new GridBagConstraints();
-            Border border = BorderFactory.createLineBorder(Color.black, 1);
+            c.insets = new Insets(10,10,10,10);
+            c.fill = GridBagConstraints.BOTH;
             c.weightx = 1;
-            c.gridwidth = 5;
+            c.weighty = 1;
+            add(jpAfspeellijsten, c);
+            jlKiesAfspeellijst = new JLabel("Afspeellijsten:");
+
+            Border border = BorderFactory.createLineBorder(Color.black, 1);
+            jpAfspeellijsten.setBorder(border);
+            c.weightx = 1;
             c.gridx = 0;
             c.gridy = 0;
-            c.insets = new Insets(0, 0, 10, 0);
-            add(jlKiesAfspeellijst, c);
+            c.insets = new Insets(0,0,10,0);
+            jpAfspeellijsten.add(jlKiesAfspeellijst,c);
+            jlKiesAfspeellijst.setHorizontalAlignment(SwingConstants.CENTER);
+            c.gridy = 1;
 
-            for (Afspeellijst afspeellijst : afspeellijsten) {
-             JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
-              jlMin.setPreferredSize(new Dimension(20, 20));
-              JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
+
+
+
+            for (Afspeellijst afspeellijst: afspeellijsten) {
+                JPanel jpAfspeellijstBalk = new JPanel();
+                jpAfspeellijstBalk.setLayout(new GridBagLayout());
+                jpAfspeellijstBalk.setBorder(border);
+                JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
+                jlMin.setPreferredSize(new Dimension(20,20));
+                JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
                 c.gridy++;
                 c.ipady = 20;
                 c.ipadx = 20;
-                c.insets = new Insets(0, 20, 0, 20);
+                c.insets = new Insets(0,20,0,20);
                 c.fill = GridBagConstraints.HORIZONTAL;
-                add(jlNaamAfspeellijst, c);
-                jlMin.setHorizontalAlignment(SwingConstants.RIGHT);
-                add(jlMin, c);
-                jlNaamAfspeellijst.setBorder(border);
+                jpAfspeellijstBalk.add(jlNaamAfspeellijst, c);
+                c.gridx = 1;
+                c.weightx = 0;
+                jpAfspeellijstBalk.add(jlMin, c);
+                c.gridx = 0;
+                c.weightx = 1;
+                jpAfspeellijsten.add(jpAfspeellijstBalk, c);
 
-                    MouseListener listener = new MouseListener() {
+
+                MouseListener listener = new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
                         if (e.getSource() == jlMin){
-                            System.out.println("Verwijder afspeellijst: " + afspeellijst.getNaam());
-//                            Database.deleteDBafspeellijst(afspeellijst.getAfspeellijstId());
-//                            dispose();
+                            System.out.println("Doe wat met afspeellijst: " + afspeellijst.getNaam());
+                        } else if (e.getSource() == jlNaamAfspeellijst){
+                            System.out.println("Hey hoe is het");
                         }
                     }
                     public void mousePressed(MouseEvent e) {
@@ -65,18 +82,13 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener, Mo
                     public void mouseExited(MouseEvent e) {
 
                     }
-
                 };
                 jlMin.addMouseListener(listener);
+                jlNaamAfspeellijst.addMouseListener(listener);
             }
 
 
-
-//        Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
-            add(jpAfspeellijsten);
-//        jpNummers.setBorder(border);
-
-            setVisible(true);
+        setVisible(true);
 
         }
 
