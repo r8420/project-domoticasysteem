@@ -361,7 +361,7 @@ public class Database {
                 resultaat.add(nummer);
             }
             conn.close();
-            System.out.println("Afspeellijst: " + afspeellijstnaam + " , met de nummers:\n" + resultaat);
+//            System.out.println("Afspeellijst: " + afspeellijstnaam + " , met de nummers:\n" + resultaat);
             return resultaat;
 
         } catch (Exception e) {
