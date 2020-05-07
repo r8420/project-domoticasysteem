@@ -62,7 +62,6 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlPlus){
                         System.out.println("Voeg " + nummer.getNaam() + " toe aan een afspeellijst");
-                        Database.selectDBafspeellijsten();
                     }else if (e.getSource() == jlNaamNummer){
                         System.out.println("Speel " + nummer.getNaam() + " af");
                     }
