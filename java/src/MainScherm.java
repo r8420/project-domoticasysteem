@@ -247,7 +247,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         c.gridy = 0;
         c.gridx = 1;
-        c.weightx = 0.1;
+        c.weightx = 0;
         c.gridheight = 4;
         add(jpZijkant, c);
 
