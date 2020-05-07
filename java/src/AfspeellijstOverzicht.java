@@ -101,10 +101,12 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
 
     }
 
+    // Functie voor een JOptionPane aangezien this binnen de Mouselistener slaat op de MouseListener i.p.v het scherm.
     private int verwijderAfspeellijst(){
         return JOptionPane.showConfirmDialog(this, "Weet u zeker dat u de afspeellijst wilt verwijderen?", "Bevestiging", JOptionPane.YES_NO_OPTION);
     }
 
+    // Functie om een bepaalde afspeellijst te openen, aangezien this in de MouseListener slaat op de MouseListener i.p.v het scherm. Meegeven afspeellijst voor het scherm om te openen.
     private void openAfspeellijst(Afspeellijst afspeellijst){
         AfspeellijstNummers Dialoog = new AfspeellijstNummers(afspeellijst, this);
     }

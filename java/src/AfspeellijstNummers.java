@@ -13,12 +13,14 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
     private ArrayList<Nummer> nummers;
     private JLabel jlKiesNummer;
 
+    // Een Afspeellijst meegeven om zo de informatie van een afspeellijst op te kunnen halen.
     public AfspeellijstNummers(Afspeellijst afspeellijst, JDialog frame){
         super(frame , true);
         this.afspeellijst = afspeellijst;
 
         nummers  = Database.selectDBafspeellijstNummer(afspeellijst.getNaam());
 
+        // afspeellijst.getNaam() halen uit de meegegeven afspeellijst.
         setTitle("Nummers in afspeellijst " + afspeellijst.getNaam());
         setSize(400, 600);
         setLayout(new GridBagLayout());
@@ -33,7 +35,7 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
         c.weightx = 1;
         c.weighty = 1;
         add(jpNummers, c);
-        jlKiesNummer = new JLabel("Nummers in afspeellijst:  ");
+        jlKiesNummer = new JLabel("Nummers in afspeellijst: " + afspeellijst.getNaam());
 
         Border border = BorderFactory.createLineBorder(Color.black, 1);
         jpNummers.setBorder(border);
@@ -44,7 +46,7 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
         jpNummers.add(jlKiesNummer,c);
         jlKiesNummer.setHorizontalAlignment(SwingConstants.CENTER);
 
-
+        // Foreach om alle nummers te printen binnen afspeellijst X
         for (Nummer nummer: nummers) {
             JPanel jpNummerBalk = new JPanel();
             jpNummerBalk.setLayout(new GridBagLayout());
@@ -100,7 +102,7 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
         setVisible(true);
 
     }
-
+    // Functie voor een JOptionPane, aangezien this binnen de Mouselistener anders slaat op de Mouselistener i.p.v het scherm
     private int verwijderNummer(){
         return JOptionPane.showConfirmDialog(this, "Weet u zeker dat u dit nummer wilt verwijderen?", "Bevestiging", JOptionPane.YES_NO_OPTION);
     }

@@ -38,7 +38,7 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
         jpNummers.add(jlKiesNummer,c);
         jlKiesNummer.setHorizontalAlignment(SwingConstants.CENTER);
 
-
+        // Foreach om alle nummers te kunnen printen, plusje om een nummer toe te voegen aan een afspeellijst
         for (Nummer nummer: nummers) {
             JPanel jpNummerBalk = new JPanel();
             jpNummerBalk.setLayout(new GridBagLayout());
