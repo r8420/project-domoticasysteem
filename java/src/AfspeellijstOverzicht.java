@@ -32,8 +32,8 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener, Mo
             add(jlKiesAfspeellijst, c);
 
             for (Afspeellijst afspeellijst : afspeellijsten) {
-              JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");
-              jlPlus.setPreferredSize(new Dimension(20, 20));
+             JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
+              jlMin.setPreferredSize(new Dimension(20, 20));
               JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
                 c.gridy++;
                 c.ipady = 20;
@@ -41,16 +41,16 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener, Mo
                 c.insets = new Insets(0, 20, 0, 20);
                 c.fill = GridBagConstraints.HORIZONTAL;
                 add(jlNaamAfspeellijst, c);
-                jlPlus.setHorizontalAlignment(SwingConstants.RIGHT);
-                add(jlPlus, c);
+                jlMin.setHorizontalAlignment(SwingConstants.RIGHT);
+                add(jlMin, c);
                 jlNaamAfspeellijst.setBorder(border);
 
                     MouseListener listener = new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
-                        if (e.getSource() == jlPlus){
+                        if (e.getSource() == jlMin){
                             System.out.println("Verwijder afspeellijst: " + afspeellijst.getNaam());
-                            Database.deleteDBafspeellijst(afspeellijst.getAfspeellijstId());
-                            dispose();
+//                            Database.deleteDBafspeellijst(afspeellijst.getAfspeellijstId());
+//                            dispose();
                         }
                     }
                     public void mousePressed(MouseEvent e) {
@@ -67,7 +67,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener, Mo
                     }
 
                 };
-                jlPlus.addMouseListener(listener);
+                jlMin.addMouseListener(listener);
             }
 
 
