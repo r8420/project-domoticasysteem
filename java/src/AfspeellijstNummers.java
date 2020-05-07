@@ -68,6 +68,10 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin){
                         System.out.println("Verwijder " + nummer.getNaam() + " uit de afspeellijst");
+                        if (verwijderNummer() == JOptionPane.YES_OPTION){
+                            Database.deleteDBafspeellijstNummer(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
+                            setVisible(false);
+                        }
                     }else if (e.getSource() == jlNaamNummer){
                         System.out.println("Speel " + nummer.getNaam() + " af");
 
@@ -97,7 +101,9 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
 
     }
 
-
+    private int verwijderNummer(){
+        return JOptionPane.showConfirmDialog(this, "Weet u zeker dat u dit nummer wilt verwijderen?", "Bevestiging", JOptionPane.YES_NO_OPTION);
+    }
 
 
     @Override

@@ -4,6 +4,10 @@ public class Nummer {
     private String artiest;
     private int nummerId;
 
+    public int getNummerId() {
+        return nummerId;
+    }
+
     public int getTijdsduur() {
         return tijdsduur;
     }
