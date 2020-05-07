@@ -7,118 +7,115 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class AfspeellijstOverzicht extends JDialog implements ActionListener, MouseListener {
+public class AfspeellijstOverzicht extends JDialog implements ActionListener {
 
-        private ArrayList<Afspeellijst> afspeellijsten;
-        private JLabel jlKiesAfspeellijst;
+    private ArrayList<Afspeellijst> afspeellijsten;
+    private JLabel jlKiesAfspeellijst;
 
-    public AfspeellijstOverzicht() {
-            setTitle("Afspeellijst overzicht");
-            setSize(400, 600);
-            setLayout(new GridBagLayout());
 
-            afspeellijsten = Database.selectDBafspeellijsten();
-            GridBagConstraints c = new GridBagConstraints();
-            JPanel jpAfspeellijsten = new JPanel();
-            jpAfspeellijsten.setLayout(new GridBagLayout());
-            c.insets = new Insets(10,10,10,10);
-            c.fill = GridBagConstraints.BOTH;
-            c.weightx = 1;
-            c.weighty = 1;
-            add(jpAfspeellijsten, c);
-            jlKiesAfspeellijst = new JLabel("Afspeellijsten:");
+    public AfspeellijstOverzicht(JFrame frame) {
+        super(frame, true);
+        setTitle("Afspeellijst overzicht");
+        setSize(400, 600);
+        setLayout(new GridBagLayout());
 
-            Border border = BorderFactory.createLineBorder(Color.black, 1);
-            jpAfspeellijsten.setBorder(border);
-            c.weightx = 1;
+        afspeellijsten = Database.selectDBafspeellijsten();
+        GridBagConstraints c = new GridBagConstraints();
+        JPanel jpAfspeellijsten = new JPanel();
+        jpAfspeellijsten.setLayout(new GridBagLayout());
+        c.insets = new Insets(10, 10, 10, 10);
+        c.fill = GridBagConstraints.BOTH;
+        c.weightx = 1;
+        c.weighty = 1;
+        add(jpAfspeellijsten, c);
+        jlKiesAfspeellijst = new JLabel("Afspeellijsten:");
+
+        Border border = BorderFactory.createLineBorder(Color.black, 1);
+        jpAfspeellijsten.setBorder(border);
+        c.weightx = 1;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.insets = new Insets(0, 0, 10, 0);
+        jpAfspeellijsten.add(jlKiesAfspeellijst, c);
+        jlKiesAfspeellijst.setHorizontalAlignment(SwingConstants.CENTER);
+        c.gridy = 1;
+
+
+        for (Afspeellijst afspeellijst : afspeellijsten) {
+            JPanel jpAfspeellijstBalk = new JPanel();
+            jpAfspeellijstBalk.setLayout(new GridBagLayout());
+            jpAfspeellijstBalk.setBorder(border);
+            JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
+            jlMin.setPreferredSize(new Dimension(20, 20));
+            JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
+            c.gridy++;
+            c.ipady = 20;
+            c.ipadx = 20;
+            c.insets = new Insets(0, 20, 0, 20);
+            c.fill = GridBagConstraints.HORIZONTAL;
+            jpAfspeellijstBalk.add(jlNaamAfspeellijst, c);
+            c.gridx = 1;
+            c.weightx = 0;
+            jpAfspeellijstBalk.add(jlMin, c);
             c.gridx = 0;
-            c.gridy = 0;
-            c.insets = new Insets(0,0,10,0);
-            jpAfspeellijsten.add(jlKiesAfspeellijst,c);
-            jlKiesAfspeellijst.setHorizontalAlignment(SwingConstants.CENTER);
-            c.gridy = 1;
+            c.weightx = 1;
+            jpAfspeellijsten.add(jpAfspeellijstBalk, c);
 
 
-
-
-            for (Afspeellijst afspeellijst: afspeellijsten) {
-                JPanel jpAfspeellijstBalk = new JPanel();
-                jpAfspeellijstBalk.setLayout(new GridBagLayout());
-                jpAfspeellijstBalk.setBorder(border);
-                JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
-                jlMin.setPreferredSize(new Dimension(20,20));
-                JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
-                c.gridy++;
-                c.ipady = 20;
-                c.ipadx = 20;
-                c.insets = new Insets(0,20,0,20);
-                c.fill = GridBagConstraints.HORIZONTAL;
-                jpAfspeellijstBalk.add(jlNaamAfspeellijst, c);
-                c.gridx = 1;
-                c.weightx = 0;
-                jpAfspeellijstBalk.add(jlMin, c);
-                c.gridx = 0;
-                c.weightx = 1;
-                jpAfspeellijsten.add(jpAfspeellijstBalk, c);
-
-
-                MouseListener listener = new MouseListener() {
-                    public void mouseClicked(MouseEvent e) {
-                        if (e.getSource() == jlMin){
-                            System.out.println("Doe wat met afspeellijst: " + afspeellijst.getNaam());
-                        } else if (e.getSource() == jlNaamAfspeellijst){
-                            System.out.println("Hey hoe is het");
+            MouseListener listener = new MouseListener() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getSource() == jlMin) {
+                        System.out.println("Verwijder " + afspeellijst.getNaam());
+                        if (verwijderAfspeellijst() == JOptionPane.YES_OPTION){
+                         Database.deleteDBafspeellijst(afspeellijst.getAfspeellijstId());
+                         setVisible(false);
                         }
+                    } else if (e.getSource() == jlNaamAfspeellijst) {
+                        System.out.println("Open " + afspeellijst.getNaam());
+                        openAfspeellijst(afspeellijst);
                     }
-                    public void mousePressed(MouseEvent e) {
+                }
 
-                    }
-                    public void mouseReleased(MouseEvent e) {
+                public void mousePressed(MouseEvent e) {
 
-                    }
-                    public void mouseEntered(MouseEvent e) {
+                }
 
-                    }
-                    public void mouseExited(MouseEvent e) {
+                public void mouseReleased(MouseEvent e) {
 
-                    }
-                };
-                jlMin.addMouseListener(listener);
-                jlNaamAfspeellijst.addMouseListener(listener);
-            }
+                }
+
+                public void mouseEntered(MouseEvent e) {
+
+                }
+
+                public void mouseExited(MouseEvent e) {
+
+                }
+            };
+            jlMin.addMouseListener(listener);
+            jlNaamAfspeellijst.addMouseListener(listener);
+        }
 
 
         setVisible(true);
 
-        }
-
-
-
-    public static void main(String[] args) {
-        AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht();
     }
+
+    private int verwijderAfspeellijst(){
+        return JOptionPane.showConfirmDialog(this, "Weet u zeker dat u de afspeellijst wilt verwijderen?", "Bevestiging", JOptionPane.YES_NO_OPTION);
+    }
+
+    private void openAfspeellijst(Afspeellijst afspeellijst){
+        AfspeellijstNummers Dialoog = new AfspeellijstNummers(afspeellijst, this);
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
     }
-
-
-
-
-    public void mouseClicked(MouseEvent e) {
-
-    }
-    public void mousePressed(MouseEvent e) {
-
-    }
-    public void mouseReleased(MouseEvent e) {
-
-    }
-    public void mouseEntered(MouseEvent e) {
-
-    }
-    public void mouseExited(MouseEvent e) {
-
-    }
 }
+
+
+
+

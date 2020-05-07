@@ -9,14 +9,20 @@ import java.util.ArrayList;
 
 public class AfspeellijstNummers extends JDialog implements ActionListener, MouseListener {
 
-
-    private ArrayList<Nummer> nummers = Database.selectDBafspeellijstNummer("Test");
+    private Afspeellijst afspeellijst;
+    private ArrayList<Nummer> nummers;
     private JLabel jlKiesNummer;
 
-    public AfspeellijstNummers(){
-        setTitle("Nummers in afspeellijst");
+    public AfspeellijstNummers(Afspeellijst afspeellijst, JDialog frame){
+        super(frame , true);
+        this.afspeellijst = afspeellijst;
+
+        nummers  = Database.selectDBafspeellijstNummer(afspeellijst.getNaam());
+
+        setTitle("Nummers in afspeellijst " + afspeellijst.getNaam());
         setSize(400, 600);
         setLayout(new GridBagLayout());
+
 
 
         GridBagConstraints c = new GridBagConstraints();
@@ -43,8 +49,8 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
             JPanel jpNummerBalk = new JPanel();
             jpNummerBalk.setLayout(new GridBagLayout());
             jpNummerBalk.setBorder(border);
-            JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");
-            jlPlus.setPreferredSize(new Dimension(20,20));
+            JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
+            jlMin.setPreferredSize(new Dimension(20,20));
             JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest() );
             c.gridy++;
             c.ipady = 20;
@@ -54,16 +60,17 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
             jpNummerBalk.add(jlNaamNummer, c);
             c.gridx = 1;
             c.weightx = 0;
-            jpNummerBalk.add(jlPlus, c);
+            jpNummerBalk.add(jlMin, c);
             c.gridx = 0;
             c.weightx = 1;
             jpNummers.add(jpNummerBalk, c);
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
-                    if (e.getSource() == jlPlus){
-                        System.out.println("Doe wat met nummer: " + nummer.getNaam());
+                    if (e.getSource() == jlMin){
+                        System.out.println("Verwijder " + nummer.getNaam() + " uit de afspeellijst");
                     }else if (e.getSource() == jlNaamNummer){
-                        System.out.println("Herres");
+                        System.out.println("Speel " + nummer.getNaam() + " af");
+
                     }
                 }
                 public void mousePressed(MouseEvent e) {
@@ -79,7 +86,7 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
 
                 }
             };
-            jlPlus.addMouseListener(listener);
+            jlMin.addMouseListener(listener);
             jlNaamNummer.addMouseListener(listener);
         }
 
@@ -88,11 +95,6 @@ public class AfspeellijstNummers extends JDialog implements ActionListener, Mous
 
         setVisible(true);
 
-    }
-
-
-    public static void main(String[] args) {
-        AfspeellijstNummers overzicht = new AfspeellijstNummers();
     }
 
 

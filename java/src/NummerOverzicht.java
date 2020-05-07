@@ -11,7 +11,9 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
     private ArrayList<Nummer> nummers = Database.selectDBnummers();
     private JLabel jlKiesNummer;
 
-    public NummerOverzicht(){
+
+    public NummerOverzicht(JFrame frame){
+        super(frame, true);
         setTitle("Nummer overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());
@@ -59,9 +61,9 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlPlus){
-                        System.out.println("Doe wat met nummer: " + nummer.getNaam());
+                        System.out.println("Voeg " + nummer.getNaam() + " toe aan een afspeellijst");
                     }else if (e.getSource() == jlNaamNummer){
-                        System.out.println("Herres");
+                        System.out.println("Speel " + nummer.getNaam() + " af");
                     }
                 }
                 public void mousePressed(MouseEvent e) {
@@ -90,10 +92,6 @@ public class NummerOverzicht  extends JDialog implements ActionListener {
 
 
 
-
-    public static void main(String[] args) {
-        NummerOverzicht a = new NummerOverzicht();
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {

@@ -14,7 +14,7 @@ public class Database {
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
-            Connection conn =  DriverManager.getConnection(
+            Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
             verbinding = true;
             return conn;
@@ -31,7 +31,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "INSERT INTO log(Temperatuur, Luchtvochtigheid, Luchtdruk, Lichtsterkte)\n" +
                     "VALUES (" + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ", " + lichtsterkte + ")";
@@ -51,7 +53,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "INSERT INTO log(Temperatuur, Luchtvochtigheid, Luchtdruk)\n" +
                     "VALUES (" + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ")";
@@ -71,7 +75,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "INSERT INTO log(Lichtsterkte)\n" +
                     "VALUES (" + lichtsterkte + ")";
@@ -91,7 +97,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "insert into profile(Gebruikersnaam)\n" +
                     "VALUES ('" + gebruikersnaam + "')";
@@ -111,7 +119,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return null;}
+            if (!verbinding) {
+                return null;
+            }
 
             String query = "SELECT * FROM profile";
 
@@ -144,7 +154,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "UPDATE profile\n" +
                     "SET TempVerwarmen = '" + temperatuur + "'\n" +
@@ -165,7 +177,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "UPDATE profile\n" +
                     "SET LichtWaarde = '" + licht + "'\n" +
@@ -184,7 +198,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return null;}
+            if (!verbinding) {
+                return null;
+            }
 
             String query = "SELECT * FROM profile\n" +
                     "WHERE LaatsteLogin = (\n" +
@@ -216,7 +232,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
             String query = "UPDATE profile\n" +
                     "SET LaatsteLogin = NOW()\n" +
@@ -237,7 +255,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return null;}
+            if (!verbinding) {
+                return null;
+            }
 
             String query = "SELECT * FROM nummer";
 
@@ -273,7 +293,9 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return null;}
+            if (!verbinding) {
+                return null;
+            }
 
             String query = "SELECT * FROM afspeellijst";
 
@@ -311,7 +333,7 @@ public class Database {
 
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/domotica", "root", "");
-            String query = "select a.Naam, n.NummerId, n.Naam, n.Artiest, n.Tijdsduur from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.Naam ='" + welkeAfspeellijst +"'";
+            String query = "select a.Naam, n.NummerId, n.Naam, n.Artiest, n.Tijdsduur from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.Naam ='" + welkeAfspeellijst + "'";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -353,9 +375,11 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
-            String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES ('" + ProfileId +"', '" + Naam +"')";
+            String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES ('" + ProfileId + "', '" + Naam + "')";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
@@ -370,15 +394,16 @@ public class Database {
     }
 
 
-
     // Functie voor het inserten van een nummer in een bepaalde afspeellist.
     public static void insertDBNummerInAfspeellijst(int AfspeellijstId, int NummerId) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
-            String query = "INSERT INTO afspeellijst_nummer VALUES ('" + AfspeellijstId +"', '" + NummerId +"')";
+            String query = "INSERT INTO afspeellijst_nummer VALUES ('" + AfspeellijstId + "', '" + NummerId + "')";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
@@ -397,9 +422,11 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
-            String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId +"' AND NummerId =  '" + NummerId +"'";
+            String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId + "' AND NummerId =  '" + NummerId + "'";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
@@ -418,9 +445,11 @@ public class Database {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {return;}
+            if (!verbinding) {
+                return;
+            }
 
-            String query = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId +"'";
+            String query = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId + "'";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
@@ -432,10 +461,6 @@ public class Database {
             System.out.println(e);
             System.out.println("Ging wat fout bij het verwijderen van een afspeellijst");
         }
-    }
-
-    public static void main(String[] args) {
-        Database.selectDBafspeellijstNummer("Test");
     }
 
 }
