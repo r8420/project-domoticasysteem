@@ -7,14 +7,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class AfspeellijstNummers extends JDialog implements ActionListener, MouseListener {
+public class NummersInAfspeellijst extends JDialog implements ActionListener, MouseListener {
 
     private Afspeellijst afspeellijst;
     private ArrayList<Nummer> nummers;
     private JLabel jlKiesNummer;
 
     // Een Afspeellijst meegeven om zo de informatie van een afspeellijst op te kunnen halen.
-    public AfspeellijstNummers(Afspeellijst afspeellijst, JDialog frame){
+    public NummersInAfspeellijst(Afspeellijst afspeellijst, JDialog frame){
         super(frame , true);
         this.afspeellijst = afspeellijst;
 

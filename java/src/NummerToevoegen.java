@@ -64,9 +64,9 @@ public class NummerToevoegen extends JDialog implements ActionListener {
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlNaamAfspeellijst) {
-                        System.out.println("Open " + afspeellijst.getNaam());
                         Database.insertDBNummerInAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
                         toegevoegdNummer();
+                        setVisible(false);
                     }
                 }
 

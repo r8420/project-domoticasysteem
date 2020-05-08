@@ -108,7 +108,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
 
     // Functie om een bepaalde afspeellijst te openen, aangezien this in de MouseListener slaat op de MouseListener i.p.v het scherm. Meegeven afspeellijst voor het scherm om te openen.
     private void openAfspeellijst(Afspeellijst afspeellijst){
-        AfspeellijstNummers Dialoog = new AfspeellijstNummers(afspeellijst, this);
+        NummersInAfspeellijst Dialoog = new NummersInAfspeellijst(afspeellijst, this);
     }
 
 

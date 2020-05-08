@@ -278,7 +278,6 @@ public class Database {
             }
 
             conn.close();
-            System.out.println(resultaat);
             return resultaat;
 
         } catch (Exception e) {
@@ -314,7 +313,6 @@ public class Database {
             }
 
             conn.close();
-            System.out.println(resultaat);
             return resultaat;
 
         } catch (Exception e) {
@@ -361,7 +359,6 @@ public class Database {
                 resultaat.add(nummer);
             }
             conn.close();
-//            System.out.println("Afspeellijst: " + afspeellijstnaam + " , met de nummers:\n" + resultaat);
             return resultaat;
 
         } catch (Exception e) {
@@ -385,7 +382,7 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
-            System.out.println("Afspeellijst toegevoegd aan Database");
+
 
         } catch (Exception e) {
             System.out.println(e);
@@ -409,7 +406,7 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
-            System.out.println("Nummer toegevoegd aan afspeellijst");
+
 
         } catch (Exception e) {
             System.out.println(e);
@@ -432,7 +429,7 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
-            System.out.println("Nummer verwijdert uit afspeellijst");
+
 
         } catch (Exception e) {
             System.out.println(e);
@@ -455,7 +452,7 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
-            System.out.println("Afspeellijst verwijderd uit Database");
+
 
         } catch (Exception e) {
             System.out.println(e);
