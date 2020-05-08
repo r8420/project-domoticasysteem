@@ -28,15 +28,6 @@ mixer.init()
 
 
 
-temp = round(sense.get_temperature(), 2)
-Humidity = round(sense.get_humidity(), 2)
-Pressure = round(sense.get_pressure(), 2)
-message = str(temp) +" "+ str(Humidity)+ " " + str(Pressure)
-length = len(message.encode('utf-8'))
-while length < 19:
-    message = message + " "
-    length = len(message.encode('utf-8'))
-
 def outputstream ():
     temp = round(sense.get_temperature(), 2)
     Humidity = round(sense.get_humidity())
