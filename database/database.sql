@@ -1,4 +1,4 @@
--- Domotica database V5
+-- Domotica database V6
 
 -- MySQL Workbench Forward Engineering
 
@@ -55,7 +55,7 @@ DEFAULT CHARACTER SET = utf8;
 -- Table `domotica`.`nummer`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `domotica`.`nummer` (
-  `NummerId` INT(11) NOT NULL,
+  `NummerId` INT(11) NOT NULL AUTO_INCREMENT,
   `Naam` VARCHAR(45) NOT NULL,
   `Artiest` VARCHAR(45) NULL DEFAULT NULL,
   `Tijdsduur` INT(11) NOT NULL,
