@@ -18,7 +18,7 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
         super(frame, true);
         this.afspeellijst = afspeellijst;
 
-        nummers = Database.selectDBafspeellijstNummer(afspeellijst.getNaam());
+        nummers = Database.selectDBafspeellijstNummer(afspeellijst.getAfspeellijstId());
 
         // afspeellijst.getNaam() halen uit de meegegeven afspeellijst.
         setTitle("Nummers in afspeellijst " + afspeellijst.getNaam());
