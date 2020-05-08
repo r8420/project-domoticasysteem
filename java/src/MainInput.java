@@ -83,11 +83,15 @@ public class MainInput {
         return ldrWaarde;
     }
 
-    public void sendMessage(String Naam) throws IOException {
-        pw = new PrintWriter(s.getOutputStream());
-        pw.write(Naam);
-        pw.flush();
-        System.out.println("gelukt");
+    public void sendMessage(String Naam) {
+        try {
+            pw = new PrintWriter(s.getOutputStream());
+            pw.write(Naam);
+            pw.flush();
+            System.out.println("gelukt");
+        }catch (IOException | NullPointerException IOE){
+            System.out.println("geen verbinding met pi");
+        }
 
     }
 }
