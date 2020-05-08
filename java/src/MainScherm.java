@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -43,6 +44,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JPanel outer;
 
     private Profiel profiel;
+    private ArrayList<Afspeellijst> afspeellijstenList;
 
     public MainScherm() throws InterruptedException {
 
@@ -50,6 +52,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         mainInput = new MainInput();
         piAansluiting = mainInput.socketStart();
         arduinoAansluiting = mainInput.arduinoStart();
+
 
 
         /* default scherm settings */
@@ -114,16 +117,19 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlAfspleellijstOverzicht = new JButton("Afspeellijst overzicht");
         jlAfspleellijstOverzicht.setBackground(Color.ORANGE);
         jlAfspleellijstOverzicht.setBounds(400, 61, 180, 20);
+        jlAfspleellijstOverzicht.addActionListener(this);
 
 
         jlAfspleellijstToevoegen = new JButton("Afspleellijst toevoegen");
         jlAfspleellijstToevoegen.setBackground(Color.ORANGE);
         jlAfspleellijstToevoegen.setBounds(400, 82, 180, 20);
+        jlAfspleellijstToevoegen.addActionListener(this);
 
 
         jlNummerOverzicht = new JButton("Nummer overzicht");
         jlNummerOverzicht.setBackground(Color.ORANGE);
         jlNummerOverzicht.setBounds(400, 103, 180, 20);
+        jlNummerOverzicht.addActionListener(this);
 
 
         jlPuntjes.addMouseListener(this);
@@ -304,6 +310,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             profiel = recentProfiel;
         }
 
+        afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
+
         /* Maak het scherm zichtbaar */
         setVisible(true);
 
@@ -476,6 +484,24 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             // licht uit
             System.out.println("licht uit");
 
+        } else if (e.getSource() == jlAfspleellijstOverzicht) {
+            AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht(profiel.getId(), this);
+        } else if (e.getSource() == jlNummerOverzicht) {
+            NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this);
+        } else if (e.getSource() == jlAfspleellijstToevoegen) {
+            if (afspeellijstenList.size() >= 8) {
+                JOptionPane.showMessageDialog(this, "Het maximaal aantal afspeellijsten is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
+            if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
+                Database.insertDBAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst());
+            } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
+                JOptionPane.showMessageDialog(this, "Er is geen naam ingevuld!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+            }
         }
+
+        afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
     }
 }
+

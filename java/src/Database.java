@@ -288,7 +288,7 @@ public class Database {
     }
 
     // Functie om alle afspeellijsten op te halen.
-    public static ArrayList<Afspeellijst> selectDBafspeellijsten() {
+    public static ArrayList<Afspeellijst> selectDBafspeellijsten(int profileId) {
         try {
 
             Connection conn = maakVerbinding();
@@ -296,7 +296,7 @@ public class Database {
                 return null;
             }
 
-            String query = "SELECT * FROM afspeellijst";
+            String query = "SELECT * FROM afspeellijst where ProfileId = '" + profileId + "'";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             ResultSet rs = preparedStmt.executeQuery();
@@ -437,6 +437,8 @@ public class Database {
         }
     }
 
+
+
     // Functie voor het verwijderen van een afspeellijst.
     public static void deleteDBafspeellijst(int AfspeellijstId) {
         try {
@@ -446,10 +448,15 @@ public class Database {
                 return;
             }
 
-            String query = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId + "'";
+            String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId + "'";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
+
+            String query2 = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId + "'";
+
+            PreparedStatement preparedStmt2 = conn.prepareStatement(query2);
+            preparedStmt2.execute();
 
             conn.close();
 

@@ -14,14 +14,14 @@ public class NummerToevoegen extends JDialog implements ActionListener {
     private Nummer nummer;
 
 
-    public NummerToevoegen(Nummer nummer, JDialog frame) {
+    public NummerToevoegen(int profileId, Nummer nummer, JDialog frame) {
         super(frame, true);
         this.nummer = nummer;
         setTitle("Afspeellijst overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
-        afspeellijsten = Database.selectDBafspeellijsten();
+        afspeellijsten = Database.selectDBafspeellijsten(profileId);
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpAfspeellijsten = new JPanel();
         jpAfspeellijsten.setLayout(new GridBagLayout());
