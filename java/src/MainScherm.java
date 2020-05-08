@@ -10,6 +10,7 @@ import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
 
+
     public static void main(String[] args) throws InterruptedException {
         MainScherm scherm = new MainScherm();
     }
@@ -34,7 +35,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
-    private boolean playOrPause, newSong  = true;
+    private boolean playOrPause, newSong = true;
 
     private long timestamp;
     private long timestampPrev = 0;
@@ -52,7 +53,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
         /* default scherm settings */
-        setSize(1000,750);
+        setSize(1000, 750);
         setMinimumSize(new Dimension(1000, 800));
         setLocation(500, 0);
         setTitle("Domotica Systeem");
@@ -63,14 +64,14 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         int standaardInset = 20;
-        c.insets = new Insets(10,standaardInset,0,0);
+        c.insets = new Insets(10, standaardInset, 0, 0);
         c.anchor = GridBagConstraints.LINE_START;
 
 
         /* muziekspeler panel */
         /** het vak voor de muziekpanel en de tekstvak van de muzieknaam */
         JPanel jpMuziekspeler = new JPanel();
-        jpMuziekspeler.setMaximumSize(new Dimension(700,600));
+        jpMuziekspeler.setMaximumSize(new Dimension(700, 600));
         jpMuziekspeler.setLayout(new FlowLayout());
         JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
         JlNaamMuziek.setPreferredSize(new Dimension(600, 100));
@@ -83,29 +84,29 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /** de slider krijgt de max tijd en de huidige */
         int maxTijd = 10;
         int huidigeTijd = 0;
-        jsTijdMuziek = new JSlider(0,maxTijd,0);
+        jsTijdMuziek = new JSlider(0, maxTijd, 0);
         jsTijdMuziek.setEnabled(false);
-        jsTijdMuziek.setMajorTickSpacing((int)(maxTijd*0.1));
+        jsTijdMuziek.setMajorTickSpacing((int) (maxTijd * 0.1));
         Hashtable<Integer, JLabel> tijdLableTable = new Hashtable<>();
-        tijdLableTable.put( 0, new JLabel("00:00") );
-        tijdLableTable.put(maxTijd, new JLabel("03:21") );
+        tijdLableTable.put(0, new JLabel("00:00"));
+        tijdLableTable.put(maxTijd, new JLabel("03:21"));
         jsTijdMuziek.setValue(huidigeTijd);
-        jsTijdMuziek.setLabelTable( tijdLableTable );
+        jsTijdMuziek.setLabelTable(tijdLableTable);
         jsTijdMuziek.setPaintLabels(true);
-        jsTijdMuziek.setPreferredSize(new Dimension(600,40));
+        jsTijdMuziek.setPreferredSize(new Dimension(600, 40));
         jpMuziekspeler.add(jsTijdMuziek);
 
         /** de panel voor de knoppen van de mp3 */
         outer = new JPanel();
         outer.setLayout(null);
-        outer.setPreferredSize(new Dimension(600,60));
+        outer.setPreferredSize(new Dimension(600, 60));
         jpMuziekspeler.add(outer);
         jlSkipBack = Functies.maakFotoLabel("src/images/skip_back.png");
-        jlSkipBack.setBounds(190,0,50,50);
+        jlSkipBack.setBounds(190, 0, 50, 50);
         jlPLay = Functies.maakFotoLabel("src/images/play.png");
-        jlPLay.setBounds(270,0,60,60);
+        jlPLay.setBounds(270, 0, 60, 60);
         jlSkip = Functies.maakFotoLabel("src/images/skip_forward.png");
-        jlSkip.setBounds(360,0,50,50);
+        jlSkip.setBounds(360, 0, 50, 50);
         jlPuntjes = Functies.maakFotoLabel("src/images/3_puntjes.png");
         jlPuntjes.setBounds(440, 0, 50, 50);
 
@@ -125,7 +126,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlNummerOverzicht.setBounds(400, 103, 180, 20);
 
 
-
         jlPuntjes.addMouseListener(this);
         jlPLay.addMouseListener(this);
         jlSkip.addMouseListener(this);
@@ -143,13 +143,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
 
-
-
         /* verwarming / temperatuur panel*/
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
-        jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50,30));
+        jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
 
         c.weightx = 0;
@@ -181,18 +179,18 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLicht.add(new JLabel("Licht aan vanaf: "), c);
         c.gridy = 2;
 
-         // de slider kan zo een waarde van 0 tot 10 krijgen.
+        // de slider kan zo een waarde van 0 tot 10 krijgen.
         int maxLichtWaarde = 10;
-        jslMaxLichtsterkte = new JSlider(0,maxLichtWaarde,maxLichtWaarde/2);
-        jslMaxLichtsterkte.setMajorTickSpacing((int)(maxLichtWaarde*0.1));
+        jslMaxLichtsterkte = new JSlider(0, maxLichtWaarde, maxLichtWaarde / 2);
+        jslMaxLichtsterkte.setMajorTickSpacing((int) (maxLichtWaarde * 0.1));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
-        labelTable.put( 0, new JLabel("Donker") );
-        labelTable.put(maxLichtWaarde, new JLabel("Licht") );
-        jslMaxLichtsterkte.setLabelTable( labelTable );
+        labelTable.put(0, new JLabel("Donker"));
+        labelTable.put(maxLichtWaarde, new JLabel("Licht"));
+        jslMaxLichtsterkte.setLabelTable(labelTable);
         jslMaxLichtsterkte.setPaintTicks(true);
         jslMaxLichtsterkte.setPaintLabels(true);
         jslMaxLichtsterkte.addChangeListener(this);
-        jslMaxLichtsterkte.setPreferredSize(new Dimension(400,40));
+        jslMaxLichtsterkte.setPreferredSize(new Dimension(400, 40));
         jpLicht.add(jslMaxLichtsterkte, c);
 
         c.gridy = 0;
@@ -221,7 +219,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlInstellingenAfb.addMouseListener(this);
 
         c.anchor = GridBagConstraints.PAGE_START;
-        c.insets = new Insets(0,0,0,0);
+        c.insets = new Insets(0, 0, 0, 0);
         c.weighty = 0;
         jpZijkant.add(jlProfielAfb, c);
         jpZijkant.add(jlAnderProfielAfb, c);
@@ -237,7 +235,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         // reset GridBagConstraints
         c.anchor = GridBagConstraints.CENTER;
         c.gridy = 0;
-        c.insets = new Insets(0,0,0,0);
+        c.insets = new Insets(0, 0, 0, 0);
 
 
         /* tijdelijke borders rondom de panels */
@@ -252,7 +250,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /* voeg alle panels toe aan het hoofdscherm */
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1;
-        c.insets = new Insets(10,10,10,10);
+        c.insets = new Insets(10, 10, 10, 10);
 
         c.gridy = 0;
         c.gridx = 0;
@@ -321,6 +319,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setProfielNaam(profiel.getNaam());
         jspVerwarmingsTemperatuur.setValue(profiel.getTempVerwarmen());
         jslMaxLichtsterkte.setValue(profiel.getLichtWaarde());
+
     }
 
 
@@ -383,33 +382,29 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
 
-
-
     @Override
     public void stateChanged(ChangeEvent e) {
         if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
             // maximale lichtsterkte is veranderd
-            try{
+            try {
                 System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
                 Database.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
-            } catch (NullPointerException np){
+            } catch (NullPointerException np) {
                 JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
             }
 
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
-            try{
-                Database.updateDBtemp((double)jspVerwarmingsTemperatuur.getValue(), profiel.getId());
+            try {
+                Database.updateDBtemp((double) jspVerwarmingsTemperatuur.getValue(), profiel.getId());
                 System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
-            } catch (NullPointerException np){
+            } catch (NullPointerException np) {
                 JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
             }
 
         }
     }
-
-
 
 
     @Override
@@ -426,11 +421,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
                 System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
             }
-        } else if (e.getSource() == jlPLay){
+        } else if (e.getSource() == jlPLay) {
             if (newSong) {
                 JlNaamMuziek.setText("geen muziek gekozen");
                 JlNaamMuziek.setForeground(Color.RED);
-            }else{
+            } else {
                 timestamp = System.currentTimeMillis() / 1000;
 
                 if (timestamp - timestampPrev >= 1) {
@@ -448,11 +443,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                     timestampPrev = System.currentTimeMillis() / 1000;
                 }
             }
-        }else if(e.getSource() == jlPuntjes){
+        } else if (e.getSource() == jlPuntjes) {
             if (pl1 < 80) {
                 pl1 = 125;
                 outer.setSize(outer.getWidth(), pl1);
-            }else {
+            } else {
                 pl1 = 60;
                 outer.setSize(outer.getWidth(), pl1);
 
@@ -460,10 +455,17 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         }
     }
 
-    public void mousePressed(MouseEvent e) {}
-    public void mouseReleased(MouseEvent e) {}
-    public void mouseEntered(MouseEvent e) {}
-    public void mouseExited(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -473,6 +475,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         } else if (e.getSource() == jbLichtUit) {
             // licht uit
             System.out.println("licht uit");
+
         }
     }
 }

@@ -10,7 +10,7 @@ public final class Functies {
     /**
      * Maakt een label met daarin de afbeelding van de meegegeven afbeeldingslocatie
      * een geldige locatie is "src/images/profiel.png"
-     * */
+     */
     public static JLabel maakFotoLabel(String locatie) {
         try {
             BufferedImage myPicture = ImageIO.read(new File(locatie));

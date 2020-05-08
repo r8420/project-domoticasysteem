@@ -89,7 +89,7 @@ public class MainInput {
             pw.write(Naam);
             pw.flush();
             System.out.println("gelukt");
-        }catch (IOException | NullPointerException IOE){
+        } catch (IOException | NullPointerException IOE) {
             System.out.println("geen verbinding met pi");
         }
 

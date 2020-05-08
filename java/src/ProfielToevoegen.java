@@ -11,6 +11,7 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
     public String getJtfNewProfile() {
         return jtfNewProfile.getText();
     }
+
     public boolean getOk() {
         return ok;
     }
