@@ -348,7 +348,6 @@ public class Database {
 
             ArrayList<Nummer> resultaat = new ArrayList<>();
             while (rs.next()) {
-                System.out.println();
                 afspeellijstnaam = rs.getString("a.Naam");
                 Nummer nummer = new Nummer(
                         nummerId = rs.getInt("n.NummerId"),
