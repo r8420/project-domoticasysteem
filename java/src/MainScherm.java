@@ -21,7 +21,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb, jlPuntjes, jlOpvuller;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
-    private JButton jbLichtAan, jbLichtUit;
+    private JButton jbLichtAan, jbLichtUit, jlAfspleellijstOverzicht, jlAfspleellijstToevoegen, jlNummerOverzicht;
     private JLabel jlSkip, jlSkipBack, jlPLay, JlNaamMuziek;
     private JSlider jsTijdMuziek;
 
@@ -38,6 +38,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private long timestamp;
     private long timestampPrev = 0;
+    private int pl1 = 60;
+    private JPanel outer;
 
     private Profiel profiel;
 
@@ -66,7 +68,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
         /* muziekspeler panel */
+        /** het vak voor de muziekpanel en de tekstvak van de muzieknaam */
         JPanel jpMuziekspeler = new JPanel();
+        jpMuziekspeler.setMaximumSize(new Dimension(700,600));
         jpMuziekspeler.setLayout(new FlowLayout());
         JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
         JlNaamMuziek.setPreferredSize(new Dimension(600, 100));
@@ -76,7 +80,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpMuziekspeler.add(JlNaamMuziek);
 
 
-        // de slider kan zo een waarde van 0 tot 10 krijgen.
+        /** de slider krijgt de max tijd en de huidige */
         int maxTijd = 10;
         int huidigeTijd = 0;
         jsTijdMuziek = new JSlider(0,maxTijd,0);
@@ -91,24 +95,41 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jsTijdMuziek.setPreferredSize(new Dimension(600,40));
         jpMuziekspeler.add(jsTijdMuziek);
 
-
-        JPanel outer = new JPanel(new FlowLayout());
-        outer.setPreferredSize(new Dimension(400,80));
+        /** de panel voor de knoppen van de mp3 */
+        outer = new JPanel();
+        outer.setLayout(null);
+        outer.setPreferredSize(new Dimension(600,60));
         jpMuziekspeler.add(outer);
         jlSkipBack = Functies.maakFotoLabel("src/images/skip_back.png");
-        jlSkipBack.setPreferredSize(new Dimension(50,50));
+        jlSkipBack.setBounds(190,0,50,50);
         jlPLay = Functies.maakFotoLabel("src/images/play.png");
-        jlPLay.setPreferredSize(new Dimension(60,60));
+        jlPLay.setBounds(270,0,60,60);
         jlSkip = Functies.maakFotoLabel("src/images/skip_forward.png");
-        jlSkip.setPreferredSize(new Dimension(50,50));
+        jlSkip.setBounds(360,0,50,50);
         jlPuntjes = Functies.maakFotoLabel("src/images/3_puntjes.png");
-        jlPuntjes.setPreferredSize(new Dimension(50,50));
-        jlOpvuller = new JLabel("               ");
+        jlPuntjes.setBounds(440, 0, 50, 50);
+
+        /** de knoppen voor de dropdown van 3_puntjes.png */
+        jlAfspleellijstOverzicht = new JButton("Afspeellijst overzicht");
+        jlAfspleellijstOverzicht.setBackground(Color.ORANGE);
+        jlAfspleellijstOverzicht.setBounds(400, 61, 180, 20);
+
+
+        jlAfspleellijstToevoegen = new JButton("Afspleellijst toevoegen");
+        jlAfspleellijstToevoegen.setBackground(Color.ORANGE);
+        jlAfspleellijstToevoegen.setBounds(400, 82, 180, 20);
+
+
+        jlNummerOverzicht = new JButton("Nummer overzicht");
+        jlNummerOverzicht.setBackground(Color.ORANGE);
+        jlNummerOverzicht.setBounds(400, 103, 180, 20);
+
+
+
         jlPuntjes.addMouseListener(this);
         jlPLay.addMouseListener(this);
         jlSkip.addMouseListener(this);
         jlSkipBack.addMouseListener(this);
-        outer.add(jlOpvuller);
         outer.add(jlSkipBack);
         outer.add(Box.createHorizontalStrut(30));
         outer.add(jlPLay);
@@ -116,6 +137,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         outer.add(jlSkip);
         outer.add(Box.createHorizontalStrut(30));
         outer.add(jlPuntjes);
+        outer.add(jlAfspleellijstOverzicht);
+        outer.add(jlAfspleellijstToevoegen);
+        outer.add(jlNummerOverzicht);
 
 
 
@@ -423,6 +447,15 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                     }
                     timestampPrev = System.currentTimeMillis() / 1000;
                 }
+            }
+        }else if(e.getSource() == jlPuntjes){
+            if (pl1 < 80) {
+                pl1 = 125;
+                outer.setSize(outer.getWidth(), pl1);
+            }else {
+                pl1 = 60;
+                outer.setSize(outer.getWidth(), pl1);
+
             }
         }
     }
