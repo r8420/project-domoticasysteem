@@ -10,10 +10,12 @@ import java.util.ArrayList;
 public class NummerOverzicht extends JDialog implements ActionListener {
     private ArrayList<Nummer> nummers = Database.selectDBnummers();
     private JLabel jlKiesNummer;
+    private int ProfileId;
 
 
-    public NummerOverzicht(JFrame frame) {
+    public NummerOverzicht(int ProfileId, JFrame frame) {
         super(frame, true);
+        this.ProfileId = ProfileId;
         setTitle("Nummer overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());
@@ -94,7 +96,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
     }
 
     private void voegNummerToe(Nummer nummer) {
-        NummerToevoegen nummerToevoegen = new NummerToevoegen(nummer, this);
+        NummerToevoegen nummerToevoegen = new NummerToevoegen(ProfileId, nummer, this);
     }
 
 

@@ -13,13 +13,13 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
     private JLabel jlKiesAfspeellijst;
 
 
-    public AfspeellijstOverzicht(JFrame frame) {
+    public AfspeellijstOverzicht(int profileId, JFrame frame) {
         super(frame, true);
         setTitle("Afspeellijst overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
-        afspeellijsten = Database.selectDBafspeellijsten();
+        afspeellijsten = Database.selectDBafspeellijsten(profileId);
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpAfspeellijsten = new JPanel();
         jpAfspeellijsten.setLayout(new GridBagLayout());
@@ -66,7 +66,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin) {
                         System.out.println("Verwijder " + afspeellijst.getNaam());
-                        if (verwijderAfspeellijst() == JOptionPane.YES_OPTION) {
+                        if (verwijderAfspeellijst() == JOptionPane.YES_OPTION){
                             Database.deleteDBafspeellijst(afspeellijst.getAfspeellijstId());
                             setVisible(false);
                         }
