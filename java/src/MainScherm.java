@@ -4,8 +4,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -16,18 +14,39 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     private boolean arduinoAansluiting;
-    private boolean piAansluiting;
 
     /* scherm-componenten */
-    private JLabel jlLichtsterkte, jlTemperatuur, jlLuchtdruk, jlLuchtvochtigheid, jlProfielNaam, jlAnderProfielAfb, jlInstellingenAfb, jlPuntjes, jlOpvuller;
+    private JLabel jlLichtsterkte;
+    private JLabel jlTemperatuur;
+    private JLabel jlLuchtdruk;
+    private JLabel jlLuchtvochtigheid;
+    private JLabel jlProfielNaam;
+    private JLabel jlAnderProfielAfb;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
-    private JButton jbLichtAan, jbLichtUit, jlAfspeellijstOverzicht, jlAfspeellijstToevoegen, jlNummerOverzicht;
-    private JLabel jlSkip, jlSkipBack, jlPLay, JlNaamMuziek;
+    private JButton jbLichtAan;
+    private JButton jbLichtUit;
+
+    /* muziekspeler-componenten */
+    private JButton jlAfspeellijstOverzicht;
+    private JButton jlAfspeellijstToevoegen;
+    private JButton jlNummerOverzicht;
+    private JLabel jlSkip;
+    private JLabel jlSkipBack;
+    private JLabel jlPLay;
+    private JLabel jlPuntjes;
+    private JLabel jlNaamMuziek;
+    private JLabel jlHuidigeTijd;
     private JSlider jsTijdMuziek;
+    private JPanel jpMuziekKnoppen;
+    private boolean gepauzeerd = true;
+    private boolean valueWASadjusting;
+
+    private Nummer nummer = null;
+    private Afspeellijst afspeellijst = null;
 
     /* connectie/update */
-    private Timer timer;
+//    private Timer metingTimer;
     private MainInput mainInput;
 
     /* meetwaardes */
@@ -35,34 +54,32 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
-    private boolean playOrPause, newSong = true;
-
-    private long timestamp;
-    private long timestampPrev = 0;
-//    private int pl1 = 60;
-    private JPanel jpMuziekKnoppen;
 
     private Profiel profiel;
-    private ArrayList<Afspeellijst> afspeellijstenList;
 
     public MainScherm() throws InterruptedException {
 
-        /* maak verbinding */
+        /*
+        * maak verbinding
+        * */
         mainInput = new MainInput();
-        piAansluiting = mainInput.socketStart();
+        mainInput.startPiSocket();
         arduinoAansluiting = mainInput.arduinoStart();
 
 
-
-        /* default scherm settings */
+        /*
+        * default scherm settings
+        * */
         setSize(1000, 750);
         setMinimumSize(new Dimension(1000, 800));
         setLocation(500, 0);
         setTitle("Domotica Systeem");
-//        setResizable(false);
+        setResizable(false);
 
 
-        /* standaard layout settings */
+        /*
+        * standaard layout settings
+        * */
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         int standaardInset = 20;
@@ -70,35 +87,39 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.anchor = GridBagConstraints.LINE_START;
 
 
-        /* muziekspeler panel */
-        /** het vak voor de muziekpanel en de tekstvak van de muzieknaam */
+        /*
+        * muziekspeler panel
+        * */
+        // het vak voor de muziekpanel en de tekstvak van de muzieknaam
         JPanel jpMuziekspeler = new JPanel();
         jpMuziekspeler.setMaximumSize(new Dimension(700, 600));
         jpMuziekspeler.setLayout(new FlowLayout());
-        JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
-        JlNaamMuziek.setPreferredSize(new Dimension(600, 100));
-        JlNaamMuziek.setMinimumSize(new Dimension(600, 100));
+        jlNaamMuziek = new JLabel("Selecteer een nummer.", SwingConstants.CENTER);
+        jlNaamMuziek.setPreferredSize(new Dimension(600, 100));
+        jlNaamMuziek.setMinimumSize(new Dimension(600, 100));
         Border border = BorderFactory.createLineBorder(Color.black, 1);
-        JlNaamMuziek.setBorder(border);
-        jpMuziekspeler.add(JlNaamMuziek);
+        jlNaamMuziek.setBorder(border);
+        jpMuziekspeler.add(jlNaamMuziek);
 
 
-        /** de slider krijgt de max tijd en de huidige */
+        // de slider krijgt de max tijd en de huidige
         int maxTijd = 10;
         int huidigeTijd = 0;
+        jlHuidigeTijd = new JLabel("0:00");
         jsTijdMuziek = new JSlider(0, maxTijd, 0);
         jsTijdMuziek.setEnabled(false);
         jsTijdMuziek.setMajorTickSpacing((int) (maxTijd * 0.1));
         Hashtable<Integer, JLabel> tijdLableTable = new Hashtable<>();
-        tijdLableTable.put(0, new JLabel("00:00"));
-        tijdLableTable.put(maxTijd, new JLabel("03:21"));
+        tijdLableTable.put(0, jlHuidigeTijd);
+        tijdLableTable.put(maxTijd, new JLabel("00:00"));
         jsTijdMuziek.setValue(huidigeTijd);
         jsTijdMuziek.setLabelTable(tijdLableTable);
         jsTijdMuziek.setPaintLabels(true);
         jsTijdMuziek.setPreferredSize(new Dimension(600, 40));
+        jsTijdMuziek.addChangeListener(this);
         jpMuziekspeler.add(jsTijdMuziek);
 
-        /** de panel voor de knoppen van de mp3 */
+        // de panel voor de knoppen van de mp3
         jpMuziekKnoppen = new JPanel();
         jpMuziekKnoppen.setLayout(null);
         jpMuziekKnoppen.setPreferredSize(new Dimension(600, 60));
@@ -112,7 +133,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlPuntjes = Functies.maakFotoLabel("src/images/3_puntjes.png");
         jlPuntjes.setBounds(440, 0, 50, 50);
 
-        /** de knoppen voor de dropdown van 3_puntjes.png */
+        // de knoppen voor de dropdown van 3_puntjes.png
         jlAfspeellijstOverzicht = new JButton("Afspeellijst overzicht");
         jlAfspeellijstOverzicht.setBackground(Color.ORANGE);
         jlAfspeellijstOverzicht.setBounds(400, 61, 180, 20);
@@ -148,7 +169,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
 
-        /* verwarming / temperatuur panel*/
+        /*
+        * verwarming / temperatuur panel
+        * */
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
@@ -168,11 +191,21 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridy = 0;
 
 
-        /* licht panel */
+        /*
+        * licht panel
+        * */
         JPanel jpLicht = new JPanel();
         jpLicht.setLayout(new GridBagLayout());
         jbLichtAan = new JButton("Aan");
         jbLichtUit = new JButton("Uit");
+        jbLichtAan.addActionListener(e -> {
+            mainInput.sendPiMessage("LAMP ON");
+            mainInput.waitForPiResponse();
+        });
+        jbLichtUit.addActionListener(e -> {
+            mainInput.sendPiMessage("LAMP OFF");
+            mainInput.waitForPiResponse();
+        });
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
         c.weightx = 0;
         jpLicht.add(jbLichtAan, c);
@@ -202,7 +235,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridwidth = 1;
 
 
-        /* lucht panel */
+        /*
+        * lucht panel
+        * */
         JPanel jpLucht = new JPanel();
         jpLucht.setLayout(new GridBagLayout());
         jlLuchtdruk = new JLabel("Luchtdruk: -");
@@ -213,28 +248,26 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLucht.add(jlLuchtvochtigheid, c);
 
 
-        /* zijkant panel (profiel knoppen) */
+        /*
+        * zijkant panel (profiel knoppen)
+        * */
         JPanel jpZijkant = new JPanel();
         jpZijkant.setLayout(new GridBagLayout());
 
         JLabel jlProfielAfb = Functies.maakFotoLabel("src/images/profiel.png");
         jlAnderProfielAfb = Functies.maakFotoLabel("src/images/anderprofiel.png");
-        jlInstellingenAfb = Functies.maakFotoLabel("src/images/instellingen.png");
         jlAnderProfielAfb.addMouseListener(this);
-        jlInstellingenAfb.addMouseListener(this);
 
         c.anchor = GridBagConstraints.PAGE_START;
         c.insets = new Insets(0, 0, 0, 0);
         c.weighty = 0;
         jpZijkant.add(jlProfielAfb, c);
         jpZijkant.add(jlAnderProfielAfb, c);
-//        jpZijkant.add(jlInstellingenAfb, c);
         c.gridy = 1;
         c.weighty = 1;
         jlProfielNaam = new JLabel();
         jpZijkant.add(jlProfielNaam, c);
         jpZijkant.add(new JLabel("Ander profiel"), c);
-//        jpZijkant.add(new JLabel("Instellingen"), c);
 
 
         // reset GridBagConstraints
@@ -243,7 +276,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.insets = new Insets(0, 0, 0, 0);
 
 
-        /* tijdelijke borders rondom de panels */
+        /*
+        * Vormgeving van de panels
+        * */
         Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
         jpMuziekspeler.setBorder(testBorder);
         jpVerwarming.setBorder(testBorder);
@@ -252,7 +287,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 //        jpZijkant.setBorder(testBorder);
 
 
-        /* voeg alle panels toe aan het hoofdscherm */
+        /*
+        * voeg alle panels toe aan het hoofdscherm
+        * */
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1;
         c.insets = new Insets(10, 10, 10, 10);
@@ -279,37 +316,52 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         add(jpZijkant, c);
 
 
-        /* timer voor opvragen van nieuwe gegevens */
-        timer = new Timer(0, e -> {
-            try {
-                updateMeetWaardes();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        /*
+        * timer voor opvragen van nieuwe gegevens
+        * */
+        Timer metingTimer = new Timer(0, e -> {
+            updateMeetWaardes();
         });
-        timer.setDelay(10000); // millisec, 1.000 = 1 sec
-        timer.start();
+        metingTimer.setDelay(60000); // millisec, 1.000 = 1 sec
+        metingTimer.start();
 
 
-        /* wat te doen als op kruisje wordt gedrukt */
+        /*
+        * timer voor updaten van de muziekslider
+        * */
+        Timer muziekSliderTimer = new Timer(1000, e -> {
+            if (gepauzeerd || jsTijdMuziek.getValueIsAdjusting()) return;
+            int nieuweTijd = jsTijdMuziek.getValue() + 1;
+            jsTijdMuziek.setValue(nieuweTijd);
+            jlHuidigeTijd.setText(Functies.intToTimestamp(nieuweTijd));
+            repaint();
+        });
+        muziekSliderTimer.start();
+
+        /*
+        * acties om uit te voeren wanneer het scherm sluit
+        * */
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                if (piAansluiting) mainInput.socketStop(); // verbreek verbinding
+                // ...
                 e.getWindow().dispose(); // sluit het scherm
             }
         });
 
 
-        /* stel mainscherm in op laatste gebruiker */
-        Profiel recentProfiel = Database.selectLastProfile();
-        if (recentProfiel == null) { // is er geen laatste gebruiker, maak dan gast account
-            Database.insertDBprofile("Gast");
-            profiel = Database.selectLastProfile();
-        } else {
-            profiel = recentProfiel;
-        }
+        /*
+        * stel mainscherm in op laatste gebruiker
+        * */
+        profiel = Database.selectRecentsteProfiel();
+        if (profiel == null) { // geen database verbinding
+            geenDatabase_Dialog();
+            profiel = new Profiel("", -1, 20, 5);
 
-        afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
+        } else if (profiel.getId() == -1) { // is er geen laatste gebruiker, maak dan gast account
+            Database.insertProfiel("Gast");
+            profiel = Database.selectRecentsteProfiel();
+
+        }
 
         /* Maak het scherm zichtbaar */
         setVisible(true);
@@ -318,7 +370,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (profiel != null) {
             updateSchermSettings();
         } else {
-            JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+            geenDatabase_Dialog();
         }
     }
 
@@ -330,14 +382,17 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
 
-    public void updateMeetWaardes() throws IOException {
+    public void updateMeetWaardes() {
+
+        System.out.println("Update meetwaardes!" + ((arduinoAansluiting || mainInput.piIsConnected()) ? "" : " (geen verbinding)"));
+
         boolean arduinoMeetIets = false;
-        System.out.println("Update meetwaardes!" + ((arduinoAansluiting || piAansluiting) ? "" : " (geen verbinding)"));
+        boolean piMeetIets = false;
 
         if (arduinoAansluiting) {
 
             String arduinoMeting = mainInput.arduinoSensor();
-            if (arduinoMeting != null) {
+            if (arduinoMeting != null && !arduinoMeting.equals("fail")) {
                 lichtsterkte = Integer.parseInt(arduinoMeting);
                 arduinoMeetIets = true;
                 setLichtsterkte(lichtsterkte);
@@ -345,31 +400,38 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             }
         }
 
-        if (piAansluiting) {
-            mainInput.sendMessage("read sensors");
-            String[] piMetingen = mainInput.piSensoren();
-            temperatuur = Double.parseDouble(piMetingen[0]);
-            luchtvochtigheid = Integer.parseInt(piMetingen[1]);
-            luchtdruk = Integer.parseInt(piMetingen[2]);
+        if (mainInput.piIsConnected()) {
 
-            setTemperatuur(temperatuur);
-            setLuchtvochtigheid(luchtvochtigheid);
-            setLuchtdruk(luchtdruk);
+            mainInput.sendPiMessage("METING");
+            String response = mainInput.waitForPiResponse();
+
+            if (response != null) {
+                piMeetIets  = true;
+                String[] piMetingen = response.split(" ");
+
+                temperatuur = Double.parseDouble(piMetingen[0]);
+                luchtvochtigheid = Integer.parseInt(piMetingen[1]);
+                luchtdruk = Integer.parseInt(piMetingen[2]);
+
+                setTemperatuur(temperatuur);
+                setLuchtvochtigheid(luchtvochtigheid);
+                setLuchtdruk(luchtdruk);
+            }
         }
 
         /* log de sensordata in de database */
-        if (piAansluiting && (arduinoAansluiting && arduinoMeetIets)) {
-            Database.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
-        } else if (piAansluiting) {
-            Database.insertDBLog(temperatuur, luchtdruk, luchtvochtigheid);
-        } else if (arduinoAansluiting && arduinoMeetIets) {
-            Database.insertDBLog(lichtsterkte);
+        if (piMeetIets && arduinoMeetIets) {
+            Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
+        } else if (piMeetIets) {
+            Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid);
+        } else if (arduinoMeetIets) {
+            Database.insertLog(lichtsterkte);
         }
 
     }
 
     public void setTemperatuur(double temp) {
-        jlTemperatuur.setText(String.valueOf(temp) + " ℃");
+        jlTemperatuur.setText(temp + " ℃");
     }
 
     public void setLichtsterkte(int licht) {
@@ -388,26 +450,90 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlProfielNaam.setText(naam);
     }
 
+    public void setNummer(Nummer nummer) {
+        this.nummer = nummer;
+
+        jsTijdMuziek.setMaximum(nummer.getTijdsduur());
+        Hashtable<Integer, JLabel> newLabelTable = new Hashtable<>();
+        newLabelTable.put(0, jlHuidigeTijd);
+        newLabelTable.put(nummer.getTijdsduur(), new JLabel( Functies.intToTimestamp(nummer.getTijdsduur()) ));
+        jsTijdMuziek.setLabelTable(newLabelTable);
+
+        setMuziekText(nummer.getNaam() + " - " + nummer.getArtiest());;
+        jsTijdMuziek.setValue(0);
+        jsTijdMuziek.setEnabled(true);
+
+        repaint(); // dit update de aangepaste waardes op het scherm
+    }
+
+    public void startNummer() {
+        mainInput.sendPiMessage("MUSIC PLAY " + nummer.getBestandsNaam());
+        String response = mainInput.waitForPiResponse();
+        if (response.equals("success")) {
+            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+            gepauzeerd = false;
+        }
+    }
+
+    public void setAfspeellijst(Afspeellijst afspeellijst) {
+        this.afspeellijst = afspeellijst;
+    }
+
+    public void setMuziekText(String text) {
+        setMuziekText(text, false);
+    }
+
+    public void setMuziekText(String text, boolean isWarning) {
+        jlNaamMuziek.setText(text);
+        if (isWarning) jlNaamMuziek.setForeground(Color.RED);
+        else jlNaamMuziek.setForeground(Color.BLACK);
+    }
+
+    public void geenDatabase_Dialog() {
+        JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+    }
+
 
     @Override
     public void stateChanged(ChangeEvent e) {
-        if (e.getSource() == jslMaxLichtsterkte && !jslMaxLichtsterkte.getValueIsAdjusting()) {
+
+        if (e.getSource() == jsTijdMuziek) {
+
+            jlHuidigeTijd.setText(Functies.intToTimestamp(jsTijdMuziek.getValue()));
+            repaint();
+
+            // zolang gebruiker slider nog vast heeft (adjusting), niks doen.
+            if (jsTijdMuziek.getValueIsAdjusting()) {
+                valueWASadjusting = true;
+                return;
+            }
+            if (!valueWASadjusting) return;
+
+            // een tijd is aangegeven
+            valueWASadjusting = false;
+            mainInput.sendPiMessage("MUSIC SET_TIME " + jsTijdMuziek.getValue());
+            mainInput.waitForPiResponse();
+
+        } else if (e.getSource() == jslMaxLichtsterkte) {
+
+            repaint();
+
+            if (jslMaxLichtsterkte.getValueIsAdjusting()) return; // zolang gebruiker slider nog vast heeft (adjusting), niks doen.
+
             // maximale lichtsterkte is veranderd
             try {
                 System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
-                Database.updateDBlicht(jslMaxLichtsterkte.getValue(), profiel.getId());
+                Database.updateProfielLicht(jslMaxLichtsterkte.getValue(), profiel.getId());
             } catch (NullPointerException np) {
-                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                geenDatabase_Dialog();
             }
-
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
             try {
-                Database.updateDBtemp((double) jspVerwarmingsTemperatuur.getValue(), profiel.getId());
-                System.out.println("Verwarmen vanaf: " + jspVerwarmingsTemperatuur.getValue());
+                Database.updateProfielTemp((double) jspVerwarmingsTemperatuur.getValue(), profiel.getId());
             } catch (NullPointerException np) {
-                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                geenDatabase_Dialog();
             }
 
         }
@@ -418,45 +544,46 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     public void mouseClicked(MouseEvent e) {
 
         if (e.getSource() == jlAnderProfielAfb) {
-            // ander profiel wordt aangeklikt
-            System.out.println("ander profiel");
 
             ProfielenManagement profielDialog = new ProfielenManagement(this);
             if (profielDialog.anderProfielGeselecteerd()) {
-                // Nieuw profiel aanmaken zodat de gebruikersnaam kan worden opgehaald, deze wordt getoond op Mainscherm.
+                // Het geselecteerde profiel ophalen, zodat het mainscherm aangepast kan worden.
                 profiel = profielDialog.getGeselecteerdProfiel();
                 updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
-                System.out.println("Instelling voor temperatuur: " + profiel.getTempVerwarmen());
             }
-        } else if (e.getSource() == jlPLay) {
-            if (newSong) {
-                JlNaamMuziek.setText("geen muziek gekozen");
-                JlNaamMuziek.setForeground(Color.RED);
-            } else {
-                timestamp = System.currentTimeMillis() / 1000;
 
-                if (timestamp - timestampPrev >= 1) {
-                    if (playOrPause) {
-                        System.out.println("play");
-                        jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-                        playOrPause = !playOrPause;
-                        mainInput.sendMessage("unpause");
-                    } else {
-                        jlPLay.setIcon(new ImageIcon("src/images/play.png"));
-                        System.out.println("pause");
-                        playOrPause = !playOrPause;
-                        mainInput.sendMessage("pause");
-                    }
-                    timestampPrev = System.currentTimeMillis() / 1000;
-                }
+        } else if (e.getSource() == jlPLay) {
+
+            if (nummer == null) {
+                setMuziekText("Kies eerst een nummer", true);
+                return;
             }
+
+            if (gepauzeerd) {
+                mainInput.sendPiMessage("MUSIC UNPAUSE");
+                if (mainInput.waitForPiResponse().equals("success")) {
+                    jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+                    gepauzeerd = false;
+                }
+                return;
+            }
+
+            // wanneer niet gepauzeerd:
+            mainInput.sendPiMessage("MUSIC PAUSE");
+            if (mainInput.waitForPiResponse().equals("success")) {
+                jlPLay.setIcon(new ImageIcon("src/images/play.png"));
+                gepauzeerd = true;
+            }
+
         } else if (e.getSource() == jlPuntjes) {
+
+            // open/sluit dropdown-menu'tje
             if (jpMuziekKnoppen.getHeight() < 80) {
                 jpMuziekKnoppen.setSize(jpMuziekKnoppen.getWidth(), 125);
+                jpMuziekKnoppen.setPreferredSize(new Dimension(jpMuziekKnoppen.getWidth(), 125));
             } else {
-
                 jpMuziekKnoppen.setSize(jpMuziekKnoppen.getWidth(), 60);
-
+                jpMuziekKnoppen.setPreferredSize(new Dimension(jpMuziekKnoppen.getWidth(), 60));
             }
         }
     }
@@ -475,31 +602,25 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == jbLichtAan) {
-            // licht aan
-            System.out.println("licht aan");
-        } else if (e.getSource() == jbLichtUit) {
-            // licht uit
-            System.out.println("licht uit");
 
-        } else if (e.getSource() == jlAfspeellijstOverzicht) {
-            AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht(profiel.getId(), this);
+        if (e.getSource() == jlAfspeellijstOverzicht) {
+            AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht(profiel.getId(), this); // afspeellijst-overzicht dialog
+
         } else if (e.getSource() == jlNummerOverzicht) {
-            NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this);
+            NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this); // nummer-overzicht dialog
+
         } else if (e.getSource() == jlAfspeellijstToevoegen) {
-            if (afspeellijstenList.size() >= 8) {
+            if (Database.selectAfspeellijsten(profiel.getId()).size() >= 8) {
                 JOptionPane.showMessageDialog(this, "Het maximaal aantal afspeellijsten is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
             if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
-                Database.insertDBAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst());
+                Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst());
             } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
                 JOptionPane.showMessageDialog(this, "Er is geen naam ingevuld!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
             }
         }
-
-        afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
     }
 }
 

@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -32,7 +30,7 @@ public class ProfielenManagement extends JDialog implements MouseListener {
         jlProfielPlaatje = Functies.maakFotoLabel("src/images/profielToevoegen.png");
         jlProfielToevoegen = new JLabel("Profiel Toevoegen");
 
-        profielen = Database.selectDBprofiles();
+        profielen = Database.selectProfielen();
 
         if (profielen != null) {
             //De labels toevoegen aan het scherm
@@ -66,7 +64,7 @@ public class ProfielenManagement extends JDialog implements MouseListener {
                         System.out.println("Geklikt op profiel: " + profiel.getNaam());
                         anderProfiel = true;
                         geselecteerdProfiel = profiel;
-                        Database.updateLastUsedProfile(profiel.getId());
+                        Database.updateProfielLaatsteLogin(profiel.getId());
                         dispose();
                     }
 
@@ -131,8 +129,8 @@ public class ProfielenManagement extends JDialog implements MouseListener {
             if (nieuwProfielDialog.getOk()) {
 
                 System.out.println("Profiel toegevoegd!");
-                Database.insertDBprofile(nieuwProfielDialog.getJtfNewProfile()); // Het nieuwe profiel in de database zetten.
-                geselecteerdProfiel = Database.selectLastProfile(); // Het nieuwe profiel ophalen, inclusief standaardinstellingen en ProfileId.
+                Database.insertProfiel(nieuwProfielDialog.getJtfNewProfile()); // Het nieuwe profiel in de database zetten.
+                geselecteerdProfiel = Database.selectRecentsteProfiel(); // Het nieuwe profiel ophalen, inclusief standaardinstellingen en ProfileId.
                 anderProfiel = true;
                 dispose();
             }

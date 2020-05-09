@@ -21,7 +21,7 @@ public class NummerToevoegen extends JDialog implements ActionListener {
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
-        afspeellijsten = Database.selectDBafspeellijsten(profileId);
+        afspeellijsten = Database.selectAfspeellijsten(profileId);
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpAfspeellijsten = new JPanel();
         jpAfspeellijsten.setLayout(new GridBagLayout());
@@ -64,7 +64,7 @@ public class NummerToevoegen extends JDialog implements ActionListener {
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlNaamAfspeellijst) {
-                        Database.insertDBNummerInAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
+                        Database.insertNummerInAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
                         toegevoegdNummer();
                         setVisible(false);
                     }

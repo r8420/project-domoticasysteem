@@ -12,13 +12,15 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
     private Afspeellijst afspeellijst;
     private ArrayList<Nummer> nummers;
     private JLabel jlKiesNummer;
+    private MainScherm hoofdscherm;
 
     // Een Afspeellijst meegeven om zo de informatie van een afspeellijst op te kunnen halen.
-    public NummersInAfspeellijst(Afspeellijst afspeellijst, JDialog frame) {
+    public NummersInAfspeellijst(Afspeellijst afspeellijst, JDialog frame, MainScherm root) {
         super(frame, true);
+        this.hoofdscherm = root;
         this.afspeellijst = afspeellijst;
 
-        nummers = Database.selectDBafspeellijstNummer(afspeellijst.getAfspeellijstId());
+        nummers = Database.selectNummersUitAfspeellijst(afspeellijst.getAfspeellijstId());
 
         // afspeellijst.getNaam() halen uit de meegegeven afspeellijst.
         setTitle("Nummers in afspeellijst " + afspeellijst.getNaam());
@@ -70,11 +72,15 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
                     if (e.getSource() == jlMin) {
                         System.out.println("Verwijder " + nummer.getNaam() + " uit de afspeellijst");
                         if (verwijderNummer() == JOptionPane.YES_OPTION) {
-                            Database.deleteDBafspeellijstNummer(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
+                            Database.deleteNummerUitAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
                             setVisible(false);
                         }
                     } else if (e.getSource() == jlNaamNummer) {
                         System.out.println("Speel " + nummer.getNaam() + " af");
+
+                        hoofdscherm.setNummer(nummer);
+                        hoofdscherm.setAfspeellijst(afspeellijst);
+                        hoofdscherm.startNummer();
 
                     }
                 }

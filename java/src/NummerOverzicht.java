@@ -8,14 +8,17 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class NummerOverzicht extends JDialog implements ActionListener {
-    private ArrayList<Nummer> nummers = Database.selectDBnummers();
+    private ArrayList<Nummer> nummers = Database.selectNummers();
     private JLabel jlKiesNummer;
     private int ProfileId;
+    private MainScherm hoofdscherm;
 
 
-    public NummerOverzicht(int ProfileId, JFrame frame) {
+
+    public NummerOverzicht(int ProfileId, MainScherm frame) {
         super(frame, true);
         this.ProfileId = ProfileId;
+        this.hoofdscherm = frame;
         setTitle("Nummer overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());
@@ -65,8 +68,13 @@ public class NummerOverzicht extends JDialog implements ActionListener {
                     if (e.getSource() == jlPlus) {
 
                         voegNummerToe(nummer);
+
                     } else if (e.getSource() == jlNaamNummer) {
+
                         System.out.println("Speel " + nummer.getNaam() + " af");
+                        hoofdscherm.setNummer(nummer);
+                        hoofdscherm.setAfspeellijst(null);
+                        hoofdscherm.startNummer();
                     }
                 }
 

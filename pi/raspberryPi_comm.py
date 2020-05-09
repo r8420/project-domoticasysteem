@@ -1,94 +1,152 @@
 import socket
-import time
+import pygame
 from sense_hat import SenseHat
-import threading
-from queue import Queue
 from pygame import mixer
-NUMBER_OF_THREADS = 2
-JOB_NUMBERS = [1, 2]
-queue = Queue()
-#socket set up
-listensocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-port = 8000
-maxConnections = 10
-IP = socket.gethostname()
 
-listensocket.bind(('',port))
-
-listensocket.listen(maxConnections)
-print("Server started at " + IP + " on port " + str(port))
-
-(clientsocket, address) = listensocket.accept()
-print("New conncection made!")
-
-listensocket.setblocking(0)
 sense = SenseHat()
 sense.clear()
-mixer.init()
+mixer.init()  # Geeft error als er geen audio device is
+
+host = ''
+port = 8000
+
+running = False
+
+fail = "fail"
+success = "success"
+
+o = (0, 0, 0)
+W = (50, 50, 50)
+Y = (100, 100, 0)
+y = (50, 50, 0)
+lamp = [
+    o, o, y, o, o, y, o, o,
+    o, o, o, o, o, o, o, o,
+    y, o, o, Y, Y, o, o, y,
+    o, o, Y, Y, Y, Y, o, o,
+    y, o, Y, Y, Y, Y, o, y,
+    o, o, o, Y, Y, o, o, o,
+    o, y, o, W, W, o, y, o,
+    o, o, o, o, o, o, o, o
+]
 
 
+def setup_server():
+    global running
 
-def outputstream ():
-    temp = round(sense.get_temperature(), 2)
-    Humidity = round(sense.get_humidity())
-    Pressure = round(sense.get_pressure())
-    message = str(temp) +" "+ str(Humidity)+ " " + str(Pressure)
-    print(message)
-    length = len(message.encode('utf-8'))
-    while length < 19:
-        message = message + " "
-        length = len(message.encode('utf-8'))
-    clientsocket.send(bytes(message, "utf-8"))
+    new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    hostname = socket.gethostname()
+    print("Socket created at " + hostname + " on port " + str(port))
 
-def inputstream ():
     try:
-        time.sleep(0.5)
-        messageJava = clientsocket.recv(1024).decode('utf-8')
-        print(messageJava)
-        if messageJava == "pause":
-            mixer.music.pause()
-        elif messageJava == "unpause":
-            mixer.music.unpause()
-        elif messageJava == "read sensors":
-            print("doing nothing")
-        else:
-            mixer.music.load('/home/pi/Music/' + messageJava + '.mp3')
-            mixer.music.play()
-            
-            
-    except socket.error:
-        print("error")
-        
-    else:
-        print("mislukt")
+        new_socket.bind((host, port))
+        print("Socket bind complete.")
+        running = True
+    except socket.error as msg:
+        print("setup_server: " + str(msg))
 
-def create_workers():
-    for _ in range(NUMBER_OF_THREADS):
-        t = threading.Thread(target=work)
-        t.daemen = True
-        t.start()
+    return new_socket
 
-def work():
+
+def setup_connection():
+    s.listen(1)  # staat maar 1 connectie tegelijkertijd toe
+    connection, address = s.accept()
+    print("Connected to: " + address[0] + ":" + str(address[1]))
+    return connection
+
+
+def data_transfer(conn):
+    global running
+
+    # loop die data verstuurt en ontvangttotdat verteld wordt te stoppen
     while True:
-        x = queue.get()
-        if x == 1:
-            outputstream()
-            time.sleep(1)
-        if x == 2:
-            inputstream()
-            time.sleep(1)
+        reply = None
 
-        queue.task_done()
-        
+        # ontvang de data
+        data = conn.recv(1024).decode('utf-8')
+        print("> " + data)
+
+        # split het bericht op in losse commands
+        commands = data.split(' ', 2)
+
+        if commands[0] == 'METING':
+            temp = round(sense.get_temperature(), 2)
+            humidity = round(sense.get_humidity())
+            pressure = round(sense.get_pressure())
+            reply = str(temp) + ' ' + str(humidity) + ' ' + str(pressure)
+
+        elif commands[0] == 'MUSIC':
+            reply = MUSIC(commands)
+
+        elif commands[0] == 'LAMP':
+            reply = LAMP(commands)
+
+        elif commands[0] == 'KILL':
+            print("> " + data)
+            print("Server shutting down...")
+            s.close()
+            running = False
+            break
+
+        # stuur het antwoord terug naar de client
+        if reply is None:
+            reply = fail
+        conn.sendall(str.encode(reply))
+        print(reply)
 
 
-def create_jobs():
-    for x in JOB_NUMBERS:
-        queue.put(x)
+def LAMP(commands):
 
-    queue.join()
-while True:
-    create_workers()
-    create_jobs()
+    if len(commands) == 1:  # geen subcommand
+        return
+
+    if commands[1] == 'ON':
+        sense.set_pixels(lamp)
+        return success
+
+    elif commands[1] == 'OFF':
+        sense.clear()
+        return success
 
 
+def MUSIC(commands):
+
+    if len(commands) == 1:  # geen subcommand
+        return
+
+    if commands[1] == 'PAUSE':
+        mixer.music.pause()
+        return success
+
+    elif commands[1] == 'UNPAUSE':
+        mixer.music.unpause()
+        return success
+
+    elif commands[1] == 'SET_TIME':
+        if len(commands) == 2:  # geen timestamp
+            return
+        mixer.music.rewind()
+        mixer.music.set_pos(float(commands[2]))
+        return success
+
+    elif commands[1] == 'PLAY':
+        if len(commands) == 2:  # geen bestandsnaam
+            return
+        try:
+            mixer.music.load('/home/pi/Music/' + commands[2] + '.mp3')
+            mixer.music.play()
+            return success
+        except pygame.error as _:
+            return 'Kon "' + commands[2] + '.mp3" niet vinden. '
+
+
+s = setup_server()
+
+while running:
+    try:
+        conn = setup_connection()
+        data_transfer(conn)
+    except ConnectionResetError:
+        print("Verbinding door client verbroken.")
+        mixer.music.stop()
+        sense.clear()
