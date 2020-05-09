@@ -29,9 +29,7 @@ public class Profiel {
         return tempVerwarmen;
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 
     public int getLichtWaarde() {
         return lichtWaarde;

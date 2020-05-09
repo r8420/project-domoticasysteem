@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JSlider jsTijdMuziek;
 
     /* connectie/update */
-    private Timer timer;
+    private Timer timer, timer1;
     private MainInput mainInput;
 
     /* meetwaardes */
@@ -39,6 +40,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private long timestamp;
     private long timestampPrev = 0;
+    private int huidigeTijd = 0;
 //    private int pl1 = 60;
     private JPanel jpMuziekKnoppen;
 
@@ -71,11 +73,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
         /* muziekspeler panel */
-        /** het vak voor de muziekpanel en de tekstvak van de muzieknaam */
+        /* het vak voor de muziekpanel en de tekstvak van de muzieknaam */
         JPanel jpMuziekspeler = new JPanel();
         jpMuziekspeler.setMaximumSize(new Dimension(700, 600));
         jpMuziekspeler.setLayout(new FlowLayout());
-        JlNaamMuziek = new JLabel("Luis Fonsi - Despacito ft. Daddy Yankee", SwingConstants.CENTER);
+        JlNaamMuziek = new JLabel("geen muziek gekozen", SwingConstants.CENTER);
+        JlNaamMuziek.setForeground(Color.RED);
+        JlNaamMuziek.setFont(new Font("Arial", Font.PLAIN, 30));
         JlNaamMuziek.setPreferredSize(new Dimension(600, 100));
         JlNaamMuziek.setMinimumSize(new Dimension(600, 100));
         Border border = BorderFactory.createLineBorder(Color.black, 1);
@@ -83,9 +87,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpMuziekspeler.add(JlNaamMuziek);
 
 
-        /** de slider krijgt de max tijd en de huidige */
-        int maxTijd = 10;
-        int huidigeTijd = 0;
+        /* de slider krijgt de max tijd en de huidige */
+        int maxTijd = 300;
         jsTijdMuziek = new JSlider(0, maxTijd, 0);
         jsTijdMuziek.setEnabled(false);
         jsTijdMuziek.setMajorTickSpacing((int) (maxTijd * 0.1));
@@ -96,6 +99,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jsTijdMuziek.setLabelTable(tijdLableTable);
         jsTijdMuziek.setPaintLabels(true);
         jsTijdMuziek.setPreferredSize(new Dimension(600, 40));
+        jsTijdMuziek.setUI(new LightSliderUI(jsTijdMuziek));
         jpMuziekspeler.add(jsTijdMuziek);
 
         /** de panel voor de knoppen van de mp3 */
@@ -280,15 +284,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
         /* timer voor opvragen van nieuwe gegevens */
-        timer = new Timer(0, e -> {
-            try {
-                updateMeetWaardes();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+        timer = new Timer(0, e -> updateMeetWaardes());
         timer.setDelay(10000); // millisec, 1.000 = 1 sec
         timer.start();
+
+        timer1 = new Timer(0, e -> updateHudigeTijd());
+        timer1.setDelay(1000); // millisec, 1.000 = 1 sec
+        timer1.start();
 
 
         /* wat te doen als op kruisje wordt gedrukt */
@@ -308,8 +310,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         } else {
             profiel = recentProfiel;
         }
-
-        afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
+        try {
+            assert profiel != null;
+            afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
+        }catch (NullPointerException ignored){
+        }
 
         /* Maak het scherm zichtbaar */
         setVisible(true);
@@ -330,7 +335,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
 
-    public void updateMeetWaardes() throws IOException {
+    public void updateMeetWaardes() {
         boolean arduinoMeetIets = false;
         System.out.println("Update meetwaardes!" + ((arduinoAansluiting || piAansluiting) ? "" : " (geen verbinding)"));
 
@@ -430,8 +435,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             }
         } else if (e.getSource() == jlPLay) {
             if (newSong) {
-                JlNaamMuziek.setText("geen muziek gekozen");
-                JlNaamMuziek.setForeground(Color.RED);
             } else {
                 timestamp = System.currentTimeMillis() / 1000;
 
@@ -483,23 +486,43 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             System.out.println("licht uit");
 
         } else if (e.getSource() == jlAfspeellijstOverzicht) {
-            AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht(profiel.getId(), this);
-        } else if (e.getSource() == jlNummerOverzicht) {
-            NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this);
-        } else if (e.getSource() == jlAfspeellijstToevoegen) {
-            if (afspeellijstenList.size() >= 8) {
-                JOptionPane.showMessageDialog(this, "Het maximaal aantal afspeellijsten is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
-                return;
+            try {
+                AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht(profiel.getId(), this);
+            }catch (NullPointerException NPE){
+                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
             }
-            AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
-            if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
-                Database.insertDBAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst());
-            } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
-                JOptionPane.showMessageDialog(this, "Er is geen naam ingevuld!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+        } else if (e.getSource() == jlNummerOverzicht) {
+            try {
+                NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this);
+            }catch (NullPointerException NPE){
+                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (e.getSource() == jlAfspeellijstToevoegen) {
+            try {
+                if (afspeellijstenList.size() >= 8) {
+                    JOptionPane.showMessageDialog(this, "Het maximaal aantal afspeellijsten is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
+                if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
+                    Database.insertDBAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst());
+                } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
+                    JOptionPane.showMessageDialog(this, "Er is geen naam ingevuld!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                }
+            }catch (NullPointerException NPE){
+                JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
             }
         }
+        try {
+            afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
+        }catch (NullPointerException NPE){
 
-        afspeellijstenList = Database.selectDBafspeellijsten(profiel.getId());
+        }
     }
+    public void updateHudigeTijd(){
+        huidigeTijd += 1;
+        jsTijdMuziek.setValue(huidigeTijd);
+    }
+
 }
 
