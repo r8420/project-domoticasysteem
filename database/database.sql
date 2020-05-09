@@ -1,3 +1,5 @@
+-- Domotica database V5
+
 -- MySQL Workbench Forward Engineering
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
@@ -37,7 +39,7 @@ DEFAULT CHARACTER SET = utf8;
 -- Table `domotica`.`afspeellijst`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `domotica`.`afspeellijst` (
-  `AfspeellijstId` INT(11) NOT NULL,
+  `AfspeellijstId` INT(11) NOT NULL AUTO_INCREMENT,
   `ProfileId` INT(11) NOT NULL,
   `Naam` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`AfspeellijstId`),
@@ -57,7 +59,9 @@ CREATE TABLE IF NOT EXISTS `domotica`.`nummer` (
   `Naam` VARCHAR(45) NOT NULL,
   `Artiest` VARCHAR(45) NULL DEFAULT NULL,
   `Tijdsduur` INT(11) NOT NULL,
-  PRIMARY KEY (`NummerId`))
+  `BestandsNaam` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`NummerId`),
+  UNIQUE INDEX `Locatie_UNIQUE` (`BestandsNaam` ASC))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 

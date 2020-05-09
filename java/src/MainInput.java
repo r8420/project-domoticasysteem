@@ -3,6 +3,7 @@ import com.fazecast.jSerialComm.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
 
 public class MainInput {
 
@@ -49,13 +50,14 @@ public class MainInput {
         }
     }
 
-    public boolean arduinoStart() {
+    public boolean arduinoStart() throws InterruptedException {
         sp = SerialPort.getCommPort("COM3");
         sp.setComPortParameters(9600, 8, 1, 0);
         sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0);
 
         if (sp.openPort()) {
             System.out.println("arduinoStart: succes");
+//            TimeUnit.MILLISECONDS.sleep(100);
             return true;
 
         } else {
@@ -65,28 +67,33 @@ public class MainInput {
     }
 
     public String arduinoSensor() {
-        String Arduino = "";
+        String ldrWaarde = null;
 
         try {
-            byte[] bytes = sp.getInputStream().readNBytes(4);
-            Arduino = new String(bytes);
-            System.out.println(Arduino);
 
-        } catch (IOException IE) {
-            System.out.println("nothing to read");giggitgit
+            while (sp.getInputStream().available() > 0) {
+                byte[] bytes = sp.getInputStream().readNBytes(4);
+                ldrWaarde = new String(bytes);
+                System.out.println("LDR waarde: " + ldrWaarde);
 
-        } catch (NullPointerException NE) {
-            System.out.println("geweldig jammer");
-            Arduino = "0";
+            }
+        } catch (NullPointerException | IOException NE) {
+            System.out.println("Arduinno LDR leest niks");
+            ldrWaarde = null;
+
         }
-        return Arduino;
+        return ldrWaarde;
     }
 
-    public void sendMessage(String Naam) throws IOException {
-        pw = new PrintWriter(s.getOutputStream());
-        pw.write(Naam);
-        pw.flush();
-        System.out.println("gelukt");
+    public void sendMessage(String Naam) {
+        try {
+            pw = new PrintWriter(s.getOutputStream());
+            pw.write(Naam);
+            pw.flush();
+            System.out.println("gelukt");
+        } catch (IOException | NullPointerException IOE) {
+            System.out.println("geen verbinding met pi");
+        }
 
     }
 }
