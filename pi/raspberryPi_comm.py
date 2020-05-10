@@ -12,6 +12,8 @@ port = 8000
 
 running = False
 
+lastPlayedSong = ""
+
 fail = "fail"
 success = "success"
 
@@ -58,7 +60,7 @@ def setup_connection():
 def data_transfer(conn):
     global running
 
-    # loop die data verstuurt en ontvangttotdat verteld wordt te stoppen
+    # loop die data verstuurt en ontvangt totdat verteld wordt te stoppen
     while True:
         reply = None
 
@@ -110,6 +112,7 @@ def LAMP(commands):
 
 
 def MUSIC(commands):
+    global lastPlayedSong
 
     if len(commands) == 1:  # geen subcommand
         return
@@ -125,6 +128,9 @@ def MUSIC(commands):
     elif commands[1] == 'SET_TIME':
         if len(commands) == 2:  # geen timestamp
             return
+        if not mixer.music.get_busy():
+            mixer.music.load(lastPlayedSong)
+            mixer.music.play()
         mixer.music.rewind()
         mixer.music.set_pos(float(commands[2]))
         return success
@@ -133,7 +139,8 @@ def MUSIC(commands):
         if len(commands) == 2:  # geen bestandsnaam
             return
         try:
-            mixer.music.load('/home/pi/Music/' + commands[2] + '.mp3')
+            lastPlayedSong = '/home/pi/Music/' + commands[2] + '.mp3'
+            mixer.music.load(lastPlayedSong)
             mixer.music.play()
             return success
         except pygame.error as _:
