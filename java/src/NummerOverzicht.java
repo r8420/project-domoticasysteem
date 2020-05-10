@@ -8,7 +8,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 public class NummerOverzicht extends JDialog implements ActionListener {
-    private ArrayList<Nummer> nummers = Database.selectNummers();
+    private ArrayList<Nummer> nummers;
     private JLabel jlKiesNummer;
     private int ProfileId;
     private MainScherm hoofdscherm;
@@ -19,6 +19,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
         super(frame, true);
         this.ProfileId = ProfileId;
         this.hoofdscherm = frame;
+        this.nummers = Database.selectNummers();
         setTitle("Nummer overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());

@@ -42,6 +42,7 @@ public class MainInput {
 
             pw.write(message);
             pw.flush();
+            System.out.println("> " + message);
 
         } catch (IOException IOE) {
             System.out.println("Couldn't send Pi a message due to IOException");
@@ -52,18 +53,20 @@ public class MainInput {
     public String waitForPiResponse() {
         if (s == null) return null;
         try {
-            long startTimeNano = System.nanoTime();
+            long startTimeMs = System.nanoTime()/1000000;
 
-            int sleepTime = 5; // ms tussen checks voor antwoord
-            long maxWaitTime = 1000000 * 500; // maximale wachttijd voordat method afbreekt
+            int sleepTime = 10; // ms tussen checks voor antwoord
+
+            long maxWaitTime = 5000; // maximale wachttijd voordat method afbreekt
             long timeWaited;
 
             // wacht totdat er een response is. Breek af na na maxWaitTime
             int available = s.getInputStream().available();
             while (available == 0) {
-                timeWaited = (System.nanoTime() - startTimeNano);
+                timeWaited = (System.nanoTime()/1000000 - startTimeMs);
                 if (timeWaited > maxWaitTime) {
-                    System.out.println("Ontvangen duurt te lang("+timeWaited/1000000+"ms). waitForResponse() afgebroken.");
+                    System.out.println("Ontvangen duurt te lang("+timeWaited+"ms). Verbinding met pi verborken.");
+                    s = null;
                     return null;
                 }
                 Thread.sleep(sleepTime);
@@ -72,8 +75,8 @@ public class MainInput {
 
             String message = new String(s.getInputStream().readNBytes(available));
 
-            int passedMs = (int) (System.nanoTime() - startTimeNano) / 1000000;
-            System.out.println("Received answer (" + passedMs + "ms): \n\t" + message);
+            int passedMs = (int) (System.nanoTime()/1000000 - startTimeMs);
+            System.out.println("Response (" + passedMs + "ms): " + message);
             return message;
 
         } catch (IOException u) {

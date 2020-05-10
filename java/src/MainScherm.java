@@ -39,6 +39,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlHuidigeTijd;
     private JSlider jsTijdMuziek;
     private JPanel jpMuziekKnoppen;
+    private Timer muziekSliderTimer;
     private boolean gepauzeerd = true;
     private boolean valueWASadjusting;
 
@@ -46,7 +47,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private Afspeellijst afspeellijst = null;
 
     /* connectie/update */
-//    private Timer metingTimer;
+    private Timer metingTimer;
     private MainInput mainInput;
 
     /* meetwaardes */
@@ -54,6 +55,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
+
 
     private Profiel profiel;
 
@@ -319,7 +321,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /*
         * timer voor opvragen van nieuwe gegevens
         * */
-        Timer metingTimer = new Timer(0, e -> {
+        metingTimer = new Timer(0, e -> {
             updateMeetWaardes();
         });
         metingTimer.setDelay(60000); // millisec, 1.000 = 1 sec
@@ -329,21 +331,26 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         /*
         * timer voor updaten van de muziekslider
         * */
-        Timer muziekSliderTimer = new Timer(1000, e -> {
-            if (gepauzeerd || jsTijdMuziek.getValueIsAdjusting()) return;
+        muziekSliderTimer = new Timer(1000, e -> {
+            if (jsTijdMuziek.getValueIsAdjusting()) return;
+            if (jsTijdMuziek.getValue() == nummer.getTijdsduur()) {
+                pause();
+                return;
+            }
             int nieuweTijd = jsTijdMuziek.getValue() + 1;
             jsTijdMuziek.setValue(nieuweTijd);
             jlHuidigeTijd.setText(Functies.intToTimestamp(nieuweTijd));
-            repaint();
+            jsTijdMuziek.repaint();
         });
-        muziekSliderTimer.start();
+        // timer wordt pas gestart wanneer het eerste nummer wordt geselecteerd
 
         /*
         * acties om uit te voeren wanneer het scherm sluit
         * */
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                // ...
+                muziekSliderTimer.stop();
+                metingTimer.stop();
                 e.getWindow().dispose(); // sluit het scherm
             }
         });
@@ -405,7 +412,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             mainInput.sendPiMessage("METING");
             String response = mainInput.waitForPiResponse();
 
-            if (response != null) {
+            if (response != null && !response.equals("fail")) {
                 piMeetIets  = true;
                 String[] piMetingen = response.split(" ");
 
@@ -463,16 +470,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jsTijdMuziek.setValue(0);
         jsTijdMuziek.setEnabled(true);
 
-        repaint(); // dit update de aangepaste waardes op het scherm
-    }
-
-    public void startNummer() {
-        mainInput.sendPiMessage("MUSIC PLAY " + nummer.getBestandsNaam());
-        String response = mainInput.waitForPiResponse();
-        if (response.equals("success")) {
-            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-            gepauzeerd = false;
-        }
+        jpMuziekKnoppen.repaint(); // dit update de aangepaste waardes op het scherm
     }
 
     public void setAfspeellijst(Afspeellijst afspeellijst) {
@@ -493,6 +491,47 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
     }
 
+    public void startNummer() {
+        mainInput.sendPiMessage("MUSIC PLAY " + nummer.getBestandsNaam());
+        String response = mainInput.waitForPiResponse();
+        if (response != null && !response.equals("fail")) {
+            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+            gepauzeerd = false;
+            muziekSliderTimer.start();
+        }
+    }
+
+    public void unpause() {
+
+        // nummer opnieuw starten als play wordt aangedrukt wanneer een nummer is afgelopen.
+        if (jsTijdMuziek.getValue() == nummer.getTijdsduur()) {
+            jsTijdMuziek.setValue(0);
+            startNummer();
+            return;
+        }
+
+        mainInput.sendPiMessage("MUSIC UNPAUSE");
+        String response = mainInput.waitForPiResponse();
+
+        if (response != null && !response.equals("fail")) {
+
+            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+            gepauzeerd = false;
+            muziekSliderTimer.start();
+        }
+    }
+
+    public void pause() {
+
+        mainInput.sendPiMessage("MUSIC PAUSE");
+        String response = mainInput.waitForPiResponse();
+        if (response != null && response.equals("success")) {
+            jlPLay.setIcon(new ImageIcon("src/images/play.png"));
+            gepauzeerd = true;
+            muziekSliderTimer.stop();
+        }
+    }
+
 
     @Override
     public void stateChanged(ChangeEvent e) {
@@ -500,23 +539,24 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         if (e.getSource() == jsTijdMuziek) {
 
             jlHuidigeTijd.setText(Functies.intToTimestamp(jsTijdMuziek.getValue()));
-            repaint();
+            jsTijdMuziek.repaint();
 
             // zolang gebruiker slider nog vast heeft (adjusting), niks doen.
             if (jsTijdMuziek.getValueIsAdjusting()) {
                 valueWASadjusting = true;
                 return;
             }
+            // wanner de slider wordt aangepast zonder dat een persoon dat doet, negeer het dan.
             if (!valueWASadjusting) return;
 
-            // een tijd is aangegeven
+            // een persoon heeft een tijd aangegeven:
             valueWASadjusting = false;
             mainInput.sendPiMessage("MUSIC SET_TIME " + jsTijdMuziek.getValue());
             mainInput.waitForPiResponse();
 
         } else if (e.getSource() == jslMaxLichtsterkte) {
 
-            repaint();
+            jslMaxLichtsterkte.repaint();
 
             if (jslMaxLichtsterkte.getValueIsAdjusting()) return; // zolang gebruiker slider nog vast heeft (adjusting), niks doen.
 
@@ -560,19 +600,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             }
 
             if (gepauzeerd) {
-                mainInput.sendPiMessage("MUSIC UNPAUSE");
-                if (mainInput.waitForPiResponse().equals("success")) {
-                    jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-                    gepauzeerd = false;
-                }
-                return;
-            }
-
-            // wanneer niet gepauzeerd:
-            mainInput.sendPiMessage("MUSIC PAUSE");
-            if (mainInput.waitForPiResponse().equals("success")) {
-                jlPLay.setIcon(new ImageIcon("src/images/play.png"));
-                gepauzeerd = true;
+                unpause();
+            } else {
+                pause();
             }
 
         } else if (e.getSource() == jlPuntjes) {
