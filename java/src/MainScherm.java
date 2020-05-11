@@ -87,6 +87,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         int standaardInset = 20;
         c.insets = new Insets(10, standaardInset, 0, 0);
         c.anchor = GridBagConstraints.LINE_START;
+        getContentPane().setBackground(Color.orange);
 
 
         /*
@@ -96,6 +97,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         JPanel jpMuziekspeler = new JPanel();
         jpMuziekspeler.setMaximumSize(new Dimension(700, 600));
         jpMuziekspeler.setLayout(new FlowLayout());
+        jpMuziekspeler.setBackground(Color.white);
         jlNaamMuziek = new JLabel("Selecteer een nummer.", SwingConstants.CENTER);
         jlNaamMuziek.setFont(new Font("Arial", Font.PLAIN, 30));
         jlNaamMuziek.setPreferredSize(new Dimension(600, 100));
@@ -111,6 +113,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         int huidigeTijd = 0;
         jlHuidigeTijd = new JLabel("0:00");
         jsTijdMuziek = new JSlider(0, maxTijd, 0);
+        jsTijdMuziek.setBackground(Color.white);
         jsTijdMuziek.setEnabled(false);
         jsTijdMuziek.setMajorTickSpacing((int) (maxTijd * 0.1));
         Hashtable<Integer, JLabel> tijdLableTable = new Hashtable<>();
@@ -126,6 +129,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         // de panel voor de knoppen van de mp3
         jpMuziekKnoppen = new JPanel();
+        jpMuziekKnoppen.setBackground(Color.white);
         jpMuziekKnoppen.setLayout(null);
         jpMuziekKnoppen.setPreferredSize(new Dimension(600, 60));
         jpMuziekspeler.add(jpMuziekKnoppen);
@@ -179,6 +183,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
+        jpVerwarming.setBackground(Color.white);
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
@@ -201,6 +206,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpLicht = new JPanel();
         jpLicht.setLayout(new GridBagLayout());
+        jpLicht.setBackground(Color.white);
         jbLichtAan = new JButton("Aan");
         jbLichtUit = new JButton("Uit");
         jbLichtAan.addActionListener(e -> {
@@ -227,6 +233,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jslMaxLichtsterkte = new JSlider(0, maxLichtWaarde, maxLichtWaarde / 2);
         jslMaxLichtsterkte.setMajorTickSpacing((int) (maxLichtWaarde * 0.1));
         Hashtable<Integer, JLabel> labelTable = new Hashtable<>();
+        jslMaxLichtsterkte.setBackground(Color.white);
         labelTable.put(0, new JLabel("Donker"));
         labelTable.put(maxLichtWaarde, new JLabel("Licht"));
         jslMaxLichtsterkte.setLabelTable(labelTable);
@@ -245,6 +252,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpLucht = new JPanel();
         jpLucht.setLayout(new GridBagLayout());
+        jpLucht.setBackground(Color.white);
         jlLuchtdruk = new JLabel("Luchtdruk: -");
         jlLuchtvochtigheid = new JLabel("Luchtvochtigheid: -");
         c.weightx = 0;
@@ -258,6 +266,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpZijkant = new JPanel();
         jpZijkant.setLayout(new GridBagLayout());
+        jpZijkant.setBackground(Color.orange);
 
         JLabel jlProfielAfb = Functies.maakFotoLabel("src/images/profiel.png");
         jlAnderProfielAfb = Functies.maakFotoLabel("src/images/anderprofiel.png");
@@ -448,11 +457,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void setLuchtdruk(int druk) {
-        jlLuchtdruk.setText("Luchtdruk: " + druk);
+        jlLuchtdruk.setText("Luchtdruk: " + druk + " mBar");
     }
 
     public void setLuchtvochtigheid(int luchtvochtigheid) {
-        jlLuchtvochtigheid.setText("Luchtvochtigheid: " + luchtvochtigheid);
+        jlLuchtvochtigheid.setText("Luchtvochtigheid: " + luchtvochtigheid + " %");
     }
 
     public void setProfielNaam(String naam) {
