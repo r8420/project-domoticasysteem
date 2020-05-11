@@ -25,8 +25,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlAnderProfielAfb;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
-    private JButton jbLichtAan;
-    private JButton jbLichtUit;
+//    private JButton jbLichtAan;
+//    private JButton jbLichtUit;
 
     /* muziekspeler-componenten */
     private JButton jlAfspeellijstOverzicht;
@@ -53,7 +53,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     /* meetwaardes */
     private double temperatuur;
-    private int lichtsterkte;
+    private double lichtsterkte;
     private int luchtdruk;
     private int luchtvochtigheid;
 
@@ -201,25 +201,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpLicht = new JPanel();
         jpLicht.setLayout(new GridBagLayout());
-        jbLichtAan = new JButton("Aan");
-        jbLichtUit = new JButton("Uit");
-        jbLichtAan.addActionListener(e -> {
-            mainInput.sendPiMessage("LAMP ON");
-            mainInput.waitForPiResponse();
-        });
-        jbLichtUit.addActionListener(e -> {
-            mainInput.sendPiMessage("LAMP OFF");
-            mainInput.waitForPiResponse();
-        });
+
+
+
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
         c.weightx = 0;
-        jpLicht.add(jbLichtAan, c);
-        jpLicht.add(jbLichtUit, c);
         c.weightx = 1;
         jpLicht.add(jlLichtsterkte, c);
         c.gridy = 1;
         c.gridwidth = 3;
-        jpLicht.add(new JLabel("Licht aan vanaf: "), c);
+        jpLicht.add(new JLabel("Licht aan tot en met: "), c);
         c.gridy = 2;
 
         // de slider kan zo een waarde van 0 tot 10 krijgen.
@@ -327,7 +318,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         metingTimer = new Timer(0, e -> {
             updateMeetWaardes();
         });
-        metingTimer.setDelay(60000); // millisec, 1.000 = 1 sec
+        metingTimer.setDelay(10000); // millisec, 1.000 = 1 sec
         metingTimer.start();
 
 
@@ -402,9 +393,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
             String arduinoMeting = mainInput.arduinoSensor();
             if (arduinoMeting != null && !arduinoMeting.equals("fail")) {
-                lichtsterkte = Integer.parseInt(arduinoMeting);
+
+                lichtsterkte = Double.parseDouble(arduinoMeting);
+                lichtsterkte = Math.round(lichtsterkte/102.4); // Opgehaalde lichtwaarde van de Arduino relativeren naar 0 tot 10, overeenkomend met de slider.
+
+                System.out.println(lichtsterkte);
                 arduinoMeetIets = true;
-                setLichtsterkte(lichtsterkte);
+                setLichtsterkte((int) lichtsterkte);
 
             }
         }
@@ -430,11 +425,25 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         /* log de sensordata in de database */
         if (piMeetIets && arduinoMeetIets) {
-            Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid, lichtsterkte);
+            Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid, (int) lichtsterkte);
         } else if (piMeetIets) {
             Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid);
         } else if (arduinoMeetIets) {
-            Database.insertLog(lichtsterkte);
+            Database.insertLog((int) lichtsterkte);
+        }
+
+        // Hier bepaal je of de lamp "Aan" of "Uit" staat, op basis van de lichtwaarde, en de instelling van een profiel.
+        try {
+            if ((lichtsterkte) <= jslMaxLichtsterkte.getValue()) {
+                mainInput.sendPiMessage("LAMP ON");
+                System.out.println("Lamp on");
+            } else {
+                mainInput.sendPiMessage("LAMP OFF");
+                System.out.println("Lamp off");
+            }
+            mainInput.waitForPiResponse();
+        } catch (NullPointerException nullpointer){
+            System.out.println(nullpointer);
         }
 
     }

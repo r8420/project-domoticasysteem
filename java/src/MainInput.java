@@ -113,6 +113,7 @@ public class MainInput {
             while (sp.getInputStream().available() > 0) {
                 byte[] bytes = sp.getInputStream().readNBytes(4);
                 ldrWaarde = new String(bytes);
+                ldrWaarde = ldrWaarde;
                 System.out.println("LDR waarde: " + ldrWaarde);
 
             }
