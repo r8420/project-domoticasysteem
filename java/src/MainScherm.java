@@ -190,8 +190,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.gridy = 1;
         jpVerwarming.add(new JLabel("Verwarmen tot en met: "), c);
         jpVerwarming.add(jspVerwarmingsTemperatuur, c);
-
-        //Nog even naar kijken of het anders kan (weightx)
         c.weightx = 1;
         jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
         jpVerwarming.add(jlKachelStatus,c);
