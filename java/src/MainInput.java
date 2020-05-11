@@ -65,7 +65,7 @@ public class MainInput {
             while (available == 0) {
                 timeWaited = (System.nanoTime()/1000000 - startTimeMs);
                 if (timeWaited > maxWaitTime) {
-                    System.out.println("Ontvangen duurt te lang("+timeWaited+"ms). Verbinding met pi verborken.");
+                    System.out.println("Ontvangen duurt te lang("+timeWaited+"ms). Verbinding met pi verbroken.");
                     s = null;
                     return null;
                 }
