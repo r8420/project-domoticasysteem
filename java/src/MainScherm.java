@@ -185,16 +185,14 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jspVerwarmingsTemperatuur.addChangeListener(this);
         c.weightx = 0;
         jpVerwarming.add(new JLabel("Huidige temperatuur: "), c);
-        c.weightx = 1;
         jlTemperatuur = new JLabel("-");
         jpVerwarming.add(jlTemperatuur, c);
         c.gridy = 1;
-        c.weightx = 0;
         jpVerwarming.add(new JLabel("Verwarmen tot en met: "), c);
         jpVerwarming.add(jspVerwarmingsTemperatuur, c);
 
         //Nog even naar kijken of het anders kan (weightx)
-        c.weightx = 20;
+        c.weightx = 1;
         jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
         jpVerwarming.add(jlKachelStatus,c);
         c.gridy = 0;
