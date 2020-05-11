@@ -21,7 +21,7 @@ public class NummerToevoegen extends JDialog implements ActionListener {
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
-        afspeellijsten = Database.selectDBafspeellijsten(profileId);
+        afspeellijsten = Database.selectAfspeellijsten(profileId);
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpAfspeellijsten = new JPanel();
         jpAfspeellijsten.setLayout(new GridBagLayout());
@@ -64,8 +64,12 @@ public class NummerToevoegen extends JDialog implements ActionListener {
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlNaamAfspeellijst) {
-                        Database.insertDBNummerInAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
-                        toegevoegdNummer();
+                        boolean toegevoegd = Database.insertNummerInAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
+                        if (toegevoegd) {
+                            nummerToegevoegdDialog();
+                        } else {
+                            nummerNietToegevoegdDialog();
+                        }
                         setVisible(false);
                     }
                 }
@@ -95,8 +99,13 @@ public class NummerToevoegen extends JDialog implements ActionListener {
     }
 
     // Functie voor een JOptionPane aangezien this binnen de Mouselistener slaat op de MouseListener i.p.v het scherm.
-    private void toegevoegdNummer() {
-        JOptionPane.showMessageDialog(this, "Nummer toegevoegd aan afspeellijst");
+    private void nummerToegevoegdDialog() {
+        JOptionPane.showMessageDialog(this, "Nummer toegevoegd aan afspeellijst.", "Bevestiging", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void nummerNietToegevoegdDialog() {
+        JOptionPane.showMessageDialog(this, "Nummer staat al in afspleellijst.", "Mislukt", JOptionPane.ERROR_MESSAGE);
+        // dit hebben we opzettelijk verkeerd gespeld, geen punten aftrek hiervoor aub
     }
 
 

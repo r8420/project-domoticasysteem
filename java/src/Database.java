@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class Database {
@@ -11,6 +8,7 @@ public class Database {
 
     // Functie om verbinding te maken met de database.
     private static Connection maakVerbinding() {
+//        if (!verbinding) return null;
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -21,19 +19,17 @@ public class Database {
 
         } catch (Exception e) {
             verbinding = false;
-            System.out.println("Geen database-verbinding");
+            System.out.println("Failed to connect to database");
             return null;
         }
     }
 
     // Functie voor het inserten van temperatuur, luchtdruk, -vochtigheid en -sterkte.
-    public static void insertDBLog(double temperatuur, int luchtdruk, int luchtvochtigheid, int lichtsterkte) {
+    public static void insertLog(double temperatuur, int luchtdruk, int luchtvochtigheid, int lichtsterkte) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "INSERT INTO log(Temperatuur, Luchtvochtigheid, Luchtdruk, Lichtsterkte)\n" +
                     "VALUES (" + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ", " + lichtsterkte + ")";
@@ -49,13 +45,11 @@ public class Database {
     }
 
     // Functie voor inserten van temperatuur, luchtdruk en -vochtigheid.
-    public static void insertDBLog(double temperatuur, int luchtdruk, int luchtvochtigheid) {
+    public static void insertLog(double temperatuur, int luchtdruk, int luchtvochtigheid) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "INSERT INTO log(Temperatuur, Luchtvochtigheid, Luchtdruk)\n" +
                     "VALUES (" + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ")";
@@ -71,13 +65,11 @@ public class Database {
     }
 
     // Functie voor het inserten van lichtsterkte.
-    public static void insertDBLog(int lichtsterkte) {
+    public static void insertLog(int lichtsterkte) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "INSERT INTO log(Lichtsterkte)\n" +
                     "VALUES (" + lichtsterkte + ")";
@@ -93,13 +85,11 @@ public class Database {
     }
 
     // Functie voor het inserten van een profiel.
-    public static void insertDBprofile(String gebruikersnaam) {
+    public static void insertProfiel(String gebruikersnaam) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "insert into profile(Gebruikersnaam)\n" +
                     "VALUES ('" + gebruikersnaam + "')";
@@ -115,13 +105,11 @@ public class Database {
     }
 
     // Functie voor het ophalen van alle profielen.
-    public static ArrayList<Profiel> selectDBprofiles() {
+    public static ArrayList<Profiel> selectProfielen() {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return null;
-            }
+            if (!verbinding) return null;
 
             String query = "SELECT * FROM profile";
 
@@ -150,13 +138,11 @@ public class Database {
     }
 
     // Functie voor het updaten van de temperatuur per profiel (instelling, wanneer gaat de kachel aan).
-    public static void updateDBtemp(double temperatuur, int id) {
+    public static void updateProfielTemp(double temperatuur, int id) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "UPDATE profile\n" +
                     "SET TempVerwarmen = '" + temperatuur + "'\n" +
@@ -173,13 +159,11 @@ public class Database {
     }
 
     // Functie voor het updaten van het licht per profiel (instelling, wanneer gaat de lamp aan).
-    public static void updateDBlicht(int licht, int id) {
+    public static void updateProfielLicht(int licht, int id) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "UPDATE profile\n" +
                     "SET LichtWaarde = '" + licht + "'\n" +
@@ -187,20 +171,20 @@ public class Database {
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             preparedStmt.execute();
+
             conn.close();
+
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
     // Functie om het laatst ingelogde profiel op te halen.
-    public static Profiel selectLastProfile() {
+    public static Profiel selectRecentsteProfiel() {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return null;
-            }
+            if (!verbinding) return null;
 
             String query = "SELECT * FROM profile\n" +
                     "WHERE LaatsteLogin = (\n" +
@@ -210,31 +194,32 @@ public class Database {
             PreparedStatement preparedStmt = conn.prepareStatement(query);
             ResultSet rs = preparedStmt.executeQuery();
 
-            rs.next();
-            Profiel p = new Profiel(
-                    (String) rs.getObject(2),
-                    (int) rs.getObject(1),
-                    (double) rs.getObject(3),
-                    (int) rs.getObject(4)
-            );
+            // wanneer er geen profiel gevonden wordt in de database wordt een prfiel met ID -1 gereturned.
+            Profiel p = new Profiel("", -1, 20, 5);
+            while (rs.next()) {
+                p = new Profiel(
+                        (String) rs.getObject(2),
+                        (int) rs.getObject(1),
+                        (double) rs.getObject(3),
+                        (int) rs.getObject(4)
+                );
+            }
 
             conn.close();
             return p;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e);
             return null;
         }
     }
 
     // Functie om het laatste ingelogde profile te updaten.
-    public static void updateLastUsedProfile(int id) {
+    public static void updateProfielLaatsteLogin(int id) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "UPDATE profile\n" +
                     "SET LaatsteLogin = NOW()\n" +
@@ -251,13 +236,11 @@ public class Database {
     }
 
     // Functie om alle nummers op te halen.
-    public static ArrayList<Nummer> selectDBnummers() {
+    public static ArrayList<Nummer> selectNummers() {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return null;
-            }
+            if (!verbinding) return null;
 
             String query = "SELECT * FROM nummer";
 
@@ -270,9 +253,8 @@ public class Database {
                         (int) rs.getObject(1),
                         (String) rs.getObject(2),
                         (String) rs.getObject(3),
-                        (int) rs.getObject(4)
-
-
+                        (int) rs.getObject(4),
+                        (String) rs.getObject(5)
                 );
                 resultaat.add(n);
             }
@@ -288,13 +270,11 @@ public class Database {
     }
 
     // Functie om alle afspeellijsten op te halen.
-    public static ArrayList<Afspeellijst> selectDBafspeellijsten(int profileId) {
+    public static ArrayList<Afspeellijst> selectAfspeellijsten(int profileId) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return null;
-            }
+            if (!verbinding) return null;
 
             String query = "SELECT * FROM afspeellijst where ProfileId = '" + profileId + "'";
 
@@ -323,15 +303,13 @@ public class Database {
     }
 
     // Functie om de nummers uit een bepaalde afspeellijst op te kunnen halen.
-    public static ArrayList<Nummer> selectDBafspeellijstNummer(int AfspeellijstId) {
-
+    public static ArrayList<Nummer> selectNummersUitAfspeellijst(int afspeellijstId) {
         try {
 
-            Class.forName("com.mysql.jdbc.Driver");
+            Connection conn = maakVerbinding();
+            if (!verbinding) return null;
 
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/domotica", "root", "");
-            String query = "select a.Naam, n.NummerId, n.Naam, n.Artiest, n.Tijdsduur from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.AfspeellijstId ='" + AfspeellijstId + "'";
+            String query = "select * from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.AfspeellijstId ='" + afspeellijstId + "'";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -339,21 +317,16 @@ public class Database {
             // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
 
-            String afspeellijstnaam = "";
-            int nummerId = 0;
-            String nummerNaam = "";
-            String nummerArtiest = "";
-            int nummerTijdsduur = 0;
-
 
             ArrayList<Nummer> resultaat = new ArrayList<>();
             while (rs.next()) {
-                afspeellijstnaam = rs.getString("a.Naam");
                 Nummer nummer = new Nummer(
-                        nummerId = rs.getInt("n.NummerId"),
-                        nummerNaam = rs.getString("n.Naam"),
-                        nummerArtiest = rs.getString("n.Artiest"),
-                        nummerTijdsduur = rs.getInt("n.TijdsDuur"));
+                        (int) rs.getObject(1),
+                        (String) rs.getObject(2),
+                        (String) rs.getObject(3),
+                        (int) rs.getObject(4),
+                        (String) rs.getObject(5)
+                );
 
                 resultaat.add(nummer);
             }
@@ -367,13 +340,11 @@ public class Database {
     }
 
     // Functie voor het inserten van een nieuwe afspeellijst.
-    public static void insertDBAfspeellijst(int ProfileId, String Naam) {
+    public static void insertAfspeellijst(int ProfileId, String Naam) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES ('" + ProfileId + "', '" + Naam + "')";
 
@@ -391,13 +362,11 @@ public class Database {
 
 
     // Functie voor het inserten van een nummer in een bepaalde afspeellist.
-    public static void insertDBNummerInAfspeellijst(int AfspeellijstId, int NummerId) {
+    public static boolean insertNummerInAfspeellijst(int AfspeellijstId, int NummerId) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return false;
 
             String query = "INSERT INTO afspeellijst_nummer VALUES ('" + AfspeellijstId + "', '" + NummerId + "')";
 
@@ -405,22 +374,21 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
+            return true;
 
 
         } catch (Exception e) {
             System.out.println(e);
-            System.out.println("Ging wat fout bij het inserten van een nummer in een afspeellijst");
+            return false;
         }
     }
 
     // Functie voor het verwijderen van een nummer uit een bepaalde afspeellist.
-    public static void deleteDBafspeellijstNummer(int AfspeellijstId, int NummerId) {
+    public static void deleteNummerUitAfspeellijst(int AfspeellijstId, int NummerId) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId + "' AND NummerId =  '" + NummerId + "'";
 
@@ -439,13 +407,11 @@ public class Database {
 
 
     // Functie voor het verwijderen van een afspeellijst.
-    public static void deleteDBafspeellijst(int AfspeellijstId) {
+    public static void deleteAfspeellijst(int AfspeellijstId) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) {
-                return;
-            }
+            if (!verbinding) return;
 
             String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId + "'";
 

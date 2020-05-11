@@ -20,4 +20,10 @@ public final class Functies {
         }
     }
 
+    public static String intToTimestamp(int seconds) {
+        int min = seconds / 60;
+        int sec = (seconds - min * 60);
+        return min + ":" + ((sec < 10) ? ("0" + sec) : sec);
+    }
+
 }

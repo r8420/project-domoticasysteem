@@ -11,43 +11,82 @@ public class MainInput {
     static PrintWriter pw;
     private SerialPort sp;
 
-    public String[] piSensoren() {
-        String[] splitStr = new String[3];
+    public boolean piIsConnected() {
+        return s != null;
+    }
+
+    public void startPiSocket() {
+        String host = "pisander";
+        int port = 8000;
 
         try {
-            byte[] bytes = s.getInputStream().readNBytes(19);
-            String string = new String(bytes);
-            splitStr = string.split("\\s+");
+            s = new Socket(host, port);
+            System.out.println("Succesfully connected to Pi on [host: \"" + host + "\", port: " + port + ']');
+            pw = new PrintWriter(s.getOutputStream());
+
+        } catch (IOException IE) {
+            System.out.println("Couldn't connect to Pi on [host: \"" + host + "\", port: " + port + ']');
+        }
+    }
+
+    public void sendPiMessage(String message) {
+        if (s == null) return;
+        try {
+
+            // leeg de buffer als daar nog wat in staat
+            int available = s.getInputStream().available();
+            if (available > 0) {
+                String oldMsg = new String(s.getInputStream().readNBytes(available));
+                System.out.println("Pi buffer bevat ongelezen informatie: \n\t" + oldMsg);
+            }
+
+            pw.write(message);
+            pw.flush();
+            System.out.println("> " + message);
+
+        } catch (IOException IOE) {
+            System.out.println("Couldn't send Pi a message due to IOException");
+            IOE.printStackTrace();
+        }
+    }
+
+    public String waitForPiResponse() {
+        if (s == null) return null;
+        try {
+            long startTimeMs = System.nanoTime()/1000000;
+
+            int sleepTime = 10; // ms tussen checks voor antwoord
+
+            long maxWaitTime = 5000; // maximale wachttijd voordat method afbreekt
+            long timeWaited;
+
+            // wacht totdat er een response is. Breek af na na maxWaitTime
+            int available = s.getInputStream().available();
+            while (available == 0) {
+                timeWaited = (System.nanoTime()/1000000 - startTimeMs);
+                if (timeWaited > maxWaitTime) {
+                    System.out.println("Ontvangen duurt te lang("+timeWaited+"ms). Verbinding met pi verbroken.");
+                    s = null;
+                    return null;
+                }
+                Thread.sleep(sleepTime);
+                available = s.getInputStream().available();
+            }
+
+            String message = new String(s.getInputStream().readNBytes(available));
+
+            int passedMs = (int) (System.nanoTime()/1000000 - startTimeMs);
+            System.out.println("Response (" + passedMs + "ms): " + message);
+            return message;
 
         } catch (IOException u) {
-            System.out.println("fail");
+            System.out.println("getMessage() IOException");
             u.printStackTrace();
+
+        } catch (InterruptedException ie) {
+            System.out.println("getMessage() InterruptedException");
         }
-        return splitStr;
-    }
-
-    public boolean socketStart() {
-        try {
-            s = new Socket("piri", 8000);
-            return true;
-
-        } catch (IOException IE) {
-            System.out.println("socketStart: No server found");
-            return false;
-        }
-    }
-
-    public void socketStop() {
-        try {
-            pw = new PrintWriter(s.getOutputStream());
-            pw.write("stop");
-            pw.flush();
-            pw.close();
-            s.close();
-
-        } catch (IOException IE) {
-            System.out.println("fail");
-        }
+        return null;
     }
 
     public boolean arduinoStart() throws InterruptedException {
@@ -56,12 +95,12 @@ public class MainInput {
         sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0);
 
         if (sp.openPort()) {
-            System.out.println("arduinoStart: succes");
+            System.out.println("Succesfully connected to Arduino");
 //            TimeUnit.MILLISECONDS.sleep(100);
             return true;
 
         } else {
-            System.out.println("arduinoStart: fail");
+            System.out.println("Couldn't connect to Arduino");
             return false;
         }
     }
@@ -83,18 +122,6 @@ public class MainInput {
 
         }
         return ldrWaarde;
-    }
-
-    public void sendMessage(String Naam) {
-        try {
-            pw = new PrintWriter(s.getOutputStream());
-            pw.write(Naam);
-            pw.flush();
-            System.out.println("gelukt");
-        } catch (IOException | NullPointerException IOE) {
-            System.out.println("geen verbinding met pi");
-        }
-
     }
 }
 

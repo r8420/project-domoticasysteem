@@ -11,15 +11,17 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
 
     private ArrayList<Afspeellijst> afspeellijsten;
     private JLabel jlKiesAfspeellijst;
+    private MainScherm hoofdscherm;
 
 
-    public AfspeellijstOverzicht(int profileId, JFrame frame) {
+    public AfspeellijstOverzicht(int profileId, MainScherm frame) {
         super(frame, true);
+        this.hoofdscherm = frame;
         setTitle("Afspeellijst overzicht");
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
-        afspeellijsten = Database.selectDBafspeellijsten(profileId);
+        afspeellijsten = Database.selectAfspeellijsten(profileId);
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpAfspeellijsten = new JPanel();
         jpAfspeellijsten.setLayout(new GridBagLayout());
@@ -67,12 +69,12 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
                     if (e.getSource() == jlMin) {
                         System.out.println("Verwijder " + afspeellijst.getNaam());
                         if (verwijderAfspeellijst() == JOptionPane.YES_OPTION){
-                            Database.deleteDBafspeellijst(afspeellijst.getAfspeellijstId());
+                            Database.deleteAfspeellijst(afspeellijst.getAfspeellijstId());
                             setVisible(false);
                         }
                     } else if (e.getSource() == jlNaamAfspeellijst) {
                         System.out.println("Open " + afspeellijst.getNaam());
-                        openAfspeellijst(afspeellijst);
+                        openAfspeellijstDialog(afspeellijst);
                     }
                 }
 
@@ -107,8 +109,8 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
     }
 
     // Functie om een bepaalde afspeellijst te openen, aangezien this in de MouseListener slaat op de MouseListener i.p.v het scherm. Meegeven afspeellijst voor het scherm om te openen.
-    private void openAfspeellijst(Afspeellijst afspeellijst) {
-        NummersInAfspeellijst Dialoog = new NummersInAfspeellijst(afspeellijst, this);
+    private void openAfspeellijstDialog(Afspeellijst afspeellijst) {
+        NummersInAfspeellijst Dialoog = new NummersInAfspeellijst(afspeellijst, this, hoofdscherm);
     }
 
 
