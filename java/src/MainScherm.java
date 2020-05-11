@@ -38,6 +38,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlPuntjes;
     private JLabel jlNaamMuziek;
     private JLabel jlHuidigeTijd;
+    private JLabel jlKachelStatus;
     private JSlider jsTijdMuziek;
     private JPanel jpMuziekKnoppen;
     private Timer muziekSliderTimer;
@@ -182,7 +183,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
-
         c.weightx = 0;
         jpVerwarming.add(new JLabel("Huidige temperatuur: "), c);
         c.weightx = 1;
@@ -190,9 +190,13 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpVerwarming.add(jlTemperatuur, c);
         c.gridy = 1;
         c.weightx = 0;
-        jpVerwarming.add(new JLabel("Verwarmen vanaf: "), c);
-        c.weightx = 1;
+        jpVerwarming.add(new JLabel("Verwarmen tot en met: "), c);
         jpVerwarming.add(jspVerwarmingsTemperatuur, c);
+
+        //Nog even naar kijken of het anders kan (weightx)
+        c.weightx = 20;
+        jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
+        jpVerwarming.add(jlKachelStatus,c);
         c.gridy = 0;
 
 
@@ -423,6 +427,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             }
         }
 
+
         /* log de sensordata in de database */
         if (piMeetIets && arduinoMeetIets) {
             Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid, (int) lichtsterkte);
@@ -434,7 +439,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         // Hier bepaal je of de lamp "Aan" of "Uit" staat, op basis van de lichtwaarde, en de instelling van een profiel.
         try {
-            if ((lichtsterkte) <= jslMaxLichtsterkte.getValue()) {
+            if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
                 mainInput.sendPiMessage("LAMP ON");
                 System.out.println("Lamp on");
             } else {
@@ -444,6 +449,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             mainInput.waitForPiResponse();
         } catch (NullPointerException nullpointer){
             System.out.println(nullpointer);
+        }
+
+        temperatuur = 23;
+
+        if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
+            jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
+            System.out.println("Kachel Aan");
+        } else if (temperatuur > (double) jspVerwarmingsTemperatuur.getValue()){
+            jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
+            System.out.println("Kachel Uit");
         }
 
     }
