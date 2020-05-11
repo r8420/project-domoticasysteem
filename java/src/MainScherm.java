@@ -28,7 +28,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JSlider jsTijdMuziek;
 
     /* connectie/update */
-    private Timer timer, timer1;
+    private Timer timer;
     private MainInput mainInput;
 
     /* meetwaardes */
@@ -288,10 +288,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         timer.setDelay(10000); // millisec, 1.000 = 1 sec
         timer.start();
 
-        timer1 = new Timer(0, e -> updateHudigeTijd());
-        timer1.setDelay(1000); // millisec, 1.000 = 1 sec
-        timer1.start();
-
 
         /* wat te doen als op kruisje wordt gedrukt */
         addWindowListener(new WindowAdapter() {
@@ -519,10 +515,5 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         }
     }
-    public void updateHudigeTijd(){
-        huidigeTijd += 1;
-        jsTijdMuziek.setValue(huidigeTijd);
-    }
-
 }
 
