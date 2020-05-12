@@ -141,19 +141,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         // de knoppen voor de dropdown van 3_puntjes.png
         jlAfspeellijstOverzicht = new JButton("Afspeellijst overzicht");
-        jlAfspeellijstOverzicht.setBackground(Color.ORANGE);
         jlAfspeellijstOverzicht.setBounds(400, 61, 180, 20);
         jlAfspeellijstOverzicht.addActionListener(this);
 
 
         jlAfspeellijstToevoegen = new JButton("Afspeellijst toevoegen");
-        jlAfspeellijstToevoegen.setBackground(Color.ORANGE);
         jlAfspeellijstToevoegen.setBounds(400, 82, 180, 20);
         jlAfspeellijstToevoegen.addActionListener(this);
 
 
         jlNummerOverzicht = new JButton("Nummer overzicht");
-        jlNummerOverzicht.setBackground(Color.ORANGE);
         jlNummerOverzicht.setBounds(400, 103, 180, 20);
         jlNummerOverzicht.addActionListener(this);
 
@@ -273,14 +270,28 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
 
         /*
-         * Vormgeving van de panels
+         * Vormgeving
          * */
         Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
         jpMuziekspeler.setBorder(testBorder);
         jpVerwarming.setBorder(testBorder);
         jpLicht.setBorder(testBorder);
         jpLucht.setBorder(testBorder);
-//        jpZijkant.setBorder(testBorder);
+
+        getContentPane().setBackground(new Color(255, 145, 164));
+        jpZijkant.setBackground(new Color(255, 145, 164));
+
+        jlNummerOverzicht.setBackground(new Color(255, 145, 164));
+        jlAfspeellijstOverzicht.setBackground(new Color(255, 145, 164));
+        jlAfspeellijstToevoegen.setBackground(new Color(255, 145, 164));
+        
+        jpMuziekspeler.setBackground(new Color(255, 205, 214));
+        jslMaxLichtsterkte.setBackground(new Color(255, 205, 214));
+        jsTijdMuziek.setBackground(new Color(255, 205, 214));
+        jpMuziekKnoppen.setBackground(new Color(255, 205, 214));
+        jpVerwarming.setBackground(new Color(255, 205, 214));
+        jpLucht.setBackground(new Color(255, 205, 214));
+        jpLicht.setBackground(new Color(255, 205, 214));
 
 
         /*
@@ -465,11 +476,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void setLuchtdruk(int druk) {
-        jlLuchtdruk.setText("Luchtdruk: " + druk);
+        jlLuchtdruk.setText("Luchtdruk: " + druk + " mBar");
     }
 
     public void setLuchtvochtigheid(int luchtvochtigheid) {
-        jlLuchtvochtigheid.setText("Luchtvochtigheid: " + luchtvochtigheid);
+        jlLuchtvochtigheid.setText("Luchtvochtigheid: " + luchtvochtigheid + " %");
     }
 
     public void setProfielNaam(String naam) {
