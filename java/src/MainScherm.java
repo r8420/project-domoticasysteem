@@ -402,6 +402,21 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 setLichtsterkte((int) lichtsterkte);
 
             }
+
+            // Hier bepaal je of de lamp "Aan" of "Uit" staat, op basis van de lichtwaarde, en de instelling van een profiel.
+            try {
+                if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
+                    mainInput.sendPiMessage("LAMP ON");
+                    System.out.println("Lamp on");
+                } else {
+                    mainInput.sendPiMessage("LAMP OFF");
+                    System.out.println("Lamp off");
+                }
+                mainInput.waitForPiResponse();
+
+            } catch (NullPointerException nullpointer){
+                System.out.println(nullpointer);
+            }
         }
 
         if (mainInput.piIsConnected()) {
@@ -420,9 +435,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 setTemperatuur(temperatuur);
                 setLuchtvochtigheid(luchtvochtigheid);
                 setLuchtdruk(luchtdruk);
+
+                if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
+                    jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
+                    System.out.println("Kachel Aan");
+                } else {
+                    jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
+                    System.out.println("Kachel Uit");
+                }
             }
         }
-
 
         /* log de sensordata in de database */
         if (piMeetIets && arduinoMeetIets) {
@@ -432,31 +454,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         } else if (arduinoMeetIets) {
             Database.insertLog((int) lichtsterkte);
         }
-
-        // Hier bepaal je of de lamp "Aan" of "Uit" staat, op basis van de lichtwaarde, en de instelling van een profiel.
-        try {
-            if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
-                mainInput.sendPiMessage("LAMP ON");
-                System.out.println("Lamp on");
-            } else {
-                mainInput.sendPiMessage("LAMP OFF");
-                System.out.println("Lamp off");
-            }
-            mainInput.waitForPiResponse();
-        } catch (NullPointerException nullpointer){
-            System.out.println(nullpointer);
-        }
-
-        temperatuur = 23;
-
-        if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
-            jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
-            System.out.println("Kachel Aan");
-        } else if (temperatuur > (double) jspVerwarmingsTemperatuur.getValue()){
-            jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
-            System.out.println("Kachel Uit");
-        }
-
     }
 
     public void setTemperatuur(double temp) {
