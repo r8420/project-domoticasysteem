@@ -85,11 +85,11 @@ public class Database {
     }
 
     // Functie voor het inserten van een profiel.
-    public static void insertProfiel(String gebruikersnaam) {
+    public static boolean insertProfiel(String gebruikersnaam) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) return;
+            if (!verbinding) return false;
 
             String query = "insert into profile(Gebruikersnaam)\n" +
                     "VALUES ('" + gebruikersnaam + "')";
@@ -98,9 +98,11 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
+            return true;
 
         } catch (Exception e) {
             System.out.println(e);
+            return false;
         }
     }
 
@@ -340,11 +342,11 @@ public class Database {
     }
 
     // Functie voor het inserten van een nieuwe afspeellijst.
-    public static void insertAfspeellijst(int ProfileId, String Naam) {
+    public static boolean insertAfspeellijst(int ProfileId, String Naam) {
         try {
 
             Connection conn = maakVerbinding();
-            if (!verbinding) return;
+            if (!verbinding) return false;
 
             String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES ('" + ProfileId + "', '" + Naam + "')";
 
@@ -352,11 +354,12 @@ public class Database {
             preparedStmt.execute();
 
             conn.close();
-
+            return true;
 
         } catch (Exception e) {
             System.out.println(e);
             System.out.println("Ging wat fout bij het inserten van een afspeellijst");
+            return false;
         }
     }
 

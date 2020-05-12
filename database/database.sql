@@ -1,4 +1,4 @@
--- Domotica database V6
+-- Domotica database V7
 
 -- MySQL Workbench Forward Engineering
 
@@ -25,7 +25,7 @@ USE `domotica` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `domotica`.`profile` (
   `ProfileId` INT(11) NOT NULL AUTO_INCREMENT,
-  `Gebruikersnaam` VARCHAR(45) NOT NULL,
+  `Gebruikersnaam` VARCHAR(10) NOT NULL,
   `TempVerwarmen` DOUBLE NULL DEFAULT 20.0,
   `LichtWaarde` INT(4) NULL DEFAULT 5,
   `LaatsteLogin` DATETIME NULL DEFAULT NOW(),
@@ -41,7 +41,7 @@ DEFAULT CHARACTER SET = utf8;
 CREATE TABLE IF NOT EXISTS `domotica`.`afspeellijst` (
   `AfspeellijstId` INT(11) NOT NULL AUTO_INCREMENT,
   `ProfileId` INT(11) NOT NULL,
-  `Naam` VARCHAR(45) NOT NULL,
+  `Naam` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`AfspeellijstId`),
   INDEX `ProfileId` (`ProfileId` ASC),
   CONSTRAINT `afspeellijst_ibfk_1`

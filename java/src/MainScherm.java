@@ -180,7 +180,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpVerwarming = new JPanel();
         jpVerwarming.setLayout(new GridBagLayout());
-        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
+        jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 50, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
         c.weightx = 0;
@@ -679,10 +679,15 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 }
                 AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
                 if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
-                    Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst());
+
+                    if(!Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst())) {
+                        JOptionPane.showMessageDialog(this, "Een Afspeellijst mag een naam van maximaal 15 symbolen hebben.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                    }
+
                 } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
                     JOptionPane.showMessageDialog(this, "Er is geen naam ingevuld!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                 }
+
             } catch (NullPointerException NPE) {
                 geenDatabase_Dialog();
             }

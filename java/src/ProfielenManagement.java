@@ -128,11 +128,14 @@ public class ProfielenManagement extends JDialog implements MouseListener {
             // Wanneer er op "Profiel aanmaken" is gedrukt en er een gebruikersnaam is ingevuld.
             if (nieuwProfielDialog.getOk()) {
 
-                System.out.println("Profiel toegevoegd!");
-                Database.insertProfiel(nieuwProfielDialog.getJtfNewProfile()); // Het nieuwe profiel in de database zetten.
-                geselecteerdProfiel = Database.selectRecentsteProfiel(); // Het nieuwe profiel ophalen, inclusief standaardinstellingen en ProfileId.
-                anderProfiel = true;
-                dispose();
+                if (Database.insertProfiel(nieuwProfielDialog.getJtfNewProfile())){ // Het nieuwe profiel in de database zetten.
+                    System.out.println("Profiel toegevoegd!");
+                    geselecteerdProfiel = Database.selectRecentsteProfiel(); // Het nieuwe profiel ophalen, inclusief standaardinstellingen en ProfileId.
+                    anderProfiel = true;
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Een accountnaam mag niet langer zijn dan 10 symbolen", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
