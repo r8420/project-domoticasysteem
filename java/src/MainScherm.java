@@ -38,6 +38,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlPuntjes;
     private JLabel jlNaamMuziek;
     private JLabel jlHuidigeTijd;
+    private JLabel jlKachelStatus;
     private JSlider jsTijdMuziek;
     private JPanel jpMuziekKnoppen;
     private Timer muziekSliderTimer;
@@ -182,17 +183,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 25, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
-
         c.weightx = 0;
         jpVerwarming.add(new JLabel("Huidige temperatuur: "), c);
-        c.weightx = 1;
         jlTemperatuur = new JLabel("-");
         jpVerwarming.add(jlTemperatuur, c);
         c.gridy = 1;
-        c.weightx = 0;
-        jpVerwarming.add(new JLabel("Verwarmen vanaf: "), c);
-        c.weightx = 1;
+        jpVerwarming.add(new JLabel("Verwarmen tot en met: "), c);
         jpVerwarming.add(jspVerwarmingsTemperatuur, c);
+        c.weightx = 1;
+        jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
+        jpVerwarming.add(jlKachelStatus,c);
         c.gridy = 0;
 
 
@@ -402,6 +402,21 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 setLichtsterkte((int) lichtsterkte);
 
             }
+
+            // Hier bepaal je of de lamp "Aan" of "Uit" staat, op basis van de lichtwaarde, en de instelling van een profiel.
+            try {
+                if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
+                    mainInput.sendPiMessage("LAMP ON");
+                    System.out.println("Lamp on");
+                } else {
+                    mainInput.sendPiMessage("LAMP OFF");
+                    System.out.println("Lamp off");
+                }
+                mainInput.waitForPiResponse();
+
+            } catch (NullPointerException nullpointer){
+                System.out.println(nullpointer);
+            }
         }
 
         if (mainInput.piIsConnected()) {
@@ -420,6 +435,14 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 setTemperatuur(temperatuur);
                 setLuchtvochtigheid(luchtvochtigheid);
                 setLuchtdruk(luchtdruk);
+
+                if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
+                    jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
+                    System.out.println("Kachel Aan");
+                } else {
+                    jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
+                    System.out.println("Kachel Uit");
+                }
             }
         }
 
@@ -431,21 +454,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         } else if (arduinoMeetIets) {
             Database.insertLog((int) lichtsterkte);
         }
-
-        // Hier bepaal je of de lamp "Aan" of "Uit" staat, op basis van de lichtwaarde, en de instelling van een profiel.
-        try {
-            if ((lichtsterkte) <= jslMaxLichtsterkte.getValue()) {
-                mainInput.sendPiMessage("LAMP ON");
-                System.out.println("Lamp on");
-            } else {
-                mainInput.sendPiMessage("LAMP OFF");
-                System.out.println("Lamp off");
-            }
-            mainInput.waitForPiResponse();
-        } catch (NullPointerException nullpointer){
-            System.out.println(nullpointer);
-        }
-
     }
 
     public void setTemperatuur(double temp) {
