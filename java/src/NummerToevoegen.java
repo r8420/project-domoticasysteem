@@ -93,7 +93,7 @@ public class NummerToevoegen extends JDialog implements ActionListener {
             jlNaamAfspeellijst.addMouseListener(listener);
         }
 
-
+        setLocationRelativeTo(null);
         setVisible(true);
 
     }

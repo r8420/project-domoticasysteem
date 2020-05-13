@@ -373,7 +373,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             Database.insertProfiel("Gast");
             profiel = Database.selectRecentsteProfiel();
         }
-
+        setLocationRelativeTo(null);
         /* Maak het scherm zichtbaar */
         setVisible(true);
 

@@ -32,7 +32,7 @@ public class AfspeellijstToevoegen extends JDialog implements ActionListener {
         jbNewAfspeellijst.addActionListener(this);
         add(jbAnnuleren);
         jbAnnuleren.addActionListener(this);
-
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 

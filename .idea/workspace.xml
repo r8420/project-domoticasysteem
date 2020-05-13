@@ -4,8 +4,6 @@
     <list default="true" id="41458d0f-3dfc-4b37-a19f-7bc86fce5c3f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/java/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/java/src/MainInput.java" beforeDir="false" afterPath="$PROJECT_DIR$/java/src/MainInput.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,14 +16,18 @@
   <component name="ProjectId" id="1bIZqhY8cWZwrMYNtD0Ga2B1LYm" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="showExcludedFiles" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/java" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -38,13 +40,18 @@
       <option name="presentableId" value="Default" />
       <updated>1588321760845</updated>
       <workItem from="1588321762244" duration="24000" />
+      <workItem from="1589359125928" duration="623000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="480" y="124" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1589359132375">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="480" y="124" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1589359132375" />
     <state x="618" y="302" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1588596568068">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
@@ -57,5 +64,9 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="549" y="167" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1588596673795" />
+    <state x="527" y="114" key="SettingsEditor" timestamp="1589359146174">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="527" y="114" key="SettingsEditor/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1589359146174" />
   </component>
 </project>

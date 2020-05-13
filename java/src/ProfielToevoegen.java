@@ -32,7 +32,7 @@ public class ProfielToevoegen extends JDialog implements ActionListener {
         jbNewProfile.addActionListener(this);
         add(jbAnnuleren);
         jbAnnuleren.addActionListener(this);
-
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
