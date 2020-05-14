@@ -14,6 +14,7 @@ public class Afspeellijst {
 
     public Afspeellijst(ArrayList<Nummer> nummers) {
         this.nummers = nummers;
+        this.afspeellijstId = -1;
     }
 
     public Afspeellijst(int afspeellijstId, int profileId, String naam) {
@@ -39,6 +40,7 @@ public class Afspeellijst {
     }
 
     public void nextSong() {
+        if (afspeellijstId != -1) nummers = Database.selectNummersUitAfspeellijst(afspeellijstId);
         currentSong++;
         if (currentSong >= nummers.size()) {
             currentSong = 0;
@@ -46,6 +48,7 @@ public class Afspeellijst {
     }
 
     public void previousSong() {
+        if (afspeellijstId != -1) nummers = Database.selectNummersUitAfspeellijst(afspeellijstId);
         currentSong--;
         if (currentSong < 0) {
             currentSong = nummers.size() - 1;
