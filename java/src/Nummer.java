@@ -1,9 +1,13 @@
+import java.util.ArrayList;
+
 public class Nummer {
     private int tijdsduur;
     private String naam;
     private String artiest;
     private String bestandsNaam;
     private int nummerId;
+
+
 
     public int getNummerId() {
         return nummerId;
@@ -36,5 +40,10 @@ public class Nummer {
     public String getBestandsNaam() {
         return bestandsNaam;
     }
+
+
+
+
+
 }
 

@@ -6,10 +6,14 @@ public class Afspeellijst {
     private int profileId;
     private String naam;
     private ArrayList<Nummer> nummers;
-    private int currentSong ;
+    private int currentSong;
 
     public int getAfspeellijstId() {
         return afspeellijstId;
+    }
+
+    public Afspeellijst(ArrayList<Nummer> nummers){
+        this.nummers = nummers;
     }
 
     public Afspeellijst(int afspeellijstId, int profileId, String naam) {

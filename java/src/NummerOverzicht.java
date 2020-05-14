@@ -16,6 +16,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
     private static Border standaardBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
     private static Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK, 3);
 
+
     public NummerOverzicht(int ProfileId, MainScherm frame) {
         super(frame, true);
         this.ProfileId = ProfileId;
@@ -126,6 +127,11 @@ public class NummerOverzicht extends JDialog implements ActionListener {
 
     private void nummerToevoegenDialog(Nummer nummer) {
         NummerToevoegen nummerToevoegen = new NummerToevoegen(ProfileId, nummer, this);
+    }
+
+
+    public int getAantalNummers() {
+        return nummers.size();
     }
 
 

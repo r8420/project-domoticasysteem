@@ -5,6 +5,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -47,6 +48,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     private Nummer nummer = null;
     private Afspeellijst afspeellijst = null;
+    private Afspeellijst alleNummers;
+
 
     /* connectie/update */
     private Timer metingTimer;
@@ -370,6 +373,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         });
 
 
+        alleNummers = new Afspeellijst(Database.selectNummers());
+
         /*
          * stel mainscherm in op laatste gebruiker
          * */
@@ -578,15 +583,28 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         }
     }
 
+
+
     public void nextSong() {
-        if (afspeellijst == null) return;
+
+        if (afspeellijst == null) {
+            alleNummers.nextSong();
+            setNummer(alleNummers.getCurrentSong());
+            startNummer();
+            return;
+        }
         afspeellijst.nextSong();
         setNummer(afspeellijst.getCurrentSong());
         startNummer();
     }
 
     public void previousSong() {
-        if (afspeellijst == null) return;
+        if (afspeellijst == null){
+            alleNummers.previousSong();
+            setNummer(alleNummers.getCurrentSong());
+            startNummer();
+            return;
+        }
         afspeellijst.previousSong();
         setNummer(afspeellijst.getCurrentSong());
         startNummer();
