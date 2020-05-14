@@ -99,7 +99,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
             jlNaamNummer.addMouseListener(listener);
         }
 
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(frame);
         setVisible(true);
 
     }

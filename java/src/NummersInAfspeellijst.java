@@ -105,7 +105,7 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
             jlNaamNummer.addMouseListener(listener);
         }
 
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(frame);
         setVisible(true);
 
     }

@@ -93,7 +93,7 @@ public class ProfielenManagement extends JDialog implements MouseListener {
             // Het "Profiel toevegen"-label klikbaar maken
             jlProfielPlaatje.addMouseListener(this);
             jlProfielToevoegen.addMouseListener(this);
-            setLocationRelativeTo(null);
+            setLocationRelativeTo(frame);
             setVisible(true);
             frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         } else {

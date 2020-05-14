@@ -98,7 +98,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
             jlNaamAfspeellijst.addMouseListener(listener);
         }
 
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(frame);
         setVisible(true);
 
     }
