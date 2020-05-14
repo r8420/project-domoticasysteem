@@ -163,11 +163,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlPLay.addMouseListener(this);
         jlSkip.addMouseListener(this);
         jlSkipBack.addMouseListener(this);
-        jpMuziekKnoppen.add(jlSkipBack);
+
         jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
         jpMuziekKnoppen.add(jlPLay);
         jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
-        jpMuziekKnoppen.add(jlSkip);
+
         jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
         jpMuziekKnoppen.add(jlPuntjes);
         jpMuziekKnoppen.add(jlAfspeellijstOverzicht);
@@ -524,6 +524,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
     public void setNummer(Nummer nummer) {
         this.nummer = nummer;
+        jpMuziekKnoppen.add(jlSkip);
+        jpMuziekKnoppen.add(jlSkipBack);
 
         jsTijdMuziek.setMaximum(nummer.getTijdsduur());
         Hashtable<Integer, JLabel> newLabelTable = new Hashtable<>();
