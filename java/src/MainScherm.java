@@ -675,6 +675,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             ProfielenManagement profielDialog = new ProfielenManagement(this);
             if (profielDialog.anderProfielGeselecteerd()) {
                 // Het geselecteerde profiel ophalen, zodat het mainscherm aangepast kan worden.
+                afspeellijst = null;
                 profiel = profielDialog.getGeselecteerdProfiel();
                 updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
             }
