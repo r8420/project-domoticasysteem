@@ -12,8 +12,9 @@ public class NummerOverzicht extends JDialog implements ActionListener {
     private JLabel jlKiesNummer;
     private int ProfileId;
     private MainScherm hoofdscherm;
-
-
+    private static Color geselecteerdKleur = Color.BLACK;
+    private static Border standaardBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
+    private static Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK, 3);
 
     public NummerOverzicht(int ProfileId, MainScherm frame) {
         super(frame, true);
@@ -37,8 +38,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
         add(jpNummers, c);
         jlKiesNummer = new JLabel("Nummers:");
 
-        Border border = BorderFactory.createLineBorder(Color.black, 1);
-        jpNummers.setBorder(border);
+        jpNummers.setBorder(standaardBorder);
         c.weightx = 1;
         c.gridx = 0;
         c.gridy = 0;
@@ -51,10 +51,18 @@ public class NummerOverzicht extends JDialog implements ActionListener {
             JPanel jpNummerBalk = new JPanel();
             jpNummerBalk.setBackground(new Color(255, 145, 164));
             jpNummerBalk.setLayout(new GridBagLayout());
-            jpNummerBalk.setBorder(border);
+            jpNummerBalk.setBorder(standaardBorder);
             JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");
             jlPlus.setPreferredSize(new Dimension(20, 20));
+
             JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
+
+            Nummer currentSong = frame.getNummer();
+            if (currentSong != null && nummer.getNummerId() == currentSong.getNummerId()) {
+                jlNaamNummer.setForeground(geselecteerdKleur);
+                jpNummerBalk.setBorder(selectedBorder);
+            }
+
             c.gridy++;
             c.ipady = 20;
             c.ipadx = 20;
@@ -71,13 +79,22 @@ public class NummerOverzicht extends JDialog implements ActionListener {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlPlus) {
 
-                        voegNummerToe(nummer);
+                        nummerToevoegenDialog(nummer);
 
                     } else if (e.getSource() == jlNaamNummer) {
 
+                        for (Component c : jpNummers.getComponents()) {  // un-highlight het andere geselecteerde nummer
+                            if (c instanceof JPanel && ((JPanel) c).getBorder() == selectedBorder) {
+                                ((JPanel) c).getComponent(0).setForeground(null);
+                                ((JPanel) c).setBorder(standaardBorder);
+                            }
+                        }
+                        jlNaamNummer.setForeground(geselecteerdKleur);
+                        jpNummerBalk.setBorder(selectedBorder);
+
                         System.out.println("Speel " + nummer.getNaam() + " af");
                         hoofdscherm.setNummer(nummer);
-                        hoofdscherm.speelAfspeellijst(null);
+                        hoofdscherm.setAfspeellijst(null);
                         hoofdscherm.startNummer();
                     }
                 }
@@ -107,7 +124,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
 
     }
 
-    private void voegNummerToe(Nummer nummer) {
+    private void nummerToevoegenDialog(Nummer nummer) {
         NummerToevoegen nummerToevoegen = new NummerToevoegen(ProfileId, nummer, this);
     }
 

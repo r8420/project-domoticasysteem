@@ -1,17 +1,19 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class AfspeellijstOverzicht extends JDialog implements ActionListener {
+public class AfspeellijstOverzicht extends JDialog {
 
     private ArrayList<Afspeellijst> afspeellijsten;
     private JLabel jlKiesAfspeellijst;
     private MainScherm hoofdscherm;
+
+    private static Color geselecteerdKleur = Color.BLACK;
+    private static Border standaardBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
+    private static Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK, 3);
 
 
     public AfspeellijstOverzicht(int profileId, MainScherm frame) {
@@ -34,8 +36,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
         add(jpAfspeellijsten, c);
         jlKiesAfspeellijst = new JLabel("Afspeellijsten:");
 
-        Border border = BorderFactory.createLineBorder(Color.black, 1);
-        jpAfspeellijsten.setBorder(border);
+        jpAfspeellijsten.setBorder(standaardBorder);
         c.weightx = 1;
         c.gridx = 0;
         c.gridy = 0;
@@ -56,11 +57,20 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
             JPanel jpAfspeellijstBalk = new JPanel();
             jpAfspeellijstBalk.setBackground(new Color(255, 145, 164));
             jpAfspeellijstBalk.setLayout(new GridBagLayout());
-            jpAfspeellijstBalk.setBorder(border);
+            jpAfspeellijstBalk.setBorder(standaardBorder);
             JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
             JLabel jlPlay = Functies.maakFotoLabel("src/images/play_small.png");
             jlMin.setPreferredSize(new Dimension(20, 20));
+
             JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
+
+            Afspeellijst currentAfspeellijst = hoofdscherm.getAfspeellijst();
+            if (currentAfspeellijst != null && afspeellijst.getAfspeellijstId() == currentAfspeellijst.getAfspeellijstId()) {
+                jlNaamAfspeellijst.setForeground(geselecteerdKleur);
+                jpAfspeellijstBalk.setBorder(selectedBorder);
+            }
+
+
             c.insets = new Insets(0, 20, 0, 20);
             c.weightx = 1;
             c.gridx = 0;
@@ -73,7 +83,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
             c.insets = new Insets(0, 0, 0, 20);
             c.gridx = 1;
             c.weightx = 0;
-            jpAfspeellijstBalk.add(jlPlay, c);
+            if (afspeellijst.getAantalNummers() > 0) jpAfspeellijstBalk.add(jlPlay, c);
 
             c.gridx = 2;
             jpAfspeellijstBalk.add(jlMin, c);
@@ -90,10 +100,22 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
                     } else if (e.getSource() == jlNaamAfspeellijst) {
                         System.out.println("Open " + afspeellijst.getNaam());
                         openAfspeellijstDialog(afspeellijst);
+
                     } else if (e.getSource() == jlPlay) {
+
+                        for (Component c : jpAfspeellijsten.getComponents()) {  // un-highlight de andere geselecteerde afspeellijst
+                            if (c instanceof JPanel && ((JPanel) c).getBorder() == selectedBorder) {
+                                ((JPanel) c).getComponent(0).setForeground(null);
+                                ((JPanel) c).setBorder(standaardBorder);
+                            }
+                        }
+                        jlNaamAfspeellijst.setForeground(geselecteerdKleur);
+                        jpAfspeellijstBalk.setBorder(selectedBorder);
+
                         System.out.println("Speel " + afspeellijst.getNaam());
-                        setVisible(false);
-                        frame.speelAfspeellijst(afspeellijst);
+                        frame.setAfspeellijst(afspeellijst);
+                        frame.setNummer(afspeellijst.getCurrentSong());
+                        frame.startNummer();
                     }
                 }
 
@@ -131,12 +153,6 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
     // Functie om een bepaalde afspeellijst te openen, aangezien this in de MouseListener slaat op de MouseListener i.p.v het scherm. Meegeven afspeellijst voor het scherm om te openen.
     private void openAfspeellijstDialog(Afspeellijst afspeellijst) {
         NummersInAfspeellijst Dialoog = new NummersInAfspeellijst(afspeellijst, this, hoofdscherm);
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
     }
 }
 

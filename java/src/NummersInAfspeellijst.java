@@ -14,6 +14,10 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
     private JLabel jlKiesNummer;
     private MainScherm hoofdscherm;
 
+    private static Color geselecteerdKleur = Color.BLACK;
+    private static Border standaardBorder = BorderFactory.createLineBorder(Color.BLACK, 1);
+    private static Border selectedBorder = BorderFactory.createLineBorder(Color.BLACK, 3);
+
     // Een Afspeellijst meegeven om zo de informatie van een afspeellijst op te kunnen halen.
     public NummersInAfspeellijst(Afspeellijst afspeellijst, JDialog frame, MainScherm root) {
         super(frame, true);
@@ -40,8 +44,7 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
         add(jpNummers, c);
         jlKiesNummer = new JLabel("Nummers in afspeellijst: " + afspeellijst.getNaam());
 
-        Border border = BorderFactory.createLineBorder(Color.black, 1);
-        jpNummers.setBorder(border);
+        jpNummers.setBorder(standaardBorder);
         c.weightx = 1;
         c.gridx = 0;
         c.gridy = 0;
@@ -54,10 +57,21 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
             JPanel jpNummerBalk = new JPanel();
             jpNummerBalk.setBackground(new Color(255, 145, 164));
             jpNummerBalk.setLayout(new GridBagLayout());
-            jpNummerBalk.setBorder(border);
+            jpNummerBalk.setBorder(standaardBorder);
             JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
             jlMin.setPreferredSize(new Dimension(20, 20));
             JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
+
+            Nummer currentSong = hoofdscherm.getNummer();
+            Afspeellijst currentAfspeellijst = hoofdscherm.getAfspeellijst();
+            if (currentSong != null && currentAfspeellijst != null &&
+                    nummer.getNummerId() == currentSong.getNummerId() &&
+                    afspeellijst.getAfspeellijstId() == currentAfspeellijst.getAfspeellijstId())
+            {
+                jlNaamNummer.setForeground(geselecteerdKleur);
+                jpNummerBalk.setBorder(selectedBorder);
+            }
+
             c.gridy++;
             c.ipady = 20;
             c.ipadx = 20;
@@ -70,6 +84,7 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
             c.gridx = 0;
             c.weightx = 1;
             jpNummers.add(jpNummerBalk, c);
+
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin) {
@@ -79,10 +94,20 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
                             setVisible(false);
                         }
                     } else if (e.getSource() == jlNaamNummer) {
-                        System.out.println("Speel " + nummer.getNaam() + " af");
 
+                        for (Component c : jpNummers.getComponents()) {
+                            if (c instanceof JPanel && ((JPanel) c).getBorder() == selectedBorder) {
+                                ((JPanel) c).getComponent(0).setForeground(null);
+                                ((JPanel) c).setBorder(standaardBorder);
+                            }
+                        }
+                        jlNaamNummer.setForeground(geselecteerdKleur);
+                        jpNummerBalk.setBorder(selectedBorder);
+
+
+                        System.out.println("Speel " + nummer.getNaam() + " af");
                         hoofdscherm.setNummer(nummer);
-                        hoofdscherm.speelAfspeellijst(afspeellijst);
+                        hoofdscherm.setAfspeellijst(afspeellijst);
                         hoofdscherm.startNummer();
 
                     }

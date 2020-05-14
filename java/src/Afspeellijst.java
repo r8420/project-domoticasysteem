@@ -48,7 +48,8 @@ public class Afspeellijst {
         }
     }
 
-
-
+    public int getAantalNummers() {
+        return nummers.size();
+    }
 }
 

@@ -340,7 +340,15 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         muziekSliderTimer = new Timer(1000, e -> {
             if (jsTijdMuziek.getValueIsAdjusting()) return;
             if (jsTijdMuziek.getValue() == nummer.getTijdsduur()) {
-                pause();
+
+                if (afspeellijst != null) {  // als er een afspeellijst speelt, ga naar volgend nummer
+                    afspeellijst.nextSong();
+                    setNummer(afspeellijst.getCurrentSong());
+                    startNummer();
+                    return;
+                }
+
+                pause();  // geen afspeellijst, stop aan het einde van nummer.
                 return;
             }
             int nieuweTijd = jsTijdMuziek.getValue() + 1;
@@ -492,26 +500,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlProfielNaam.setText(naam);
     }
 
-    public void setNummer(Nummer nummer) {
-        this.nummer = nummer;
-
-        jsTijdMuziek.setMaximum(nummer.getTijdsduur());
-        Hashtable<Integer, JLabel> newLabelTable = new Hashtable<>();
-        newLabelTable.put(0, jlHuidigeTijd);
-        newLabelTable.put(nummer.getTijdsduur(), new JLabel(Functies.intToTimestamp(nummer.getTijdsduur())));
-        jsTijdMuziek.setLabelTable(newLabelTable);
-
-        setMuziekText(nummer.getNaam() + " - " + nummer.getArtiest());
-        ;
-        jsTijdMuziek.setValue(0);
-        jsTijdMuziek.setEnabled(true);
-
-        jpMuziekKnoppen.repaint(); // dit update de aangepaste waardes op het scherm
-    }
-
-    public void speelAfspeellijst(Afspeellijst afspeellijst) {
+    public void setAfspeellijst(Afspeellijst afspeellijst) {
         this.afspeellijst = afspeellijst;
-
     }
 
     public void setMuziekText(String text) {
@@ -528,7 +518,26 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
     }
 
+    public void setNummer(Nummer nummer) {
+        this.nummer = nummer;
+
+        jsTijdMuziek.setMaximum(nummer.getTijdsduur());
+        Hashtable<Integer, JLabel> newLabelTable = new Hashtable<>();
+        newLabelTable.put(0, jlHuidigeTijd);
+        newLabelTable.put(nummer.getTijdsduur(), new JLabel(Functies.intToTimestamp(nummer.getTijdsduur())));
+        jsTijdMuziek.setLabelTable(newLabelTable);
+
+        setMuziekText(nummer.getNaam() + " - " + nummer.getArtiest());
+
+        jsTijdMuziek.setValue(0);
+        jsTijdMuziek.setEnabled(true);
+
+        jpMuziekKnoppen.repaint(); // dit update de aangepaste waardes op het scherm
+    }
+
     public void startNummer() {
+        if (nummer == null) return;
+
         mainInput.sendPiMessage("MUSIC PLAY " + nummer.getBestandsNaam());
         String response = mainInput.waitForPiResponse();
         if (response != null && !response.equals("fail")) {
@@ -569,6 +578,26 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         }
     }
 
+    public void nextSong() {
+
+        afspeellijst.nextSong();
+        setNummer(afspeellijst.getCurrentSong());
+        startNummer();
+    }
+
+    public void previousSong() {
+        afspeellijst.previousSong();
+        setNummer(afspeellijst.getCurrentSong());
+        startNummer();
+    }
+
+    public Nummer getNummer() {
+        return nummer;
+    }
+
+    public Afspeellijst getAfspeellijst() {
+        return afspeellijst;
+    }
 
     @Override
     public void stateChanged(ChangeEvent e) {
@@ -654,6 +683,14 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 jpMuziekKnoppen.setSize(jpMuziekKnoppen.getWidth(), 60);
                 jpMuziekKnoppen.setPreferredSize(new Dimension(jpMuziekKnoppen.getWidth(), 60));
             }
+        } else if (e.getSource() == jlSkip) {
+
+            nextSong();
+
+        } else if (e.getSource() == jlSkipBack) {
+
+            previousSong();
+
         }
     }
 
@@ -685,6 +722,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             try {
                 NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this); // nummer-overzicht dialog
             } catch (NullPointerException NPE) {
+//                NPE.printStackTrace();
                 geenDatabase_Dialog();
             }
 
@@ -709,6 +747,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             } catch (NullPointerException NPE) {
                 geenDatabase_Dialog();
             }
+
         }
     }
 }
