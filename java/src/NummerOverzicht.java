@@ -21,12 +21,14 @@ public class NummerOverzicht extends JDialog implements ActionListener {
         this.hoofdscherm = frame;
         this.nummers = Database.selectNummers();
         setTitle("Nummer overzicht");
+        getContentPane().setBackground(new Color(255, 145, 164));
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
 
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpNummers = new JPanel();
+        jpNummers.setBackground(new Color(255, 205, 214));
         jpNummers.setLayout(new GridBagLayout());
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.BOTH;
@@ -47,6 +49,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
         // Foreach om alle nummers te kunnen printen, plusje om een nummer toe te voegen aan een afspeellijst
         for (Nummer nummer : nummers) {
             JPanel jpNummerBalk = new JPanel();
+            jpNummerBalk.setBackground(new Color(255, 145, 164));
             jpNummerBalk.setLayout(new GridBagLayout());
             jpNummerBalk.setBorder(border);
             JLabel jlPlus = Functies.maakFotoLabel("src/images/plus.png");

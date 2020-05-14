@@ -22,6 +22,7 @@ public class ProfielenManagement extends JDialog implements MouseListener {
         super(frame, true);
 
         setTitle("Kies profiel");
+        getContentPane().setBackground(new Color(255, 205, 214));
         setLayout(new GridBagLayout());
         setSize(800, 300);
 

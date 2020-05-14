@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,14 @@ public final class Functies {
             return new JLabel(new ImageIcon(myPicture));
         } catch (IOException e) {
             return new JLabel("<image not found>");
+        }
+    }
+
+    public static Image maakImage(String locatie) {
+        try {
+            return ImageIO.read(new File(locatie));
+        } catch (IOException e) {
+            return null;
         }
     }
 

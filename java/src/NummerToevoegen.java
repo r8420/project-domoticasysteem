@@ -18,12 +18,14 @@ public class NummerToevoegen extends JDialog implements ActionListener {
         super(frame, true);
         this.nummer = nummer;
         setTitle("Afspeellijst overzicht");
+        getContentPane().setBackground(new Color(255, 145, 164));
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
         afspeellijsten = Database.selectAfspeellijsten(profileId);
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpAfspeellijsten = new JPanel();
+        jpAfspeellijsten.setBackground(new Color(255, 205, 214));
         jpAfspeellijsten.setLayout(new GridBagLayout());
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.BOTH;
@@ -45,6 +47,7 @@ public class NummerToevoegen extends JDialog implements ActionListener {
 
         for (Afspeellijst afspeellijst : afspeellijsten) {
             JPanel jpAfspeellijstBalk = new JPanel();
+            jpAfspeellijstBalk.setBackground(new Color(255, 145, 164));
             jpAfspeellijstBalk.setLayout(new GridBagLayout());
             jpAfspeellijstBalk.setBorder(border);
             JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());

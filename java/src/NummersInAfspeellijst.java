@@ -24,12 +24,14 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
 
         // afspeellijst.getNaam() halen uit de meegegeven afspeellijst.
         setTitle("Nummers in afspeellijst " + afspeellijst.getNaam());
+        getContentPane().setBackground(new Color(255, 145, 164));
         setSize(400, 600);
         setLayout(new GridBagLayout());
 
 
         GridBagConstraints c = new GridBagConstraints();
         JPanel jpNummers = new JPanel();
+        jpNummers.setBackground(new Color(255, 205, 214));
         jpNummers.setLayout(new GridBagLayout());
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.BOTH;
@@ -50,6 +52,7 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
         // Foreach om alle nummers te printen binnen afspeellijst X
         for (Nummer nummer : nummers) {
             JPanel jpNummerBalk = new JPanel();
+            jpNummerBalk.setBackground(new Color(255, 145, 164));
             jpNummerBalk.setLayout(new GridBagLayout());
             jpNummerBalk.setBorder(border);
             JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");

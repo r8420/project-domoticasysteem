@@ -19,6 +19,7 @@ public class AfspeellijstToevoegen extends JDialog implements ActionListener {
     public AfspeellijstToevoegen(JFrame frame) {
         super(frame, true);
         setTitle("Nieuwe afspeellijst aanmaken");
+        getContentPane().setBackground(new Color(255, 205, 214));
         setSize(300, 130);
         setLayout(new FlowLayout());
 

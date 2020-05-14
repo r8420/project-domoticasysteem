@@ -2,9 +2,9 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -78,6 +78,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         setLocation(500, 0);
         setTitle("Domotica Systeem");
         setResizable(false);
+        setIconImage(Functies.maakImage("src/images/icon.png"));
 
 
         /*
