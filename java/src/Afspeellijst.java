@@ -6,8 +6,7 @@ public class Afspeellijst {
     private int profileId;
     private String naam;
     private ArrayList<Nummer> nummers;
-    private Nummer nummer;
-
+    private int currentSong ;
 
     public int getAfspeellijstId() {
         return afspeellijstId;
@@ -17,24 +16,38 @@ public class Afspeellijst {
         this.afspeellijstId = afspeellijstId;
         this.profileId = profileId;
         this.naam = naam;
-    }
+        this.currentSong = 0;
 
-    public void voegNummerToe(Nummer nummer) {
-        nummers.add(nummer);
-    }
-
-    public String toString() {
-
-        return "Afspeellijstnaam: " + naam;
+        this.nummers = Database.selectNummersUitAfspeellijst(afspeellijstId);
     }
 
     public String getNaam() {
         return naam;
     }
 
-    public String printNummers() {
-        return nummer.getNaam();
+    public void setCurrentSong(int currentSong) {
+        this.currentSong = currentSong;
     }
+
+    public Nummer getCurrentSong() {
+        if (nummers.size() > 0) return nummers.get(currentSong);
+        else return null;
+    }
+
+    public void nextSong() {
+        currentSong++;
+        if (currentSong >= nummers.size()) {
+            currentSong = 0;
+        }
+    }
+
+    public void previousSong() {
+        currentSong--;
+        if (currentSong < 0) {
+            currentSong = nummers.size()-1;
+        }
+    }
+
 
 
 }

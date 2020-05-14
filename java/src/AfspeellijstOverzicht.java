@@ -45,28 +45,40 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
         c.gridy = 1;
 
 
+        c.ipady = 20;
+        c.ipadx = 20;
+        c.fill = GridBagConstraints.HORIZONTAL;
+
         for (Afspeellijst afspeellijst : afspeellijsten) {
+
+            c.gridy++;
+
             JPanel jpAfspeellijstBalk = new JPanel();
             jpAfspeellijstBalk.setBackground(new Color(255, 145, 164));
             jpAfspeellijstBalk.setLayout(new GridBagLayout());
             jpAfspeellijstBalk.setBorder(border);
             JLabel jlMin = Functies.maakFotoLabel("src/images/min.png");
+            JLabel jlPlay = Functies.maakFotoLabel("src/images/play_small.png");
             jlMin.setPreferredSize(new Dimension(20, 20));
             JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
-            c.gridy++;
-            c.ipady = 20;
-            c.ipadx = 20;
             c.insets = new Insets(0, 20, 0, 20);
-            c.fill = GridBagConstraints.HORIZONTAL;
-            jpAfspeellijstBalk.add(jlNaamAfspeellijst, c);
-            c.gridx = 1;
-            c.weightx = 0;
-            jpAfspeellijstBalk.add(jlMin, c);
+            c.weightx = 1;
             c.gridx = 0;
+            jpAfspeellijstBalk.add(jlNaamAfspeellijst, c);
+
+
             c.weightx = 1;
             jpAfspeellijsten.add(jpAfspeellijstBalk, c);
 
+            c.insets = new Insets(0, 0, 0, 20);
+            c.gridx = 1;
+            c.weightx = 0;
+            jpAfspeellijstBalk.add(jlPlay, c);
 
+            c.gridx = 2;
+            jpAfspeellijstBalk.add(jlMin, c);
+
+            c.gridx = 1;
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin) {
@@ -78,6 +90,10 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
                     } else if (e.getSource() == jlNaamAfspeellijst) {
                         System.out.println("Open " + afspeellijst.getNaam());
                         openAfspeellijstDialog(afspeellijst);
+                    } else if (e.getSource() == jlPlay) {
+                        System.out.println("Speel " + afspeellijst.getNaam());
+                        setVisible(false);
+                        frame.speelAfspeellijst(afspeellijst);
                     }
                 }
 
@@ -97,6 +113,7 @@ public class AfspeellijstOverzicht extends JDialog implements ActionListener {
 
                 }
             };
+            jlPlay.addMouseListener(listener);
             jlMin.addMouseListener(listener);
             jlNaamAfspeellijst.addMouseListener(listener);
         }

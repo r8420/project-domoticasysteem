@@ -77,7 +77,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
 
                         System.out.println("Speel " + nummer.getNaam() + " af");
                         hoofdscherm.setNummer(nummer);
-                        hoofdscherm.setAfspeellijst(null);
+                        hoofdscherm.speelAfspeellijst(null);
                         hoofdscherm.startNummer();
                     }
                 }

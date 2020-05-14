@@ -448,13 +448,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 setLuchtvochtigheid(luchtvochtigheid);
                 setLuchtdruk(luchtdruk);
 
-                if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
-                    jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
-                    System.out.println("Kachel Aan");
-                } else {
-                    jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
-                    System.out.println("Kachel Uit");
-                }
+                pasVerwarmingAan();
             }
         }
 
@@ -465,6 +459,16 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             Database.insertLog(temperatuur, luchtdruk, luchtvochtigheid);
         } else if (arduinoMeetIets) {
             Database.insertLog((int) lichtsterkte);
+        }
+    }
+
+    public void pasVerwarmingAan() {
+        if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
+            jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
+            System.out.println("Kachel Aan");
+        } else {
+            jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
+            System.out.println("Kachel Uit");
         }
     }
 
@@ -505,8 +509,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpMuziekKnoppen.repaint(); // dit update de aangepaste waardes op het scherm
     }
 
-    public void setAfspeellijst(Afspeellijst afspeellijst) {
+    public void speelAfspeellijst(Afspeellijst afspeellijst) {
         this.afspeellijst = afspeellijst;
+
     }
 
     public void setMuziekText(String text) {
@@ -603,6 +608,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         } else if (e.getSource() == jspVerwarmingsTemperatuur) {
             // verwarmingstemperatuur is veranderd
+            pasVerwarmingAan();
             try {
                 Database.updateProfielTemp((double) jspVerwarmingsTemperatuur.getValue(), profiel.getId());
             } catch (NullPointerException np) {

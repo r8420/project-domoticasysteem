@@ -82,7 +82,7 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
                         System.out.println("Speel " + nummer.getNaam() + " af");
 
                         hoofdscherm.setNummer(nummer);
-                        hoofdscherm.setAfspeellijst(afspeellijst);
+                        hoofdscherm.speelAfspeellijst(afspeellijst);
                         hoofdscherm.startNummer();
 
                     }
