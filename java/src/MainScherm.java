@@ -193,7 +193,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpVerwarming.add(jspVerwarmingsTemperatuur, c);
         c.weightx = 1;
         jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
-        jpVerwarming.add(jlKachelStatus,c);
+        jpVerwarming.add(jlKachelStatus, c);
         c.gridy = 0;
 
 
@@ -202,7 +202,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpLicht = new JPanel();
         jpLicht.setLayout(new GridBagLayout());
-
 
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
@@ -288,7 +287,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlNummerOverzicht.setBackground(new Color(255, 145, 164));
         jlAfspeellijstOverzicht.setBackground(new Color(255, 145, 164));
         jlAfspeellijstToevoegen.setBackground(new Color(255, 145, 164));
-        
+
         jpMuziekspeler.setBackground(new Color(255, 205, 214));
         jslMaxLichtsterkte.setBackground(new Color(255, 205, 214));
         jsTijdMuziek.setBackground(new Color(255, 205, 214));
@@ -420,7 +419,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             if (arduinoMeting != null && !arduinoMeting.equals("fail")) {
 
                 lichtsterkte = Double.parseDouble(arduinoMeting);
-                lichtsterkte = Math.round(lichtsterkte/102.4); // Opgehaalde lichtwaarde van de Arduino relativeren naar 0 tot 10, overeenkomend met de slider.
+                lichtsterkte = Math.round(lichtsterkte / 102.4); // Opgehaalde lichtwaarde van de Arduino relativeren naar 0 tot 10, overeenkomend met de slider.
 
                 System.out.println(lichtsterkte);
                 arduinoMeetIets = true;
@@ -439,7 +438,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 }
                 mainInput.waitForPiResponse();
 
-            } catch (NullPointerException nullpointer){
+            } catch (NullPointerException nullpointer) {
                 System.out.println(nullpointer);
             }
         }
@@ -476,7 +475,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void pasVerwarmingAan() {
-        if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()){
+        if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()) {
             jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
             System.out.println("Kachel Aan");
         } else {
@@ -584,7 +583,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
 
-
     public void nextSong() {
 
         if (afspeellijst == null) {
@@ -599,7 +597,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void previousSong() {
-        if (afspeellijst == null){
+        if (afspeellijst == null) {
             alleNummers.previousSong();
             setNummer(alleNummers.getCurrentSong());
             startNummer();
@@ -755,7 +753,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
                 if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
 
-                    if(!Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst())) {
+                    if (!Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst())) {
                         JOptionPane.showMessageDialog(this, "Een Afspeellijst mag een naam van maximaal 15 symbolen hebben.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                     }
 

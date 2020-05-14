@@ -93,7 +93,7 @@ public class AfspeellijstOverzicht extends JDialog {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin) {
                         System.out.println("Verwijder " + afspeellijst.getNaam());
-                        if (verwijderAfspeellijst() == JOptionPane.YES_OPTION){
+                        if (verwijderAfspeellijst() == JOptionPane.YES_OPTION) {
                             Database.deleteAfspeellijst(afspeellijst.getAfspeellijstId());
                             setVisible(false);
                         }

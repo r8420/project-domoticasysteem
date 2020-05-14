@@ -130,11 +130,6 @@ public class NummerOverzicht extends JDialog implements ActionListener {
     }
 
 
-    public int getAantalNummers() {
-        return nummers.size();
-    }
-
-
     @Override
     public void actionPerformed(ActionEvent e) {
 

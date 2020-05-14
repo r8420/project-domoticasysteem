@@ -12,7 +12,7 @@ public class Afspeellijst {
         return afspeellijstId;
     }
 
-    public Afspeellijst(ArrayList<Nummer> nummers){
+    public Afspeellijst(ArrayList<Nummer> nummers) {
         this.nummers = nummers;
     }
 
@@ -48,7 +48,7 @@ public class Afspeellijst {
     public void previousSong() {
         currentSong--;
         if (currentSong < 0) {
-            currentSong = nummers.size()-1;
+            currentSong = nummers.size() - 1;
         }
     }
 

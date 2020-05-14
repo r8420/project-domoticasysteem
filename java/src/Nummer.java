@@ -8,7 +8,6 @@ public class Nummer {
     private int nummerId;
 
 
-
     public int getNummerId() {
         return nummerId;
     }
@@ -40,9 +39,6 @@ public class Nummer {
     public String getBestandsNaam() {
         return bestandsNaam;
     }
-
-
-
 
 
 }
