@@ -579,13 +579,14 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void nextSong() {
-
+        if (afspeellijst == null) return;
         afspeellijst.nextSong();
         setNummer(afspeellijst.getCurrentSong());
         startNummer();
     }
 
     public void previousSong() {
+        if (afspeellijst == null) return;
         afspeellijst.previousSong();
         setNummer(afspeellijst.getCurrentSong());
         startNummer();
