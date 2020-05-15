@@ -567,6 +567,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     public void setNummer(Nummer nummer) {
         this.nummer = nummer;
 
+        if(nummer == null) return;
         jsTijdMuziek.setMaximum(nummer.getTijdsduur());
         Hashtable<Integer, JLabel> newLabelTable = new Hashtable<>();
         newLabelTable.put(0, jlHuidigeTijd);
