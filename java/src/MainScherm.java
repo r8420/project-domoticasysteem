@@ -4,8 +4,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
@@ -27,6 +25,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlLichtSymbool;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
+    private LichtGraphicsPanel lichtGraphicsPanel;
 //    private JButton jbLichtAan;
 //    private JButton jbLichtUit;
 
@@ -189,7 +188,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlTemperatuur = new JLabel("-");
         jlTemperatuur.setFont(new Font(jlTemperatuur.getFont().getName(), Font.BOLD, 50));
-        setTemperatuur(25); // tijdelijk
+//        setTemperatuur(25); // tijdelijk
         jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 50, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
@@ -219,6 +218,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
         jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeUit.png");
+        lichtGraphicsPanel = new LichtGraphicsPanel();
+        lichtGraphicsPanel.setLichtsterkte(3); // tijdelijk
 
         // de slider kan zo een waarde van 0 tot 10 krijgen.
         int maxLichtWaarde = 10;
@@ -234,26 +235,36 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jslMaxLichtsterkte.setPreferredSize(new Dimension(400, 40));
 
         // links
+        c.gridy = 0;
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(20, 40, 10, 0);
+        jpLichtLinks.add(jlLichtsterkte, c);
+        c.insets = new Insets(0, 40, 20, 0);
+        c.gridy = 1;
         c.weighty = 1;
-        c.insets = new Insets(20, 20, 20, 0);
-        jpLichtLinks.add(new JPanel(), c);
+        jpLichtLinks.add(lichtGraphicsPanel, c);
+        c.gridx = 1;
+        c.gridy = 0;
+        c.gridheight = 2;
+        c.insets = new Insets(0, 0, 0, 20);
         jpLichtLinks.add(jlLichtSymbool, c);
+
+        c.gridx = -1; //reset
+        c.gridheight = 1; //reset
 
 
         // rechts
         c.insets = new Insets(0, 0, 0, 0);
         c.gridy = 0;
-        jpLichtRechts.add(jlLichtsterkte, c);
-        c.gridy = 1;
-        c.weighty = 0;
+        c.anchor = GridBagConstraints.PAGE_END;
         jpLichtRechts.add(new JLabel("Licht aan tot en met: "), c);
-        c.weighty = 1;
+        c.anchor = GridBagConstraints.PAGE_START;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridy = 2;
+        c.gridy++;
         jpLichtRechts.add(jslMaxLichtsterkte, c);
 
+        c.anchor = GridBagConstraints.CENTER; // reset
         c.gridy = 0; // reset
 
 
@@ -269,8 +280,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlLuchtdruk.setFont(new Font(jlLuchtdruk.getFont().getName(), Font.BOLD, 30));
         jlLuchtvochtigheid.setFont(new Font(jlLuchtvochtigheid.getFont().getName(), Font.BOLD, 30));
         
-        setLuchtvochtigheid(20); // tijdelijk
-        setLuchtdruk(500); // tijdelijk
+//        setLuchtvochtigheid(20); // tijdelijk
+//        setLuchtdruk(500); // tijdelijk
 
         jpLucht.add(Functies.maakFotoLabel("src/images/Luchtdruk.png"), c);
         jpLucht.add(jlLuchtdruk, c);
@@ -298,7 +309,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlProfielNaam = new JLabel();
         jpZijkant.add(jlProfielNaam, c);
         jpZijkant.add(new JLabel("Ander profiel"), c);
-
 
         // reset GridBagConstraints
         c.anchor = GridBagConstraints.CENTER;
@@ -530,6 +540,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void setLichtsterkte(int licht) {
+        lichtGraphicsPanel.setLichtsterkte(licht);
         jlLichtsterkte.setText("Huidige lichtsterkte: " + licht);
     }
 
