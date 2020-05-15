@@ -298,6 +298,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpZijkant.add(jlAnderProfielAfb, c);
         c.gridy = 1;
         c.weighty = 1;
+        c.fill = GridBagConstraints.NONE;
         jlProfielNaam = new JLabel();
         jpZijkant.add(jlProfielNaam, c);
         jpZijkant.add(new JLabel("Ander profiel"), c);
