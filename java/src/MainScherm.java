@@ -24,6 +24,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlLuchtvochtigheid;
     private JLabel jlProfielNaam;
     private JLabel jlAnderProfielAfb;
+    private JLabel jlLichtSymbool;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
 //    private JButton jbLichtAan;
@@ -188,7 +189,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlTemperatuur = new JLabel("-");
         jlTemperatuur.setFont(new Font(jlTemperatuur.getFont().getName(), Font.BOLD, 50));
-        setTemperatuur(25);
+        setTemperatuur(25); // tijdelijk
         jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 50, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
@@ -217,6 +218,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLicht.add(jpLichtRechts);
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
+        jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeUit.png");
 
         // de slider kan zo een waarde van 0 tot 10 krijgen.
         int maxLichtWaarde = 10;
@@ -231,7 +233,17 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jslMaxLichtsterkte.addChangeListener(this);
         jslMaxLichtsterkte.setPreferredSize(new Dimension(400, 40));
 
+        // links
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.BOTH;
         c.weighty = 1;
+        c.insets = new Insets(20, 20, 20, 0);
+        jpLichtLinks.add(new JPanel(), c);
+        jpLichtLinks.add(jlLichtSymbool, c);
+
+
+        // rechts
+        c.insets = new Insets(0, 0, 0, 0);
         c.gridy = 0;
         jpLichtRechts.add(jlLichtsterkte, c);
         c.gridy = 1;
@@ -250,11 +262,19 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         JPanel jpLucht = new JPanel();
         jpLucht.setLayout(new GridBagLayout());
-        jlLuchtdruk = new JLabel("Luchtdruk: -");
-        jlLuchtvochtigheid = new JLabel("Luchtvochtigheid: -");
-        c.weightx = 0;
+
+        jlLuchtdruk = new JLabel("-");
+        jlLuchtvochtigheid = new JLabel("-");
+
+        jlLuchtdruk.setFont(new Font(jlLuchtdruk.getFont().getName(), Font.BOLD, 30));
+        jlLuchtvochtigheid.setFont(new Font(jlLuchtvochtigheid.getFont().getName(), Font.BOLD, 30));
+        
+        setLuchtvochtigheid(20); // tijdelijk
+        setLuchtdruk(500); // tijdelijk
+
+        jpLucht.add(Functies.maakFotoLabel("src/images/Luchtdruk.png"), c);
         jpLucht.add(jlLuchtdruk, c);
-        c.weightx = 1;
+        jpLucht.add(Functies.maakFotoLabel("src/images/Waterdruppel.png"), c);
         jpLucht.add(jlLuchtvochtigheid, c);
 
 
@@ -294,22 +314,27 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpVerwarming.setBorder(testBorder);
         jpLicht.setBorder(testBorder);
         jpLucht.setBorder(testBorder);
+        
+        Color zalmroze = new Color(255, 145, 164);
+        Color lichtZalmroze = new Color(255, 205, 214);
 
-        getContentPane().setBackground(new Color(255, 145, 164));
-        jpZijkant.setBackground(new Color(255, 145, 164));
+        getContentPane().setBackground(zalmroze);
+        jpZijkant.setBackground(zalmroze);
 
-        jlNummerOverzicht.setBackground(new Color(255, 145, 164));
-        jlAfspeellijstOverzicht.setBackground(new Color(255, 145, 164));
-        jlAfspeellijstToevoegen.setBackground(new Color(255, 145, 164));
+        jlNummerOverzicht.setBackground(zalmroze);
+        jlAfspeellijstOverzicht.setBackground(zalmroze);
+        jlAfspeellijstToevoegen.setBackground(zalmroze);
 
-        jpMuziekspeler.setBackground(new Color(255, 205, 214));
-        jslMaxLichtsterkte.setBackground(new Color(255, 205, 214));
-        jsTijdMuziek.setBackground(new Color(255, 205, 214));
-        jpMuziekKnoppen.setBackground(new Color(255, 205, 214));
-        jpVerwarming.setBackground(new Color(255, 205, 214));
-        jpLucht.setBackground(new Color(255, 205, 214));
-        jpLicht.setBackground(new Color(255, 205, 214));
+        jpMuziekspeler.setBackground(lichtZalmroze);
+        jslMaxLichtsterkte.setBackground(lichtZalmroze);
+        jsTijdMuziek.setBackground(lichtZalmroze);
+        jpMuziekKnoppen.setBackground(lichtZalmroze);
+        jpLucht.setBackground(lichtZalmroze);
 
+        jpLichtLinks.setBackground(lichtZalmroze);
+        jpLichtRechts.setBackground(lichtZalmroze);
+        jpVerwarmingLinks.setBackground(lichtZalmroze);
+        jpVerwarmingRechts.setBackground(lichtZalmroze);
 
         /*
          * voeg alle panels toe aan het hoofdscherm
@@ -445,9 +470,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             try {
                 if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
                     mainInput.sendPiMessage("LAMP ON");
+                    jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeAan.png");
                     System.out.println("Lamp on");
                 } else {
                     mainInput.sendPiMessage("LAMP OFF");
+                    jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeUit.png");
                     System.out.println("Lamp off");
                 }
                 mainInput.waitForPiResponse();
@@ -507,11 +534,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     }
 
     public void setLuchtdruk(int druk) {
-        jlLuchtdruk.setText("Luchtdruk: " + druk + " mBar");
+        jlLuchtdruk.setText(druk + " mBar");
     }
 
     public void setLuchtvochtigheid(int luchtvochtigheid) {
-        jlLuchtvochtigheid.setText("Luchtvochtigheid: " + luchtvochtigheid + " %");
+        jlLuchtvochtigheid.setText(luchtvochtigheid + " %");
     }
 
     public void setProfielNaam(String naam) {
