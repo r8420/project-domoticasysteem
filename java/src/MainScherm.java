@@ -217,7 +217,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
         lichtGraphicsPanel = new LichtGraphicsPanel();
-        lichtGraphicsPanel.setLichtsterkte(3); // tijdelijk
+//        lichtGraphicsPanel.setLichtsterkte(3); // tijdelijk
 
         // de slider kan zo een waarde van 0 tot 10 krijgen.
         int maxLichtWaarde = 10;
