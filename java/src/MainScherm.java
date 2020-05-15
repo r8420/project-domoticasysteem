@@ -22,7 +22,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JLabel jlLuchtvochtigheid;
     private JLabel jlProfielNaam;
     private JLabel jlAnderProfielAfb;
-    private JLabel jlLichtSymbool;
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
     private LichtGraphicsPanel lichtGraphicsPanel;
@@ -217,7 +216,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jpLicht.add(jpLichtRechts);
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
-        jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeUit.png");
         lichtGraphicsPanel = new LichtGraphicsPanel();
 //        lichtGraphicsPanel.setLichtsterkte(3); // tijdelijk
 
@@ -235,27 +233,21 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jslMaxLichtsterkte.setPreferredSize(new Dimension(400, 40));
 
         // links
-        c.gridy = 0;
         c.anchor = GridBagConstraints.CENTER;
-        c.fill = GridBagConstraints.BOTH;
-        c.insets = new Insets(20, 40, 10, 0);
-        jpLichtLinks.add(jlLichtsterkte, c);
-        c.insets = new Insets(0, 40, 20, 0);
-        c.gridy = 1;
+        c.weightx = 0.5;
         c.weighty = 1;
+        jpLichtLinks.add(jlLichtsterkte, c);
+        c.weightx = 1;
+        c.fill = GridBagConstraints.BOTH;
+        c.ipady = -5;
+        c.insets = new Insets(20, 0, 20 ,0);
         jpLichtLinks.add(lichtGraphicsPanel, c);
-        c.gridx = 1;
-        c.gridy = 0;
-        c.gridheight = 2;
-        c.insets = new Insets(0, 0, 0, 20);
-        jpLichtLinks.add(jlLichtSymbool, c);
 
-        c.gridx = -1; //reset
-        c.gridheight = 1; //reset
+        c.ipady = 0; //reset
+        c.insets = new Insets(0, 0, 0 ,0); //reset
 
 
         // rechts
-        c.insets = new Insets(0, 0, 0, 0);
         c.gridy = 0;
         c.anchor = GridBagConstraints.PAGE_END;
         jpLichtRechts.add(new JLabel("Licht aan tot en met: "), c);
@@ -480,11 +472,9 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             try {
                 if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
                     mainInput.sendPiMessage("LAMP ON");
-                    jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeAan.png");
                     System.out.println("Lamp on");
                 } else {
                     mainInput.sendPiMessage("LAMP OFF");
-                    jlLichtSymbool = Functies.maakFotoLabel("src/images/LampjeUit.png");
                     System.out.println("Lamp off");
                 }
                 mainInput.waitForPiResponse();
