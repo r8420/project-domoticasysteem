@@ -89,9 +89,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * */
         setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        int standaardInset = 20;
-        c.insets = new Insets(10, standaardInset, 0, 0);
-        c.anchor = GridBagConstraints.LINE_START;
+        c.anchor = GridBagConstraints.CENTER;
 
 
         /*
@@ -181,38 +179,44 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * verwarming / temperatuur panel
          * */
         JPanel jpVerwarming = new JPanel();
-        jpVerwarming.setLayout(new GridBagLayout());
+        jpVerwarming.setLayout(new GridLayout(1,2));
+
+        JPanel jpVerwarmingLinks = new JPanel(new GridBagLayout());
+        JPanel jpVerwarmingRechts = new JPanel(new GridBagLayout());
+        jpVerwarming.add(jpVerwarmingLinks);
+        jpVerwarming.add(jpVerwarmingRechts);
+
+        jlTemperatuur = new JLabel("-");
+        jlTemperatuur.setFont(new Font(jlTemperatuur.getFont().getName(), Font.BOLD, 50));
+        setTemperatuur(25);
+        jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 50, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
         jspVerwarmingsTemperatuur.addChangeListener(this);
-        c.weightx = 0;
-        jpVerwarming.add(new JLabel("Huidige temperatuur: "), c);
-        jlTemperatuur = new JLabel("-");
-        jpVerwarming.add(jlTemperatuur, c);
-        c.gridy = 1;
-        jpVerwarming.add(new JLabel("Verwarmen tot en met: "), c);
-        jpVerwarming.add(jspVerwarmingsTemperatuur, c);
+
+        c.weightx = 0.5;
+        jpVerwarmingLinks.add(jlTemperatuur, c);
+        jpVerwarmingLinks.add(jlKachelStatus, c);
+
+        c.anchor = GridBagConstraints.LINE_END;
+        jpVerwarmingRechts.add(new JLabel("Verwarmen tot en met: "), c);
+        c.anchor = GridBagConstraints.LINE_START;
         c.weightx = 1;
-        jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
-        jpVerwarming.add(jlKachelStatus, c);
-        c.gridy = 0;
+        jpVerwarmingRechts.add(jspVerwarmingsTemperatuur, c);
 
 
         /*
          * licht panel
          * */
         JPanel jpLicht = new JPanel();
-        jpLicht.setLayout(new GridBagLayout());
+        jpLicht.setLayout(new GridLayout(1, 2));
 
+        JPanel jpLichtLinks = new JPanel(new GridBagLayout());
+        JPanel jpLichtRechts = new JPanel(new GridBagLayout());
+        jpLicht.add(jpLichtLinks);
+        jpLicht.add(jpLichtRechts);
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
-        c.weightx = 0;
-        c.weightx = 1;
-        jpLicht.add(jlLichtsterkte, c);
-        c.gridy = 1;
-        c.gridwidth = 3;
-        jpLicht.add(new JLabel("Licht aan tot en met: "), c);
-        c.gridy = 2;
 
         // de slider kan zo een waarde van 0 tot 10 krijgen.
         int maxLichtWaarde = 10;
@@ -226,10 +230,19 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jslMaxLichtsterkte.setPaintLabels(true);
         jslMaxLichtsterkte.addChangeListener(this);
         jslMaxLichtsterkte.setPreferredSize(new Dimension(400, 40));
-        jpLicht.add(jslMaxLichtsterkte, c);
 
+        c.weighty = 1;
         c.gridy = 0;
-        c.gridwidth = 1;
+        jpLichtRechts.add(jlLichtsterkte, c);
+        c.gridy = 1;
+        c.weighty = 0;
+        jpLichtRechts.add(new JLabel("Licht aan tot en met: "), c);
+        c.weighty = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridy = 2;
+        jpLichtRechts.add(jslMaxLichtsterkte, c);
+
+        c.gridy = 0; // reset
 
 
         /*
