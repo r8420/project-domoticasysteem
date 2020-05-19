@@ -1,23 +1,23 @@
-  int LDRValue = 0;
+int LDRValue = 0;
 boolean Running = true;
+
 void setup() {
-  // put your setup code here, to run once:
+  
   pinMode(A0,INPUT);
   Serial.begin(9600);
-  while(!Serial){
-    ;
+  while(!Serial){;}
 }
-}
+
 void loop() {
-  // put your main code here, to run repeatedly:
   
-   LDRValue = analogRead(A0); // read the value from the LDR
-   int waarde = LDRValue;
+  LDRValue = analogRead(A0); // read the value from the LDR
+  int waarde = LDRValue;
   
   
   int getal;
   String msg = "....";
   
+  // Deze for loop zorgt ervoor dat getal omgezet wordt naar een string van lengte 4. (51 wordt dus 0051)
   for (int i = 3; i>=0; i--) {
     getal = waarde % 10;
     waarde = (waarde - getal) / 10;
