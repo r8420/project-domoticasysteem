@@ -16,7 +16,7 @@ public class MainInput {
     }
 
     public void startPiSocket() {
-        String host = "pisander";
+        String host = "piri";
         int port = 8000;
 
         try {
