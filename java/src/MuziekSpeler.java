@@ -15,7 +15,7 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
     private JButton jbNummerOverzicht;
     private JLabel jlSkip;
     private JLabel jlSkipBack;
-    private JLabel jlPLay;
+    private JLabel jlPlay;
     private JLabel jlPuntjes;
     private JLabel jlNaamMuziek;
     private JLabel jlHuidigeTijd;
@@ -74,8 +74,8 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
         add(jpMuziekKnoppen);
         jlSkipBack = Functies.maakFotoLabel("src/images/skip_back.png");
         jlSkipBack.setBounds(190, 0, 50, 50);
-        jlPLay = Functies.maakFotoLabel("src/images/play.png");
-        jlPLay.setBounds(270, 0, 60, 60);
+        jlPlay = Functies.maakFotoLabel("src/images/play.png");
+        jlPlay.setBounds(270, 0, 60, 60);
         jlSkip = Functies.maakFotoLabel("src/images/skip_forward.png");
         jlSkip.setBounds(360, 0, 50, 50);
         jlPuntjes = Functies.maakFotoLabel("src/images/3_puntjes.png");
@@ -98,13 +98,13 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
 
 
         jlPuntjes.addMouseListener(this);
-        jlPLay.addMouseListener(this);
+        jlPlay.addMouseListener(this);
         jlSkip.addMouseListener(this);
         jlSkipBack.addMouseListener(this);
         jpMuziekKnoppen.add(jlSkip);
         jpMuziekKnoppen.add(jlSkipBack);
         jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
-        jpMuziekKnoppen.add(jlPLay);
+        jpMuziekKnoppen.add(jlPlay);
         jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
 
         jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
@@ -203,7 +203,7 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
         mainInput.sendPiMessage("MUSIC PLAY " + nummer.getBestandsNaam());
         String response = mainInput.waitForPiResponse();
         if (response != null && !response.equals("fail")) {
-            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+            jlPlay.setIcon(new ImageIcon("src/images/pause.png"));
             gepauzeerd = false;
             muziekSliderTimer.start();
         }
@@ -223,7 +223,7 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
 
         if (response != null && !response.equals("fail")) {
 
-            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
+            jlPlay.setIcon(new ImageIcon("src/images/pause.png"));
             gepauzeerd = false;
             muziekSliderTimer.start();
         }
@@ -234,7 +234,7 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
         mainInput.sendPiMessage("MUSIC PAUSE");
         String response = mainInput.waitForPiResponse();
         if (response != null && response.equals("success")) {
-            jlPLay.setIcon(new ImageIcon("src/images/play.png"));
+            jlPlay.setIcon(new ImageIcon("src/images/play.png"));
             gepauzeerd = true;
             muziekSliderTimer.stop();
         }
@@ -323,7 +323,7 @@ public class MuziekSpeler extends JPanel implements ActionListener, MouseListene
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getSource() == jlPLay) {
+        if (mouseEvent.getSource() == jlPlay) {
 
             if (nummer == null) {
                 setMuziekText("Kies eerst een nummer", true);
