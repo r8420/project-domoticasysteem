@@ -8,7 +8,7 @@ public class Database {
 
     // Functie om verbinding te maken met de database.
     private static Connection maakVerbinding() {
-//        if (!verbinding) return null;
+        if (!verbinding) return null;
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -32,9 +32,13 @@ public class Database {
             if (!verbinding) return;
 
             String query = "INSERT INTO log(Temperatuur, Luchtvochtigheid, Luchtdruk, Lichtsterkte)\n" +
-                    "VALUES (" + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ", " + lichtsterkte + ")";
+                    "VALUES ( ?, ?, ?, ? )";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setDouble(1, temperatuur);
+            preparedStmt.setInt(2, luchtvochtigheid);
+            preparedStmt.setInt(3, luchtdruk);
+            preparedStmt.setInt(4, lichtsterkte);
             preparedStmt.execute();
 
             conn.close();
@@ -52,9 +56,12 @@ public class Database {
             if (!verbinding) return;
 
             String query = "INSERT INTO log(Temperatuur, Luchtvochtigheid, Luchtdruk)\n" +
-                    "VALUES (" + temperatuur + ", " + luchtvochtigheid + ", " + luchtdruk + ")";
+                    "VALUES (?,?,?)";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setDouble(1, temperatuur);
+            preparedStmt.setInt(2, luchtvochtigheid);
+            preparedStmt.setInt(3, luchtdruk);
             preparedStmt.execute();
 
             conn.close();
@@ -72,9 +79,10 @@ public class Database {
             if (!verbinding) return;
 
             String query = "INSERT INTO log(Lichtsterkte)\n" +
-                    "VALUES (" + lichtsterkte + ")";
+                    "VALUES (?)";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, lichtsterkte);
             preparedStmt.execute();
 
             conn.close();
@@ -92,9 +100,10 @@ public class Database {
             if (!verbinding) return false;
 
             String query = "insert into profile(Gebruikersnaam)\n" +
-                    "VALUES ('" + gebruikersnaam + "')";
+                    "VALUES (?)";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setString(1, gebruikersnaam);
             preparedStmt.execute();
 
             conn.close();
@@ -147,10 +156,12 @@ public class Database {
             if (!verbinding) return;
 
             String query = "UPDATE profile\n" +
-                    "SET TempVerwarmen = '" + temperatuur + "'\n" +
-                    "WHERE ProfileId = '" + id + "'";
+                    "SET TempVerwarmen = ?\n" +
+                    "WHERE ProfileId = ?";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setDouble(1, temperatuur);
+            preparedStmt.setInt(2, id);
             preparedStmt.execute();
 
             conn.close();
@@ -168,10 +179,12 @@ public class Database {
             if (!verbinding) return;
 
             String query = "UPDATE profile\n" +
-                    "SET LichtWaarde = '" + licht + "'\n" +
-                    "WHERE ProfileId = '" + id + "'";
+                    "SET LichtWaarde = ?\n" +
+                    "WHERE ProfileId = ?";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, licht);
+            preparedStmt.setInt(2, id);
             preparedStmt.execute();
 
             conn.close();
@@ -225,9 +238,10 @@ public class Database {
 
             String query = "UPDATE profile\n" +
                     "SET LaatsteLogin = NOW()\n" +
-                    "WHERE ProfileId = " + id + ";";
+                    "WHERE ProfileId = ?;";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, id);
             preparedStmt.execute();
 
             conn.close();
@@ -278,9 +292,10 @@ public class Database {
             Connection conn = maakVerbinding();
             if (!verbinding) return null;
 
-            String query = "SELECT * FROM afspeellijst where ProfileId = '" + profileId + "'";
+            String query = "SELECT * FROM afspeellijst where ProfileId = ?";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, profileId);
             ResultSet rs = preparedStmt.executeQuery();
 
             ArrayList<Afspeellijst> resultaat = new ArrayList<>();
@@ -311,10 +326,11 @@ public class Database {
             Connection conn = maakVerbinding();
             if (!verbinding) return null;
 
-            String query = "select * from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.AfspeellijstId ='" + afspeellijstId + "'";
+            String query = "select * from nummer as n join afspeellijst_nummer as an on n.NummerId = an.NummerId join afspeellijst as a on a.AfspeellijstId = an.AfspeellijstId where a.AfspeellijstId =?";
 
             // create the mysql insert preparedstatement
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, afspeellijstId);
 
             // execute the preparedstatement
             ResultSet rs = preparedStmt.executeQuery();
@@ -342,15 +358,17 @@ public class Database {
     }
 
     // Functie voor het inserten van een nieuwe afspeellijst.
-    public static boolean insertAfspeellijst(int ProfileId, String Naam) {
+    public static boolean insertAfspeellijst(int profileId, String naam) {
         try {
 
             Connection conn = maakVerbinding();
             if (!verbinding) return false;
 
-            String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES ('" + ProfileId + "', '" + Naam + "')";
+            String query = "INSERT INTO afspeellijst (ProfileId, Naam) VALUES (?, ?)";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, profileId);
+            preparedStmt.setString(2, naam);
             preparedStmt.execute();
 
             conn.close();
@@ -365,15 +383,17 @@ public class Database {
 
 
     // Functie voor het inserten van een nummer in een bepaalde afspeellist.
-    public static boolean insertNummerInAfspeellijst(int AfspeellijstId, int NummerId) {
+    public static boolean insertNummerInAfspeellijst(int afspeellijstId, int nummerId) {
         try {
 
             Connection conn = maakVerbinding();
             if (!verbinding) return false;
 
-            String query = "INSERT INTO afspeellijst_nummer VALUES ('" + AfspeellijstId + "', '" + NummerId + "')";
+            String query = "INSERT INTO afspeellijst_nummer VALUES (?, ?)";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, afspeellijstId);
+            preparedStmt.setInt(2, nummerId);
             preparedStmt.execute();
 
             conn.close();
@@ -387,15 +407,17 @@ public class Database {
     }
 
     // Functie voor het verwijderen van een nummer uit een bepaalde afspeellist.
-    public static void deleteNummerUitAfspeellijst(int AfspeellijstId, int NummerId) {
+    public static void deleteNummerUitAfspeellijst(int afspeellijstId, int nummerId) {
         try {
 
             Connection conn = maakVerbinding();
             if (!verbinding) return;
 
-            String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId + "' AND NummerId =  '" + NummerId + "'";
+            String query = "delete from afspeellijst_nummer where AfspeellijstId = ? AND NummerId =  ?";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, afspeellijstId);
+            preparedStmt.setInt(2, nummerId);
             preparedStmt.execute();
 
             conn.close();
@@ -408,22 +430,23 @@ public class Database {
     }
 
 
-
     // Functie voor het verwijderen van een afspeellijst.
-    public static void deleteAfspeellijst(int AfspeellijstId) {
+    public static void deleteAfspeellijst(int afspeellijstId) {
         try {
 
             Connection conn = maakVerbinding();
             if (!verbinding) return;
 
-            String query = "delete from afspeellijst_nummer where AfspeellijstId = '" + AfspeellijstId + "'";
+            String query = "delete from afspeellijst_nummer where AfspeellijstId = ?";
 
             PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, afspeellijstId);
             preparedStmt.execute();
 
-            String query2 = "delete from afspeellijst where AfspeellijstId = '" + AfspeellijstId + "'";
+            String query2 = "delete from afspeellijst where AfspeellijstId = ?";
 
             PreparedStatement preparedStmt2 = conn.prepareStatement(query2);
+            preparedStmt.setInt(1, afspeellijstId);
             preparedStmt2.execute();
 
             conn.close();
