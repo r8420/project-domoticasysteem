@@ -58,7 +58,7 @@ public class NummerOverzicht extends JDialog implements ActionListener {
 
             JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
 
-            Nummer currentSong = frame.getNummer();
+            Nummer currentSong = frame.getJpMuziekspeler().getNummer();
             if (currentSong != null && nummer.getNummerId() == currentSong.getNummerId()) {
                 jlNaamNummer.setForeground(geselecteerdKleur);
                 jpNummerBalk.setBorder(selectedBorder);
@@ -94,9 +94,9 @@ public class NummerOverzicht extends JDialog implements ActionListener {
                         jpNummerBalk.setBorder(selectedBorder);
 
                         System.out.println("Speel " + nummer.getNaam() + " af");
-                        hoofdscherm.setNummer(nummer);
-                        hoofdscherm.setAfspeellijst(null);
-                        hoofdscherm.startNummer();
+                        hoofdscherm.getJpMuziekspeler().setNummer(nummer);
+                        hoofdscherm.getJpMuziekspeler().setAfspeellijst(null);
+                        hoofdscherm.getJpMuziekspeler().startNummer();
                     }
                 }
 
