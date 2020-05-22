@@ -64,7 +64,7 @@ public class AfspeellijstOverzicht extends JDialog {
 
             JLabel jlNaamAfspeellijst = new JLabel("  " + afspeellijst.getNaam());
 
-            Afspeellijst currentAfspeellijst = hoofdscherm.getAfspeellijst();
+            Afspeellijst currentAfspeellijst = hoofdscherm.getJpMuziekspeler().getAfspeellijst();
             if (currentAfspeellijst != null && afspeellijst.getAfspeellijstId() == currentAfspeellijst.getAfspeellijstId()) {
                 jlNaamAfspeellijst.setForeground(geselecteerdKleur);
                 jpAfspeellijstBalk.setBorder(selectedBorder);
@@ -113,9 +113,9 @@ public class AfspeellijstOverzicht extends JDialog {
                         jpAfspeellijstBalk.setBorder(selectedBorder);
 
                         System.out.println("Speel " + afspeellijst.getNaam());
-                        frame.setAfspeellijst(afspeellijst);
-                        frame.setNummer(afspeellijst.getCurrentSong());
-                        frame.startNummer();
+                        frame.getJpMuziekspeler().setAfspeellijst(afspeellijst);
+                        frame.getJpMuziekspeler().setNummer(afspeellijst.getCurrentSong());
+                        frame.getJpMuziekspeler().startNummer();
                     }
                 }
 

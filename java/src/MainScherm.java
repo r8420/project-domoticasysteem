@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Hashtable;
 
-public class MainScherm extends JFrame implements ChangeListener, MouseListener, ActionListener {
+public class MainScherm extends JFrame implements ChangeListener, MouseListener {
 
 
     public static void main(String[] args) throws InterruptedException {
@@ -18,6 +18,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     /* scherm-componenten */
     private JLabel jlLichtsterkte;
     private JLabel jlTemperatuur;
+    private JLabel jlKachelStatus;
     private JLabel jlLuchtdruk;
     private JLabel jlLuchtvochtigheid;
     private JLabel jlProfielNaam;
@@ -25,29 +26,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private JSpinner jspVerwarmingsTemperatuur;
     private JSlider jslMaxLichtsterkte;
     private LichtGraphicsPanel lichtGraphicsPanel;
-//    private JButton jbLichtAan;
-//    private JButton jbLichtUit;
-
-    /* muziekspeler-componenten */
-    private JButton jlAfspeellijstOverzicht;
-    private JButton jlAfspeellijstToevoegen;
-    private JButton jlNummerOverzicht;
-    private JLabel jlSkip;
-    private JLabel jlSkipBack;
-    private JLabel jlPLay;
-    private JLabel jlPuntjes;
-    private JLabel jlNaamMuziek;
-    private JLabel jlHuidigeTijd;
-    private JLabel jlKachelStatus;
-    private JSlider jsTijdMuziek;
-    private JPanel jpMuziekKnoppen;
-    private Timer muziekSliderTimer;
-    private boolean gepauzeerd = true;
-    private boolean valueWASadjusting;
-
-    private Nummer nummer = null;
-    private Afspeellijst afspeellijst = null;
-    private Afspeellijst alleNummers;
 
 
     /* connectie/update */
@@ -61,6 +39,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     private int luchtvochtigheid;
 
     private Profiel profiel;
+
+    private MuziekSpeler jpMuziekspeler;
 
     public MainScherm() throws InterruptedException {
 
@@ -90,95 +70,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         GridBagConstraints c = new GridBagConstraints();
         c.anchor = GridBagConstraints.CENTER;
 
-
-        /*
-         * muziekspeler panel
-         * */
-        // het vak voor de muziekpanel en de tekstvak van de muzieknaam
-        JPanel jpMuziekspeler = new JPanel();
-        jpMuziekspeler.setMaximumSize(new Dimension(700, 600));
-        jpMuziekspeler.setLayout(new FlowLayout());
-        jlNaamMuziek = new JLabel("Selecteer een nummer.", SwingConstants.CENTER);
-        jlNaamMuziek.setFont(new Font("Arial", Font.PLAIN, 30));
-        jlNaamMuziek.setPreferredSize(new Dimension(600, 100));
-        jlNaamMuziek.setMinimumSize(new Dimension(600, 100));
-
-        Border border = BorderFactory.createLineBorder(Color.black, 1);
-        jlNaamMuziek.setBorder(border);
-        jpMuziekspeler.add(jlNaamMuziek);
-
-
-        // de slider krijgt de max tijd en de huidige
-        int maxTijd = 10;
-        int huidigeTijd = 0;
-        jlHuidigeTijd = new JLabel("0:00");
-        jsTijdMuziek = new JSlider(0, maxTijd, 0);
-        jsTijdMuziek.setEnabled(false);
-        jsTijdMuziek.setMajorTickSpacing((int) (maxTijd * 0.1));
-        Hashtable<Integer, JLabel> tijdLableTable = new Hashtable<>();
-        tijdLableTable.put(0, jlHuidigeTijd);
-        tijdLableTable.put(maxTijd, new JLabel("00:00"));
-        jsTijdMuziek.setValue(huidigeTijd);
-        jsTijdMuziek.setLabelTable(tijdLableTable);
-        jsTijdMuziek.setPaintLabels(true);
-        jsTijdMuziek.setPreferredSize(new Dimension(600, 40));
-        jsTijdMuziek.setUI(new LightSliderUI(jsTijdMuziek));
-        jsTijdMuziek.addChangeListener(this);
-        jpMuziekspeler.add(jsTijdMuziek);
-
-        // de panel voor de knoppen van de mp3
-        jpMuziekKnoppen = new JPanel();
-        jpMuziekKnoppen.setLayout(null);
-        jpMuziekKnoppen.setPreferredSize(new Dimension(600, 60));
-        jpMuziekspeler.add(jpMuziekKnoppen);
-        jlSkipBack = Functies.maakFotoLabel("src/images/skip_back.png");
-        jlSkipBack.setBounds(190, 0, 50, 50);
-        jlPLay = Functies.maakFotoLabel("src/images/play.png");
-        jlPLay.setBounds(270, 0, 60, 60);
-        jlSkip = Functies.maakFotoLabel("src/images/skip_forward.png");
-        jlSkip.setBounds(360, 0, 50, 50);
-        jlPuntjes = Functies.maakFotoLabel("src/images/3_puntjes.png");
-        jlPuntjes.setBounds(440, 0, 50, 50);
-
-        // de knoppen voor de dropdown van 3_puntjes.png
-        jlAfspeellijstOverzicht = new JButton("Afspeellijst overzicht");
-        jlAfspeellijstOverzicht.setBounds(400, 61, 180, 20);
-        jlAfspeellijstOverzicht.addActionListener(this);
-
-
-        jlAfspeellijstToevoegen = new JButton("Afspeellijst toevoegen");
-        jlAfspeellijstToevoegen.setBounds(400, 82, 180, 20);
-        jlAfspeellijstToevoegen.addActionListener(this);
-
-
-        jlNummerOverzicht = new JButton("Nummer overzicht");
-        jlNummerOverzicht.setBounds(400, 103, 180, 20);
-        jlNummerOverzicht.addActionListener(this);
-
-
-        jlPuntjes.addMouseListener(this);
-        jlPLay.addMouseListener(this);
-        jlSkip.addMouseListener(this);
-        jlSkipBack.addMouseListener(this);
-        jpMuziekKnoppen.add(jlSkip);
-        jpMuziekKnoppen.add(jlSkipBack);
-        jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
-        jpMuziekKnoppen.add(jlPLay);
-        jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
-
-        jpMuziekKnoppen.add(Box.createHorizontalStrut(30));
-        jpMuziekKnoppen.add(jlPuntjes);
-        jpMuziekKnoppen.add(jlAfspeellijstOverzicht);
-        jpMuziekKnoppen.add(jlAfspeellijstToevoegen);
-        jpMuziekKnoppen.add(jlNummerOverzicht);
-
-
-
         /*
          * verwarming / temperatuur panel
          * */
         JPanel jpVerwarming = new JPanel();
-        jpVerwarming.setLayout(new GridLayout(1,2));
+        jpVerwarming.setLayout(new GridLayout(1, 2));
 
         JPanel jpVerwarmingLinks = new JPanel(new GridBagLayout());
         JPanel jpVerwarmingRechts = new JPanel(new GridBagLayout());
@@ -187,7 +83,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlTemperatuur = new JLabel("-");
         jlTemperatuur.setFont(new Font(jlTemperatuur.getFont().getName(), Font.BOLD, 50));
-//        setTemperatuur(25); // tijdelijk
         jlKachelStatus = Functies.maakFotoLabel("src/images/kachelUit.png");
         jspVerwarmingsTemperatuur = new JSpinner(new SpinnerNumberModel(0, 0, 50, 0.5));
         jspVerwarmingsTemperatuur.setPreferredSize(new Dimension(50, 30));
@@ -217,7 +112,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlLichtsterkte = new JLabel("Huidige lichtsterkte: -");
         lichtGraphicsPanel = new LichtGraphicsPanel();
-//        lichtGraphicsPanel.setLichtsterkte(3); // tijdelijk
+
 
         // de slider kan zo een waarde van 0 tot 10 krijgen.
         int maxLichtWaarde = 10;
@@ -240,11 +135,11 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.weightx = 1;
         c.fill = GridBagConstraints.BOTH;
         c.ipady = -5;
-        c.insets = new Insets(20, 0, 20 ,0);
+        c.insets = new Insets(20, 0, 20, 0);
         jpLichtLinks.add(lichtGraphicsPanel, c);
 
         c.ipady = 0; //reset
-        c.insets = new Insets(0, 0, 0 ,0); //reset
+        c.insets = new Insets(0, 0, 0, 0); //reset
 
 
         // rechts
@@ -271,9 +166,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
 
         jlLuchtdruk.setFont(new Font(jlLuchtdruk.getFont().getName(), Font.BOLD, 30));
         jlLuchtvochtigheid.setFont(new Font(jlLuchtvochtigheid.getFont().getName(), Font.BOLD, 30));
-        
-//        setLuchtvochtigheid(20); // tijdelijk
-//        setLuchtdruk(500); // tijdelijk
+
 
         jpLucht.add(Functies.maakFotoLabel("src/images/Luchtdruk.png"), c);
         jpLucht.add(jlLuchtdruk, c);
@@ -313,25 +206,18 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
          * Vormgeving
          * */
         Border testBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
-        jpMuziekspeler.setBorder(testBorder);
         jpVerwarming.setBorder(testBorder);
         jpLicht.setBorder(testBorder);
         jpLucht.setBorder(testBorder);
-        
+
         Color zalmroze = new Color(255, 145, 164);
         Color lichtZalmroze = new Color(255, 205, 214);
 
         getContentPane().setBackground(zalmroze);
         jpZijkant.setBackground(zalmroze);
 
-        jlNummerOverzicht.setBackground(zalmroze);
-        jlAfspeellijstOverzicht.setBackground(zalmroze);
-        jlAfspeellijstToevoegen.setBackground(zalmroze);
-
-        jpMuziekspeler.setBackground(lichtZalmroze);
         jslMaxLichtsterkte.setBackground(lichtZalmroze);
-        jsTijdMuziek.setBackground(lichtZalmroze);
-        jpMuziekKnoppen.setBackground(lichtZalmroze);
+
         jpLucht.setBackground(lichtZalmroze);
 
         jpLichtLinks.setBackground(lichtZalmroze);
@@ -346,6 +232,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         c.weightx = 1;
         c.insets = new Insets(10, 10, 10, 10);
 
+        jpMuziekspeler = new MuziekSpeler(this, mainInput);
         c.gridy = 0;
         c.gridx = 0;
         c.weighty = 1;
@@ -378,43 +265,20 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         metingTimer.start();
 
 
-        /*
-         * timer voor updaten van de muziekslider
-         * */
-        muziekSliderTimer = new Timer(1000, e -> {
-            if (jsTijdMuziek.getValueIsAdjusting()) return;
-            if (jsTijdMuziek.getValue() == nummer.getTijdsduur()) {
 
-                if (afspeellijst != null) {  // als er een afspeellijst speelt, ga naar volgend nummer
-                    afspeellijst.nextSong();
-                    setNummer(afspeellijst.getCurrentSong());
-                    startNummer();
-                    return;
-                }
 
-                pause();  // geen afspeellijst, stop aan het einde van nummer.
-                return;
-            }
-            int nieuweTijd = jsTijdMuziek.getValue() + 1;
-            jsTijdMuziek.setValue(nieuweTijd);
-            jlHuidigeTijd.setText(Functies.intToTimestamp(nieuweTijd));
-            jsTijdMuziek.repaint();
-        });
-        // timer wordt pas gestart wanneer het eerste nummer wordt geselecteerd
 
         /*
          * acties om uit te voeren wanneer het scherm sluit
          * */
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                muziekSliderTimer.stop();
+                jpMuziekspeler.stopSlider();
                 metingTimer.stop();
                 e.getWindow().dispose(); // sluit het scherm
             }
         });
 
-
-        alleNummers = new Afspeellijst(Database.selectNummers());
 
         /*
          * stel mainscherm in op laatste gebruiker
@@ -547,148 +411,25 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
         jlProfielNaam.setText(naam);
     }
 
-    public void setAfspeellijst(Afspeellijst afspeellijst) {
-        this.afspeellijst = afspeellijst;
-    }
-
-    public void setMuziekText(String text) {
-        setMuziekText(text, false);
-    }
-
-    public void setMuziekText(String text, boolean isWarning) {
-        jlNaamMuziek.setText(text);
-        if (isWarning) jlNaamMuziek.setForeground(Color.RED);
-        else jlNaamMuziek.setForeground(Color.BLACK);
-    }
 
     public void geenDatabase_Dialog() {
         JOptionPane.showMessageDialog(this, "Er is waarschijnlijk geen verbinding met de database", "Foutmelding", JOptionPane.ERROR_MESSAGE);
     }
 
-    public void setNummer(Nummer nummer) {
-        this.nummer = nummer;
-
-        if(nummer == null) return;
-        jsTijdMuziek.setMaximum(nummer.getTijdsduur());
-        Hashtable<Integer, JLabel> newLabelTable = new Hashtable<>();
-        newLabelTable.put(0, jlHuidigeTijd);
-        newLabelTable.put(nummer.getTijdsduur(), new JLabel(Functies.intToTimestamp(nummer.getTijdsduur())));
-        jsTijdMuziek.setLabelTable(newLabelTable);
-
-        setMuziekText(nummer.getNaam() + " - " + nummer.getArtiest());
-
-        jsTijdMuziek.setValue(0);
-        jsTijdMuziek.setEnabled(true);
-
-        jpMuziekKnoppen.repaint(); // dit update de aangepaste waardes op het scherm
-    }
-
-    public void startNummer() {
-        if (nummer == null) return;
-
-        mainInput.sendPiMessage("MUSIC PLAY " + nummer.getBestandsNaam());
-        String response = mainInput.waitForPiResponse();
-        if (response != null && !response.equals("fail")) {
-            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-            gepauzeerd = false;
-            muziekSliderTimer.start();
-        }
-    }
-
-    public void unpause() {
-
-        // nummer opnieuw starten als play wordt aangedrukt wanneer een nummer is afgelopen.
-        if (jsTijdMuziek.getValue() == nummer.getTijdsduur()) {
-            jsTijdMuziek.setValue(0);
-            startNummer();
-            return;
-        }
-
-        mainInput.sendPiMessage("MUSIC UNPAUSE");
-        String response = mainInput.waitForPiResponse();
-
-        if (response != null && !response.equals("fail")) {
-
-            jlPLay.setIcon(new ImageIcon("src/images/pause.png"));
-            gepauzeerd = false;
-            muziekSliderTimer.start();
-        }
-    }
-
-    public void pause() {
-
-        mainInput.sendPiMessage("MUSIC PAUSE");
-        String response = mainInput.waitForPiResponse();
-        if (response != null && response.equals("success")) {
-            jlPLay.setIcon(new ImageIcon("src/images/play.png"));
-            gepauzeerd = true;
-            muziekSliderTimer.stop();
-        }
+    public MuziekSpeler getJpMuziekspeler() {
+        return jpMuziekspeler;
     }
 
 
-    public void nextSong() {
-        if (nummer == null){
-            alleNummers.setCurrentSong(-1);
-            alleNummers.nextSong();
-            setNummer(alleNummers.getCurrentSong());
-            startNummer();
-            return;
-        }
-
-        if (afspeellijst == null) {
-            alleNummers.nextSong();
-            setNummer(alleNummers.getCurrentSong());
-            startNummer();
-            return;
-        }
-        afspeellijst.nextSong();
-        setNummer(afspeellijst.getCurrentSong());
-        startNummer();
+    public Profiel getProfiel() {
+        return profiel;
     }
 
-    public void previousSong() {
-        if (afspeellijst == null) {
-            alleNummers.previousSong();
-            setNummer(alleNummers.getCurrentSong());
-            startNummer();
-            return;
-        }
-        afspeellijst.previousSong();
-        setNummer(afspeellijst.getCurrentSong());
-        startNummer();
-    }
-
-    public Nummer getNummer() {
-        return nummer;
-    }
-
-    public Afspeellijst getAfspeellijst() {
-        return afspeellijst;
-    }
 
     @Override
     public void stateChanged(ChangeEvent e) {
 
-        if (e.getSource() == jsTijdMuziek) {
-
-            jlHuidigeTijd.setText(Functies.intToTimestamp(jsTijdMuziek.getValue()));
-            jsTijdMuziek.repaint();
-
-            // zolang gebruiker slider nog vast heeft (adjusting), niks doen.
-            if (jsTijdMuziek.getValueIsAdjusting()) {
-                valueWASadjusting = true;
-                return;
-            }
-            // wanner de slider wordt aangepast zonder dat een persoon dat doet, negeer het dan.
-            if (!valueWASadjusting) return;
-
-            // een persoon heeft een tijd aangegeven:
-            valueWASadjusting = false;
-            mainInput.sendPiMessage("MUSIC SET_TIME " + jsTijdMuziek.getValue());
-            mainInput.waitForPiResponse();
-
-        } else if (e.getSource() == jslMaxLichtsterkte) {
+        if (e.getSource() == jslMaxLichtsterkte) {
 
             jslMaxLichtsterkte.repaint();
 
@@ -724,41 +465,10 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
             ProfielenManagement profielDialog = new ProfielenManagement(this);
             if (profielDialog.anderProfielGeselecteerd()) {
                 // Het geselecteerde profiel ophalen, zodat het mainscherm aangepast kan worden.
-                afspeellijst = null;
+                jpMuziekspeler.setAfspeellijst(null);
                 profiel = profielDialog.getGeselecteerdProfiel();
                 updateSchermSettings(); // pas instellingen/gebruikersnaam aan op het nieuwe profiel
             }
-
-        } else if (e.getSource() == jlPLay) {
-
-            if (nummer == null) {
-                setMuziekText("Kies eerst een nummer", true);
-                return;
-            }
-
-            if (gepauzeerd) {
-                unpause();
-            } else {
-                pause();
-            }
-
-        } else if (e.getSource() == jlPuntjes) {
-
-            // open/sluit dropdown-menu'tje
-            if (jpMuziekKnoppen.getHeight() < 80) {
-                jpMuziekKnoppen.setSize(jpMuziekKnoppen.getWidth(), 125);
-                jpMuziekKnoppen.setPreferredSize(new Dimension(jpMuziekKnoppen.getWidth(), 125));
-            } else {
-                jpMuziekKnoppen.setSize(jpMuziekKnoppen.getWidth(), 60);
-                jpMuziekKnoppen.setPreferredSize(new Dimension(jpMuziekKnoppen.getWidth(), 60));
-            }
-        } else if (e.getSource() == jlSkip) {
-
-            nextSong();
-
-        } else if (e.getSource() == jlSkipBack) {
-
-            previousSong();
 
         }
     }
@@ -775,49 +485,5 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
     public void mouseExited(MouseEvent e) {
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        if (e.getSource() == jlAfspeellijstOverzicht) {
-
-            try {
-                AfspeellijstOverzicht overzicht = new AfspeellijstOverzicht(profiel.getId(), this);
-            } catch (NullPointerException NPE) {
-                geenDatabase_Dialog();
-            }
-
-        } else if (e.getSource() == jlNummerOverzicht) {
-
-            try {
-                NummerOverzicht overzicht2 = new NummerOverzicht(profiel.getId(), this); // nummer-overzicht dialog
-            } catch (NullPointerException NPE) {
-//                NPE.printStackTrace();
-                geenDatabase_Dialog();
-            }
-
-        } else if (e.getSource() == jlAfspeellijstToevoegen) {
-
-            try {
-                if (Database.selectAfspeellijsten(profiel.getId()).size() >= 8) {
-                    JOptionPane.showMessageDialog(this, "Het maximaal aantal afspeellijsten is bereikt!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                AfspeellijstToevoegen toevoegen = new AfspeellijstToevoegen(this);
-                if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
-
-                    if (!Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst())) {
-                        JOptionPane.showMessageDialog(this, "Een Afspeellijst mag een naam van maximaal 15 symbolen hebben.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
-                    }
-
-                } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
-                    JOptionPane.showMessageDialog(this, "Er is geen naam ingevuld!", "Foutmelding", JOptionPane.ERROR_MESSAGE);
-                }
-
-            } catch (NullPointerException NPE) {
-                geenDatabase_Dialog();
-            }
-
-        }
-    }
 }
 

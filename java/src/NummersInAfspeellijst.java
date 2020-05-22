@@ -62,8 +62,8 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
             jlMin.setPreferredSize(new Dimension(20, 20));
             JLabel jlNaamNummer = new JLabel("  " + nummer.getNaam() + " - " + nummer.getArtiest());
 
-            Nummer currentSong = hoofdscherm.getNummer();
-            Afspeellijst currentAfspeellijst = hoofdscherm.getAfspeellijst();
+            Nummer currentSong = hoofdscherm.getJpMuziekspeler().getNummer();
+            Afspeellijst currentAfspeellijst = hoofdscherm.getJpMuziekspeler().getAfspeellijst();
             if (currentSong != null && currentAfspeellijst != null &&
                     nummer.getNummerId() == currentSong.getNummerId() &&
                     afspeellijst.getAfspeellijstId() == currentAfspeellijst.getAfspeellijstId())
@@ -106,9 +106,9 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
 
 
                         System.out.println("Speel " + nummer.getNaam() + " af");
-                        hoofdscherm.setNummer(nummer);
-                        hoofdscherm.setAfspeellijst(afspeellijst);
-                        hoofdscherm.startNummer();
+                        hoofdscherm.getJpMuziekspeler().setNummer(nummer);
+                        hoofdscherm.getJpMuziekspeler().setAfspeellijst(afspeellijst);
+                        hoofdscherm.getJpMuziekspeler().startNummer();
 
                     }
                 }
