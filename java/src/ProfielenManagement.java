@@ -135,7 +135,7 @@ public class ProfielenManagement extends JDialog implements MouseListener {
                     anderProfiel = true;
                     dispose();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Een accountnaam mag niet langer zijn dan 10 symbolen", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Een accountnaam mag niet langer zijn dan 10 symbolen of speciale tekens bevatten", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

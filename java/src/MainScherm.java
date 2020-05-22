@@ -806,7 +806,7 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener,
                 if (toevoegen.getOk() && !toevoegen.getJtfNewAfspeellijst().equals("")) {
 
                     if (!Database.insertAfspeellijst(profiel.getId(), toevoegen.getJtfNewAfspeellijst())) {
-                        JOptionPane.showMessageDialog(this, "Een Afspeellijst mag een naam van maximaal 15 symbolen hebben.", "Foutmelding", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Een Afspeellijstnaam mag niet langer zijn dan 15 symbolen of speciale tekens bevatten", "Foutmelding", JOptionPane.ERROR_MESSAGE);
                     }
 
                 } else if (toevoegen.getOk() && toevoegen.getJtfNewAfspeellijst().equals("")) {
