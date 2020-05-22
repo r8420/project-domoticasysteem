@@ -8,7 +8,7 @@ public class Database {
 
     // Functie om verbinding te maken met de database.
     private static Connection maakVerbinding() {
-//        if (!verbinding) return null;
+        if (!verbinding) return null;
         try {
 
             Class.forName("com.mysql.jdbc.Driver");
