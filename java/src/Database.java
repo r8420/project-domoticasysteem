@@ -446,7 +446,7 @@ public class Database {
             String query2 = "delete from afspeellijst where AfspeellijstId = ?";
 
             PreparedStatement preparedStmt2 = conn.prepareStatement(query2);
-            preparedStmt.setInt(1, afspeellijstId);
+            preparedStmt2.setInt(1, afspeellijstId);
             preparedStmt2.execute();
 
             conn.close();
