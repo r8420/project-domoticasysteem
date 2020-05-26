@@ -254,11 +254,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener 
         c.gridheight = 4;
         add(jpZijkant, c);
 
-setLuchtvochtigheid(20);
-setLuchtdruk(1000);
-setTemperatuur(20.5);
-setLichtsterkte(5);
-
 
         /*
          * timer voor opvragen van nieuwe gegevens
