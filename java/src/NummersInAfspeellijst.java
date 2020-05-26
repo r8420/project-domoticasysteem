@@ -88,7 +88,6 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin) {
-                        System.out.println("Verwijder " + nummer.getNaam() + " uit de afspeellijst");
                         if (verwijderNummer() == JOptionPane.YES_OPTION) {
                             Database.deleteNummerUitAfspeellijst(afspeellijst.getAfspeellijstId(), nummer.getNummerId());
                             setVisible(false);
@@ -105,7 +104,6 @@ public class NummersInAfspeellijst extends JDialog implements ActionListener, Mo
                         jpNummerBalk.setBorder(selectedBorder);
 
 
-                        System.out.println("Speel " + nummer.getNaam() + " af");
                         hoofdscherm.getJpMuziekspeler().setNummer(nummer);
                         hoofdscherm.getJpMuziekspeler().setAfspeellijst(afspeellijst);
                         hoofdscherm.getJpMuziekspeler().startNummer();

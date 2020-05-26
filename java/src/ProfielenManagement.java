@@ -62,7 +62,6 @@ public class ProfielenManagement extends JDialog implements MouseListener {
                 JLabel jlNaam = new JLabel(profiel.getNaam());
                 MouseListener listener = new MouseListener() {
                     public void mouseClicked(MouseEvent e) {
-                        System.out.println("Geklikt op profiel: " + profiel.getNaam());
                         anderProfiel = true;
                         geselecteerdProfiel = profiel;
                         Database.updateProfielLaatsteLogin(profiel.getId());
@@ -130,7 +129,6 @@ public class ProfielenManagement extends JDialog implements MouseListener {
             if (nieuwProfielDialog.getOk()) {
 
                 if (Database.insertProfiel(nieuwProfielDialog.getJtfNewProfile())){ // Het nieuwe profiel in de database zetten.
-                    System.out.println("Profiel toegevoegd!");
                     geselecteerdProfiel = Database.selectRecentsteProfiel(); // Het nieuwe profiel ophalen, inclusief standaardinstellingen en ProfileId.
                     anderProfiel = true;
                     dispose();

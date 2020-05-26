@@ -93,7 +93,6 @@ public class NummerOverzicht extends JDialog implements ActionListener {
                         jlNaamNummer.setForeground(geselecteerdKleur);
                         jpNummerBalk.setBorder(selectedBorder);
 
-                        System.out.println("Speel " + nummer.getNaam() + " af");
                         hoofdscherm.getJpMuziekspeler().setNummer(nummer);
                         hoofdscherm.getJpMuziekspeler().setAfspeellijst(null);
                         hoofdscherm.getJpMuziekspeler().startNummer();
