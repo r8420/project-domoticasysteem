@@ -92,13 +92,11 @@ public class AfspeellijstOverzicht extends JDialog {
             MouseListener listener = new MouseListener() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getSource() == jlMin) {
-                        System.out.println("Verwijder " + afspeellijst.getNaam());
                         if (verwijderAfspeellijst() == JOptionPane.YES_OPTION) {
                             Database.deleteAfspeellijst(afspeellijst.getAfspeellijstId());
                             setVisible(false);
                         }
                     } else if (e.getSource() == jlNaamAfspeellijst) {
-                        System.out.println("Open " + afspeellijst.getNaam());
                         openAfspeellijstDialog(afspeellijst);
 
                     } else if (e.getSource() == jlPlay) {
@@ -112,7 +110,6 @@ public class AfspeellijstOverzicht extends JDialog {
                         jlNaamAfspeellijst.setForeground(geselecteerdKleur);
                         jpAfspeellijstBalk.setBorder(selectedBorder);
 
-                        System.out.println("Speel " + afspeellijst.getNaam());
                         frame.getJpMuziekspeler().setAfspeellijst(afspeellijst);
                         frame.getJpMuziekspeler().setNummer(afspeellijst.getCurrentSong());
                         frame.getJpMuziekspeler().startNummer();

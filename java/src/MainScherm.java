@@ -327,7 +327,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener 
                 lichtsterkte = Double.parseDouble(arduinoMeting);
                 lichtsterkte = Math.round(lichtsterkte / 102.4); // Opgehaalde lichtwaarde van de Arduino relativeren naar 0 tot 10, overeenkomend met de slider.
 
-                System.out.println(lichtsterkte);
                 arduinoMeetIets = true;
                 setLichtsterkte((int) lichtsterkte);
 
@@ -337,10 +336,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener 
             try {
                 if (lichtsterkte <= jslMaxLichtsterkte.getValue()) {
                     mainInput.sendPiMessage("LAMP ON");
-                    System.out.println("Lamp on");
                 } else {
                     mainInput.sendPiMessage("LAMP OFF");
-                    System.out.println("Lamp off");
                 }
                 mainInput.waitForPiResponse();
 
@@ -383,10 +380,8 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener 
     public void pasVerwarmingAan() {
         if (temperatuur <= (double) jspVerwarmingsTemperatuur.getValue()) {
             jlKachelStatus.setIcon(new ImageIcon("src/images/kachelAan.png"));
-            System.out.println("Kachel Aan");
         } else {
             jlKachelStatus.setIcon(new ImageIcon("src/images/kachelUit.png"));
-            System.out.println("Kachel Uit");
         }
     }
 
@@ -438,7 +433,6 @@ public class MainScherm extends JFrame implements ChangeListener, MouseListener 
 
             // maximale lichtsterkte is veranderd
             try {
-                System.out.println("Lamp aan vanaf: " + jslMaxLichtsterkte.getValue());
                 Database.updateProfielLicht(jslMaxLichtsterkte.getValue(), profiel.getId());
             } catch (NullPointerException np) {
                 geenDatabase_Dialog();
